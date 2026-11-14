@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:zuum_core/core.dart';
 
+import '../features/account/account_tab.dart';
 import '../features/auth/login_screen.dart';
 import '../features/auth/register_screen.dart';
 import '../features/earnings/earnings_tab.dart';
@@ -14,7 +15,6 @@ import '../features/shell/partner_shell.dart';
 import '../features/splash/partner_splash.dart';
 import '../features/trip/trip_screen.dart';
 import '../features/vehicles/vehicles_tab.dart';
-import '../shared/placeholder_page.dart';
 import 'auth_controller.dart';
 
 /// Partner navigation with auth + KYC gates:
@@ -97,12 +97,7 @@ final partnerRouterProvider = Provider<GoRouter>((ref) {
           StatefulShellBranch(routes: [
             GoRoute(
               path: '/account',
-              builder: (_, _) => const PlaceholderPage(
-                title: 'Partner account',
-                subtitle:
-                    'Profile, KYC status, ratings and settings land in Batch 8.',
-                illustration: 'empty_generic',
-              ),
+              builder: (_, _) => const AccountTab(),
             ),
           ]),
         ],

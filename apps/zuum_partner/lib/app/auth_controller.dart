@@ -88,8 +88,67 @@ class PartnerAuthController extends Notifier<PartnerAuthState> {
         ),
       );
 
-  Future<bool> _authenticate(Future<Session> Function() action) async {
+  /// DEV-ONLY (mock builds): seeds/signs into a fully-approved demo partner
+  /// so judges and testers can reach the dashboard in one tap. The mock user
+  /// lives in memory only; a fresh process starts from the login screen.
+  Future<bool> enterDemoPartner() async {
     state = state.copyWith(busy: true, clearError: true);
+    try {
+      final api = _api;
+      const email = 'demo@zuum.in';
+      const password = 'demo1234';
+      Session session;
+      try {
+        session = await api.login(email: email, password: password);
+      } on ApiException {
+        await api.register(
+          email: email,
+          password: password,
+          firstName: 'Demo',
+          lastName: 'Partner',
+          phone: '9845000000',
+        );
+        for (final type in const [
+          KycDocType.licence,
+          KycDocType.rc,
+          KycDocType.insurance,
+        ]) {
+          await api.uploadDocument(
+            type: type,
+            filePath: 'demo://demo-${type.name}.jpg',
+          );
+        }
+        await api.createVehicle(
+          categoryCode: 'auto',
+          registrationNumber: 'KA 01 DM 0001',
+          make: 'Bajaj',
+          model: 'RE Auto',
+          color: 'Yellow',
+        );
+        await api.submitKyc();
+        session = await api.login(email: email, password: password);
+      }
+      await _storage.saveSession(session);
+      final profile = await api.profile();
+      state = PartnerAuthState(
+        status: PartnerAuthStatus.authenticated,
+        user: session.user,
+        profile: profile,
+      );
+      return true;
+    } on ApiException catch (e) {
+      state = state.copyWith(busy: false, error: _message(e));
+      return false;
+    } catch (_) {
+      state = state.copyWith(
+        busy: false,
+        error: 'Something went wrong. Please try again.',
+      );
+      return false;
+    }
+  }
+
+  Future<bool> _authenticate(Future<Session> Function() action) async {    state = state.copyWith(busy: true, clearError: true);
     try {
       final session = await action();
       await _storage.saveSession(session);

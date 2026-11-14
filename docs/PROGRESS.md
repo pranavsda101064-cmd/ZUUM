@@ -88,7 +88,14 @@ Legend: ⬜ not started · 🟨 in progress · ✅ done · ⛔ blocked
       insurance expiry warnings, add-vehicle sheet with category chips), fleet
       console (overview stats, driver roster, assign-vehicle sheet); 3 new
       e2e tests (12 partner total), analyze clean
-- [ ] Batch 8 — account/polish → APK → install → docs → commit/push
+- [x] Batch 8 — account/polish → APK → install → docs → commit/push: account
+      tab (profile header, rating/acceptance stats, KYC document tiles,
+      notifications toggle, language/support/terms, environment badge, sign
+      out with confirm), one-tap dev demo sign-in (+ `AUTO_DEMO` kiosk flag),
+      INTERNET permission added to both release manifests (map tiles/search
+      now work in release APKs), partner APK built/installed and home screen
+      verified on device; 14 partner tests + 44 core + 28 design-system green,
+      analyze clean
 
 
 ## Phase 5 — Admin Dashboard (Flutter Web) ⬜

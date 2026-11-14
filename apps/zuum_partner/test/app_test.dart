@@ -571,4 +571,48 @@ void main() {
     expect(find.text('KA05AB1234'), findsWidgets);
     await tearDownHome(tester);
   });
+
+  testWidgets('demo sign-in lands on the dashboard in mock builds',
+      (tester) async {
+    final api = MockPartnerApi(
+      latency: Duration.zero,
+      kycReviewDelay: Duration.zero,
+    );
+    await pumpThroughSplash(tester, api);
+
+    await tester.tap(find.text('Demo partner (dev)'));
+    await settleAction(tester);
+    await settleAction(tester);
+
+    expect(find.text('OFFLINE'), findsOneWidget);
+    expect(find.text('Demo Partner'), findsWidgets);
+    await tearDownHome(tester);
+  });
+
+  testWidgets('account tab shows profile, documents and signs out',
+      (tester) async {
+    final api = MockPartnerApi(
+      latency: Duration.zero,
+      kycReviewDelay: Duration.zero,
+    );
+    final storage = await seedApprovedPartner(api);
+    await pumpSeededHome(tester, api, storage);
+
+    await tester.tap(find.text('Account'));
+    await settleAction(tester);
+    expect(find.text('Ravi Kumar'), findsWidgets);
+    expect(find.text('VERIFIED'), findsWidgets);
+    expect(find.text('Driving licence'), findsOneWidget);
+    expect(find.text('Vehicle RC'), findsOneWidget);
+    expect(find.text('RATING'), findsOneWidget);
+    expect(find.text('MOCK'), findsOneWidget);
+
+    await tester.tap(find.text('Sign out'));
+    await settleAction(tester);
+    expect(find.text('Sign out of Zuum Partner?'), findsOneWidget);
+    await tester.tap(find.widgetWithText(TextButton, 'Sign out'));
+    await settleAction(tester);
+    expect(find.text('Partner sign in'), findsWidgets);
+    await tearDownHome(tester);
+  });
 }
