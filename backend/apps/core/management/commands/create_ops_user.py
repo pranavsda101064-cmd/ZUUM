@@ -26,9 +26,15 @@ class Command(BaseCommand):
         email = (options.get("email") or "").strip().lower()
         password = options.get("password") or ""
         if not email or not password:
-            raise CommandError(
-                "Provide --email/--password or set DJANGO_SUPERUSER_EMAIL/PASSWORD"
+            # Free Render services run this on boot with no shell; a missing
+            # env must not take the whole service down.
+            self.stdout.write(
+                self.style.WARNING(
+                    "Skipping ops superuser: set DJANGO_SUPERUSER_EMAIL and "
+                    "DJANGO_SUPERUSER_PASSWORD (or pass --email/--password)."
+                )
             )
+            return
         user, created = User.objects.get_or_create(
             email=email,
             defaults={

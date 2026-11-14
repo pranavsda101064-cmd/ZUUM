@@ -13,6 +13,7 @@ services:
     name: zuum-api
     runtime: docker
     dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
     plan: free
     autoDeploy: true
     healthCheckPath: /api/v1/health
