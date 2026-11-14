@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 120" fill="none">
+  <g stroke="#090D16" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Namma Metro viaduct curving past a Tabebuia canopy -->
+    <path d="M12 84c30-14 70-20 136-16" />
+    <path d="M12 92c30-14 70-20 136-16" />
+    <path d="M34 86v22M74 76v32M118 70v38" />
+    <!-- Metro train -->
+    <rect x="44" y="54" width="52" height="22" rx="6" fill="#FFFFFF"/>
+    <path d="M52 62h14M72 62h14M92 62h6" stroke="#F3F4F6"/>
+    <circle cx="92" cy="70" r="3" fill="#84CC16" stroke="none"/>
+    <!-- Tabebuia canopy -->
+    <circle cx="130" cy="42" r="16" fill="#F3F4F6"/>
+    <path d="M130 58v34M130 70l-8 8M130 66l8 8" />
+    <path d="M20 108h120" />
+  </g>
+</svg>

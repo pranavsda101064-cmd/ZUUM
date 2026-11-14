@@ -1,0 +1,40 @@
+name: zuum_design_system
+description: Zuum design system — tokens, components, illustrations, map abstraction
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ^3.13.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_map: ^8.3.2
+  flutter_riverpod: ^3.5.0
+  flutter_svg: ^2.3.4
+  latlong2: ^0.10.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  assets:
+    - assets/illustrations/
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Inter-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Inter-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Inter-Bold.ttf
+          weight: 700
+    - family: NotoSansKannada
+      fonts:
+        - asset: assets/fonts/NotoSansKannada-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/NotoSansKannada-SemiBold.ttf
+          weight: 600

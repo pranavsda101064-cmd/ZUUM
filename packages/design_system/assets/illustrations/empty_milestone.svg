@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 120" fill="none">
+  <g stroke="#090D16" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Old Bengaluru cast-iron street milestone -->
+    <path d="M64 100h32l-4-46H68z" fill="#FFFFFF"/>
+    <path d="M68 54h24" />
+    <path d="M70 66h20M72 78h16" stroke="#F3F4F6"/>
+    <circle cx="80" cy="42" r="10" fill="#FFFFFF"/>
+    <path d="M80 36v12M76 40h8" />
+    <!-- Rain tree branch -->
+    <path d="M20 24c16-8 30-4 40 6" />
+    <path d="M34 20c2 6 0 10-4 12M50 18c4 4 4 10 0 14" stroke="#F3F4F6"/>
+    <!-- Ground -->
+    <path d="M30 104h100" />
+    <circle cx="112" cy="34" r="6" fill="#84CC16" stroke="none"/>
+  </g>
+</svg>

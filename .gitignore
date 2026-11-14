@@ -1,0 +1,38 @@
+# Secrets / env
+.env
+.env.*
+!.env.example
+
+# Flutter / Dart
+.dart_tool/
+.packages
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+*.g.dart
+*.freezed.dart
+.idea/
+*.iml
+.vscode/
+
+# Python / Django
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+db.sqlite3
+staticfiles/
+media/
+
+# Node (not used, safety)
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Build deliverables (ship APK via GitHub Releases, not git)
+builds/
