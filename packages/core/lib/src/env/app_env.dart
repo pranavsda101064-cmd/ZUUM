@@ -3,8 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../api/api_client.dart';
 import '../api/api_contract.dart';
 import '../api/mock/mock_api_adapter.dart';
+import '../api/mock/mock_partner_api.dart';
+import '../api/partner_api_contract.dart';
 import '../payments/payment_gateway.dart';
 import '../places/place_search.dart';
+import '../realtime/driver_realtime_service.dart';
 import '../realtime/realtime_service.dart';
 import '../storage/prefs_store.dart';
 import '../storage/token_storage.dart';
@@ -67,4 +70,24 @@ final realtimeServiceProvider = Provider<RealtimeService>((ref) {
 /// Payment gateway seam. Mock until Razorpay keys are configured.
 final paymentGatewayProvider = Provider<PaymentGateway>((ref) {
   return MockPaymentGateway();
+});
+/// Partner API surface (`docs/06_partner_api.md`).
+/// `MockPartnerApi` is DEV-ONLY and reachable only when `ENV=mock`.
+final partnerApiProvider = Provider<PartnerApiContract>((ref) {
+  if (AppEnv.isMock) return MockPartnerApi();
+  throw UnsupportedError(
+    'Live partner API client ships with the Phase 2 Django backend '
+    '(docs/06_partner_api.md).',
+  );
+});
+
+/// Driver offer feed — mock simulator until the WS backend (Phase 6).
+final driverRealtimeProvider = Provider<DriverRealtimeService>((ref) {
+  final api = ref.watch(partnerApiProvider);
+  if (api is MockPartnerApi) {
+    final service = MockDriverRealtimeService(api: api);
+    ref.onDispose(service.dispose);
+    return service;
+  }
+  return NoopDriverRealtimeService();
 });

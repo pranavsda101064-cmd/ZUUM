@@ -54,6 +54,15 @@ abstract final class ZFormat {
   /// Plate formatting is server-truth; this only normalizes spacing.
   static String plate(String raw) => raw.trim().toUpperCase();
 
+  /// `12 Nov 2026` — date-only (document expiry, invoices).
+  static String shortDate(DateTime dt) {
+    final months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+    ];
+    return '${dt.day} ${months[dt.month - 1]} ${dt.year}';
+  }
+
   static const _days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   static const _months = [
     'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',

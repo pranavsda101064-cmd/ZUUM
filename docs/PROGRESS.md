@@ -50,8 +50,41 @@ Legend: ⬜ not started · 🟨 in progress · ✅ done · ⛔ blocked
       (com.zuum.customer · label "Zuum" · minSdk 24 · ENV=mock)
 - [x] Demo script: `docs/DEMO.md`
 
-## Phase 4 — Partner App ⬜
-- [ ] Onboarding/KYC, vehicles, availability, offers, trip flow, earnings, fleet console
+## Phase 4 — Partner App
+- [x] Batch 1 — contract + scaffold: `apps/zuum_partner` (com.zuum.partner,
+      "Zuum Partner"), carbon-header partner theme, router skeleton (splash →
+      auth → 4-tab shell), env/mock wiring, `docs/06_partner_api.md`; 2 smoke
+      tests green, analyze clean
+- [x] Batch 2 — core partner layer: PartnerApiContract + MockPartnerApi
+      (KYC state machine, vehicles, availability, offers, ride + goods trip
+      lifecycle with OTP/POD, 20/80 commission, earnings ranges, payouts,
+      fleet console data), DriverRealtimeService + offer simulator, partner
+      models, providers; 16 new unit tests (44 core total), analyze clean
+- [x] Batch 3 — partner design-system components: ZOnlineHero (lime live
+      dot + big switch), ZOfferCard (countdown ring, surge pill, accept/
+      decline, expired state), ZStatCard, ZCommissionBreakdown,
+      ZDocumentTile (verified/pending/expired), ZLiveDot, ZFormat.shortDate;
+      8 new widget tests (28 design-system total), analyze clean
+- [x] Batch 4 — shell + onboarding/KYC: partner auth controller (email +
+      password, session restore), router guards (splash → login → KYC wizard →
+      pending → shell), 5-step wizard (details / licence / vehicle / documents
+      with camera-gallery-demo picker / payout), KYC pending screen with review
+      polling, iOS camera + photo permission strings; 4 e2e tests, analyze clean
+- [x] Batch 5 — home + online status + offers: dashboard (online hero with
+      server-authoritative toggle, simulated-GPS map card, net-today +
+      acceptance stats, active-trip card), offer bottom sheet (live countdown,
+      accept/decline, expired + error states), realtime simulator wired with
+      provider-dispose cleanup, dev "Simulate offer" action; 7 partner e2e
+      tests (44 core + 28 design-system green), analyze clean
+- [x] Batch 6 — trip lifecycle (ride + goods POD): `TripController`
+      (server-authoritative transitions), trip screen states (heading to
+      pickup / at pickup OTP / in-trip / completed receipt), customer card with
+      masked phone, cancel-with-reason dialog, goods POD delivery-OTP gate
+      (`pod_missing` surfaced), completion receipt with commission breakdown;
+      2 new e2e tests (9 partner total), analyze clean
+- [ ] Batch 7 — earnings + vehicles + fleet console
+- [ ] Batch 8 — account/polish → APK → install → docs → commit/push
+
 
 ## Phase 5 — Admin Dashboard (Flutter Web) ⬜
 - [ ] Live ops map, bookings, drivers, customers, finance, analytics, config, audit
