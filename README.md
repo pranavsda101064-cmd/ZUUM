@@ -10,7 +10,7 @@ transport (2W/3W/Ace/Pickup/Van/Tempo), built as one platform.
 | `apps/zuum_customer` | Customer booking app (Flutter mobile) | ✅ Phase 3 (mock) |
 | `apps/zuum_partner` | Driver & fleet partner app (Flutter mobile) | ✅ Phase 4 (mock) |
 | `apps/zuum_admin` | Ops & monitoring dashboard (Flutter Web) | ⬜ Phase 5 |
-| `backend/` | Django + DRF + Channels + Celery | ⬜ Phase 2 |
+| `backend/` | Django + DRF + Channels + Celery | ✅ Phase 2 core (dev) |
 
 ## Docs
 
@@ -46,6 +46,22 @@ a fully-approved partner (documents + auto vehicle) in one tap. For kiosk demos
 add `--dart-define=AUTO_DEMO=true` to sign in automatically on launch.
 
 Demo builds: `builds/zuum-customer-mock.apk`, `builds/zuum-partner-mock.apk`.
+
+## Quick start (backend)
+
+```bash
+cd backend
+python -m venv .venv && .venv\Scripts\activate   # (source .venv/bin/activate)
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py seed_demo
+python manage.py runserver
+```
+
+Demo logins (password `zuum1234`): `customer@zuum.in` · `partner@zuum.in` ·
+`fleet@zuum.in`. API at `/api/v1/` · Swagger at `/api/v1/docs/` ·
+WebSocket at `/ws/{topic}/{id}/?token=<access>`. See
+[backend/README.md](backend/README.md).
 
 ## Partner docs
 

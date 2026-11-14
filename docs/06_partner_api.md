@@ -144,3 +144,18 @@ Same envelope as consumer (`{code, message, details?}`). Partner-specific codes:
 simulator (offer every 20–40 s while online, 15 s expiry, compressed trip
 timings) so the partner app is demoable before the Django backend (Phase 2).
 Any deviation from this contract is a bug.
+
+## Backend implementation notes (Phase 2)
+
+The Django backend (`backend/apps/api/views/partner.py`) implements this
+contract with these documented extensions:
+
+- `GET /partner/bookings/active` - `{"trip": booking | null}` for profile
+  restore on app launch (the mock app's `activeTrip()` parity).
+- `dev_otp_hint` on offers/partner bookings while `DEBUG=1` (single-phone demo
+  convenience; never present in production builds).
+- Offer expiry is 15 s; a sweep runs on `GET /partner/offers` and on accept
+  (`offer_expired` / `offer_taken`).
+- `POST /partner/availability` returns `{online, state}`.
+- Delivery POD (`delivery-pod`) requires the delivery OTP to be verified first
+  (`409 pod_missing`), matching `complete`.

@@ -107,12 +107,34 @@ Legend: ⬜ not started · 🟨 in progress · ✅ done · ⛔ blocked
 ## Phase 7 — Testing & Deployment ⬜
 - [ ] Test suites, security pass, Render deploy, CI, store readiness
 
+## Phase 2 — Backend (Django) ✅ core
+- [x] Scaffold: config (settings/env/asgi/channels/celery), 7 apps, SQLite dev
+- [x] Auth: email+password JWT, rotating refresh + blacklist, logout, signed
+      password reset, `{code, message, details?}` error envelope
+- [x] Catalog + pricing: service categories, distance/surge/night/loading fare
+      breakdown, commission rules, promos, referrals
+- [x] Bookings + dispatch + lifecycle: quote → book → offers (15 s expiry) →
+      accept → arrive → OTP start → complete, goods POD gate, cancel, history
+- [x] Partner surface: profile promotion, KYC documents/submit, vehicles +
+      availability, offers, trip actions, PODs, earnings/payouts/stats
+- [x] Fleet console API: overview, roster, invite, detach, vehicles, assign,
+      earnings breakdown
+- [x] Money: wallet + ledger, mock Razorpay order/verify, commission entries,
+      payouts
+- [x] Platform: support tickets, SOS, notifications, reviews, audit, settings
+- [x] Realtime: Channels consumer (JWT handshake, topic authz, hello/pong/
+      resume, offer + status push, location/presence uplink)
+- [x] OpenAPI via drf-spectacular (`schema.yml`, 0 errors) + Swagger UI
+- [x] `seed_demo` personas (customer / partner / fleet) + 32 tests green
+- [ ] Production swaps (Phase 6): Postgres+PostGIS, Redis, Razorpay live,
+      Celery workers, admin dashboard consumption
+
 ## Open items
 - [ ] Mapbox access token (mobile + web) — env-injected at Milestone C
 - [ ] Razorpay account keys — Phase 6
 - [ ] Partner + admin brand visual specs (design tokens already shared)
 - [ ] App store assets / privacy policy (Phase 7)
-- [ ] Backend Phase 2 (Django) — contract frozen in `03_api_contract.md`
+- [x] Backend Phase 2 core — implemented in `backend/` (32 tests, `seed_demo`)
 
 ## Log
 -- 2026-11-14 - Palette v2 'Obsidian Monochrome & Lime Volt' shipped: token remap (obsidian #111827 CTAs, carbon ink #090D16, volt lime #84CC16 signals), zero hex literals outside colors.dart, 18 SVGs remapped, launcher icon regenerated, dark-surface contrast fixes (splash progress + wallet CTA/chips), 60 tests green, APK rebuilt and reinstalled.
@@ -159,3 +181,6 @@ Legend: ⬜ not started · 🟨 in progress · ✅ done · ⛔ blocked
   the brace and all errors vanished. Also: POD signature rasterization
   (RenderRepaintBoundary.toImage) is unavailable under flutter_test — made it
   non-fatal so delivery confirmation never blocks on optional evidence.
+
+## Log — 2026-11-14 (Phase 2 backend)
+- Django 5 + DRF + Channels backend: auth/JWT, catalog+pricing, dispatch offers, full trip state machine (ride + goods POD), wallet/mock payments/commission/payouts, promos/referrals, support/SOS/notifications/reviews, fleet console, websocket topics. 32 tests green; `seed_demo` creates customer/partner/fleet personas; OpenAPI schema 0 errors.

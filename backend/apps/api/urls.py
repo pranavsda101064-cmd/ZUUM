@@ -1,0 +1,92 @@
+"""API routes — contract paths exactly as documented (no trailing slashes)."""
+from django.urls import path
+
+from apps.api.views import auth, bookings, catalog, customer, fleet, health, money, partner, support
+
+urlpatterns = [
+    path("health", health.HealthView.as_view()),
+    # auth
+    path("auth/register", auth.RegisterView.as_view()),
+    path("auth/login", auth.LoginView.as_view()),
+    path("auth/refresh", auth.RotatingTokenRefreshView.as_view()),
+    path("auth/logout", auth.LogoutView.as_view()),
+    path("auth/me", auth.MeView.as_view()),
+    path("auth/password/forgot", auth.ForgotPasswordView.as_view()),
+    path("auth/password/reset", auth.ResetPasswordView.as_view()),
+    # customer profile + addresses
+    path("customers/me", customer.CustomerMeView.as_view()),
+    path("customers/me/addresses", customer.AddressListCreateView.as_view()),
+    path("customers/me/addresses/<uuid:address_id>", customer.AddressDetailView.as_view()),
+    # catalog + pricing
+    path("service-categories", catalog.ServiceCategoryListView.as_view()),
+    path("pricing/quote", catalog.QuoteView.as_view()),
+    # bookings
+    path("bookings", bookings.BookingListCreateView.as_view()),
+    path("bookings/<uuid:booking_id>", bookings.BookingDetailView.as_view()),
+    path("bookings/<uuid:booking_id>/cancel", bookings.BookingCancelView.as_view()),
+    path("bookings/<uuid:booking_id>/rate", bookings.BookingRateView.as_view()),
+    path("bookings/<uuid:booking_id>/receipt", bookings.BookingReceiptView.as_view()),
+    path("bookings/<uuid:booking_id>/location", bookings.BookingLocationView.as_view()),
+    path("bookings/<uuid:booking_id>/eta", bookings.BookingEtaView.as_view()),
+    path("bookings/<uuid:booking_id>/otp/verify", bookings.BookingOtpVerifyView.as_view()),
+    # money
+    path("payments/methods", money.PaymentMethodsView.as_view()),
+    path("payments/orders", money.PaymentOrderView.as_view()),
+    path("payments/verify", money.PaymentVerifyView.as_view()),
+    path("wallet", money.WalletView.as_view()),
+    path("wallet/transactions", money.WalletTransactionsView.as_view()),
+    path("wallet/topup", money.WalletTopupView.as_view()),
+    path("promos/active", money.ActivePromosView.as_view()),
+    path("promos/validate", money.ValidatePromoView.as_view()),
+    path("referrals/me", money.ReferralMeView.as_view()),
+    # support / safety / notifications / reviews
+    path("support/topics", support.SupportTopicsView.as_view()),
+    path("support/tickets", support.SupportTicketListCreateView.as_view()),
+    path("support/tickets/<uuid:ticket_id>", support.SupportTicketDetailView.as_view()),
+    path("safety/sos", support.SosView.as_view()),
+    path("notifications", support.NotificationListView.as_view()),
+    path("notifications/<uuid:notification_id>/read", support.NotificationReadView.as_view()),
+    path("reviews/mine", support.MyReviewsView.as_view()),
+    # partner surface
+    path("partner/profile", partner.PartnerProfileView.as_view()),
+    path("partner/kyc", partner.PartnerKycView.as_view()),
+    path("partner/kyc/submit", partner.PartnerKycSubmitView.as_view()),
+    path("partner/documents", partner.PartnerDocumentListCreateView.as_view()),
+    path("partner/documents/<uuid:document_id>", partner.PartnerDocumentDetailView.as_view()),
+    path("partner/vehicles", partner.PartnerVehicleListCreateView.as_view()),
+    path("partner/vehicles/<uuid:vehicle_id>", partner.PartnerVehicleDetailView.as_view()),
+    path(
+        "partner/vehicles/<uuid:vehicle_id>/availability",
+        partner.PartnerVehicleAvailabilityView.as_view(),
+    ),
+    path("partner/availability", partner.PartnerAvailabilityView.as_view()),
+    path("partner/location", partner.PartnerLocationView.as_view()),
+    path("partner/offers", partner.PartnerOffersView.as_view()),
+    path("partner/offers/<uuid:offer_id>/accept", partner.PartnerOfferAcceptView.as_view()),
+    path("partner/offers/<uuid:offer_id>/decline", partner.PartnerOfferDeclineView.as_view()),
+    path("partner/bookings/active", partner.PartnerActiveTripView.as_view()),
+    path(
+        "partner/bookings/<uuid:booking_id>/<str:action>",
+        partner.PartnerTripActionView.as_view(),
+    ),
+    path(
+        "partner/bookings/<uuid:booking_id>/pickup-pod",
+        partner.PartnerPickupPodView.as_view(),
+    ),
+    path(
+        "partner/bookings/<uuid:booking_id>/delivery-pod",
+        partner.PartnerDeliveryPodView.as_view(),
+    ),
+    path("partner/earnings", partner.PartnerEarningsView.as_view()),
+    path("partner/earnings/trips", partner.PartnerEarningTripsView.as_view()),
+    path("partner/payouts", partner.PartnerPayoutsView.as_view()),
+    path("partner/stats", partner.PartnerStatsView.as_view()),
+    # fleet surface
+    path("fleet/overview", fleet.FleetOverviewView.as_view()),
+    path("fleet/drivers", fleet.FleetDriversView.as_view()),
+    path("fleet/drivers/invite", fleet.FleetInviteView.as_view()),
+    path("fleet/drivers/<uuid:driver_id>", fleet.FleetDriverDetailView.as_view()),
+    path("fleet/vehicles", fleet.FleetVehiclesView.as_view()),
+    path("fleet/vehicles/<uuid:vehicle_id>/assign", fleet.FleetVehicleAssignView.as_view()),
+    path("fleet/earnings", fleet.FleetEarningsView.as_view()),
+]

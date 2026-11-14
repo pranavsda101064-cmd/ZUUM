@@ -60,3 +60,27 @@ All packages: `flutter analyze` clean.
 - Razorpay: keys → `PaymentGateway` Razorpay impl (Phase 6)
 - Backend: Django Phase 2 implements `/api/v1` per `docs/03_api_contract.md`;
   set `API_BASE_URL`/`WS_BASE_URL` + `ENV=dev`.
+
+## Backend (Phase 2) demo
+
+```bash
+cd backend
+python -m venv .venv && .venv\Scripts\activate
+pip install -r requirements.txt
+python manage.py migrate && python manage.py seed_demo
+python manage.py runserver
+```
+
+- Swagger: http://127.0.0.1:8000/api/v1/docs/
+- Personas (password `zuum1234`): `customer@zuum.in`, `partner@zuum.in`,
+  `fleet@zuum.in`
+- 60-second API walkthrough: login customer -> `POST /pricing/quote` ->
+  `POST /bookings` -> login partner -> `GET /partner/offers` ->
+  `POST /partner/offers/{id}/accept` -> `POST /partner/bookings/{id}/arrive`
+  -> `POST /partner/bookings/{id}/verify-otp` (OTP in `dev_otp_hint` while
+  `DEBUG=1`) -> `POST /partner/bookings/{id}/complete` ->
+  `GET /bookings/{id}/receipt`.
+- WebSocket: `ws://127.0.0.1:8000/ws/driver/{user_id}/?token=<access>` emits
+  `hello`, `booking.offer`, `booking.offer.expired` and accepts
+  `driver.status` / `booking.location` uplinks.
+- Tests: `python manage.py test apps.api.tests` (32 green).
