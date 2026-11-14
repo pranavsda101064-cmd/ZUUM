@@ -20,7 +20,10 @@ from apps.bookings.services import (
     cancel_booking,
     create_booking,
     haversine_m,
+    project_onto_route,
 )
+from apps.routing.providers import bounding_box
+from apps.routing.service import RoutingService, profile_for_category
 from apps.core.exceptions import ApiError
 
 
@@ -263,6 +266,24 @@ class BookingEtaView(APIView):
             return Response(
                 {"eta_seconds": booking.duration_s, "distance_m": booking.distance_m}
             )
+        if (
+            booking.status == Booking.Status.IN_PROGRESS
+            and booking.route_geometry
+        ):
+            remaining, total = project_onto_route(
+                booking.route_geometry, {"lat": ping.lat, "lng": ping.lng}
+            )
+            ratio = remaining / total if total else 1.0
+            return Response(
+                {
+                    "eta_seconds": max(
+                        60, int(booking.duration_s * max(0.05, ratio))
+                    ),
+                    "distance_m": remaining,
+                    "route_provider": booking.route_provider,
+                    "degraded": booking.route_degraded,
+                }
+            )
         target = (
             {"lat": booking.drop_lat, "lng": booking.drop_lng}
             if booking.status == Booking.Status.IN_PROGRESS
@@ -273,6 +294,8 @@ class BookingEtaView(APIView):
             {
                 "eta_seconds": max(60, int(distance / 1000 / 22 * 3600)),
                 "distance_m": distance,
+                "route_provider": "haversine",
+                "degraded": True,
             }
         )
 
@@ -296,3 +319,77 @@ class BookingOtpVerifyView(APIView):
         shipment.delivery_otp_verified_at = timezone.now()
         shipment.save(update_fields=["delivery_otp_verified_at"])
         return Response({"verified": True})
+
+
+class BookingRouteView(APIView):
+    """Route geometry + turn-by-turn steps for a booking.
+
+    `leg=drop` returns the stored pickup→drop route (customer tracking and
+    partner after pickup). `leg=pickup` returns a fresh route from the assigned
+    driver's last known point to the pickup (partner navigation).
+    """
+
+    def get(self, request, booking_id):
+        booking = Booking.objects.filter(pk=booking_id).first()
+        if booking is None:
+            raise ApiError("Booking not found", code="not_found", status_code=404)
+
+        offer = booking.offers.filter(status="accepted").first()
+        driver = getattr(request.user, "driver_profile", None)
+        allowed = (
+            booking.customer_id == request.user.id
+            or (offer is not None and driver is not None and offer.driver_id == driver.id)
+            or getattr(request.user, "is_staff", False)
+            or getattr(request.user, "role", None) == "staff"
+        )
+        if not allowed:
+            raise ApiError(
+                "Booking not found", code="not_found", status_code=404
+            )
+
+        leg = request.query_params.get("leg", "drop")
+        if leg == "pickup" and offer is not None:
+            ping = (
+                LocationPing.objects.filter(driver=offer.driver)
+                .order_by("-recorded_at")
+                .first()
+            )
+            origin = (
+                {"lat": ping.lat, "lng": ping.lng}
+                if ping is not None
+                else {"lat": booking.pickup_lat, "lng": booking.pickup_lng}
+            )
+            result = RoutingService().route(
+                [origin, {"lat": booking.pickup_lat, "lng": booking.pickup_lng}],
+                profile=profile_for_category(booking.service_category.code),
+            )
+            return Response({"leg": "pickup", **result.as_dict()})
+
+        if booking.route_geometry:
+            from apps.routing.polyline import encode_polyline
+
+            return Response(
+                {
+                    "leg": "drop",
+                    "distance_m": booking.distance_m,
+                    "duration_s": booking.duration_s,
+                    "geometry": booking.route_geometry,
+                    "encoded_polyline": encode_polyline(booking.route_geometry),
+                    "steps": booking.route_steps,
+                    "bbox": bounding_box(booking.route_geometry),
+                    "provider": booking.route_provider,
+                    "degraded": booking.route_degraded,
+                    "cached": False,
+                    "toll": None,
+                }
+            )
+
+        # Legacy bookings created before routed quotes: compute on demand.
+        result = RoutingService().route(
+            [
+                {"lat": booking.pickup_lat, "lng": booking.pickup_lng},
+                {"lat": booking.drop_lat, "lng": booking.drop_lng},
+            ],
+            profile=profile_for_category(booking.service_category.code),
+        )
+        return Response({"leg": "drop", **result.as_dict()})

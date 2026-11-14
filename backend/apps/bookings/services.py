@@ -67,10 +67,15 @@ def compute_quote(
     drop: dict,
     scheduled_at=None,
     goods: dict | None = None,
+    route=None,
 ) -> dict:
     rule = rule_for(category)
-    distance_m = max(500, int(haversine_m(pickup, drop)))
-    duration_s = max(120, estimate_duration_s(distance_m))
+    if route is not None:
+        distance_m = max(500, int(route.distance_m))
+        duration_s = max(120, int(route.duration_s))
+    else:
+        distance_m = max(500, int(haversine_m(pickup, drop)))
+        duration_s = max(120, estimate_duration_s(distance_m))
 
     base = rule.base_paise
     distance_paise = int(rule.per_km_paise * distance_m / 1000)
@@ -189,6 +194,10 @@ def create_booking(*, customer, quote: FareQuote, payload: dict) -> Booking:
             payment_method=payload.get("payment_method") or "cash",
             notes=payload.get("notes") or "",
             scheduled_at=payload.get("scheduled_at"),
+            route_geometry=quote.route_geometry,
+            route_steps=quote.route_steps,
+            route_provider=quote.route_provider,
+            route_degraded=quote.route_degraded,
         )
         quote.booking = booking
         quote.save(update_fields=["booking"])
@@ -596,3 +605,45 @@ def cancel_booking(
         },
     )
     return booking
+
+
+def project_onto_route(
+    geometry: list[dict], point: dict
+) -> tuple[int, int]:
+    """Remaining and total route metres for a driver `point` (flat projection).
+
+    Used by the ETA endpoint so polling never hits the routing engine.
+    """
+    if len(geometry) < 2:
+        return 0, 0
+    mean_lat = sum(p["lat"] for p in geometry) / len(geometry)
+    kx = 111320.0 * math.cos(math.radians(mean_lat))
+    ky = 110540.0
+
+    def xy(p):
+        return (float(p["lng"]) * kx, float(p["lat"]) * ky)
+
+    segments = []
+    total = 0.0
+    for a, b in zip(geometry, geometry[1:]):
+        ax, ay = xy(a)
+        bx, by = xy(b)
+        length = math.hypot(bx - ax, by - ay)
+        segments.append((ax, ay, bx, by, length, total))
+        total += length
+
+    px, py = xy(point)
+    best_along = 0.0
+    best_distance = float("inf")
+    for ax, ay, bx, by, length, start in segments:
+        if length == 0:
+            continue
+        t = ((px - ax) * (bx - ax) + (py - ay) * (by - ay)) / (length * length)
+        t = max(0.0, min(1.0, t))
+        cx, cy = ax + t * (bx - ax), ay + t * (by - ay)
+        distance = math.hypot(px - cx, py - cy)
+        if distance < best_distance:
+            best_distance = distance
+            best_along = start + t * length
+    remaining = max(0.0, total - best_along)
+    return int(round(remaining)), int(round(total))

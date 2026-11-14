@@ -297,6 +297,7 @@ class BookingSerializer(serializers.ModelSerializer):
     trip = serializers.SerializerMethodField()
     shipment = serializers.SerializerMethodField()
     history = serializers.SerializerMethodField()
+    route = serializers.SerializerMethodField()
 
     class Meta:
         model = Booking
@@ -319,6 +320,7 @@ class BookingSerializer(serializers.ModelSerializer):
             "history",
             "promo_code",
             "discount_paise",
+            "route",
         )
 
     def get_fare(self, obj) -> dict:
@@ -373,6 +375,18 @@ class BookingSerializer(serializers.ModelSerializer):
     def get_history(self, obj) -> list:
         return BookingStatusHistorySerializer(obj.history.all()[:10], many=True).data
 
+    def get_route(self, obj) -> dict | None:
+        if not obj.route_geometry:
+            return None
+        return {
+            "geometry": obj.route_geometry,
+            "steps": obj.route_steps,
+            "provider": obj.route_provider,
+            "degraded": obj.route_degraded,
+            "distance_m": obj.distance_m,
+            "duration_s": obj.duration_s,
+        }
+
     def get_pickup(self, obj) -> dict:
         return {
             "lat": obj.pickup_lat,
@@ -420,6 +434,7 @@ class PartnerTripSerializer(serializers.ModelSerializer):
     goods_type = serializers.SerializerMethodField()
     needs_loading_help = serializers.SerializerMethodField()
     dev_otp_hint = serializers.SerializerMethodField()
+    route = serializers.SerializerMethodField()
     booking_id = serializers.UUIDField(source="id", read_only=True)
 
     class Meta:
@@ -444,11 +459,24 @@ class PartnerTripSerializer(serializers.ModelSerializer):
             "goods_type",
             "needs_loading_help",
             "created_at",
+            "route",
             "dev_otp_hint",
         )
 
     def get_kind(self, obj) -> str:
         return "goods" if obj.type == Booking.Type.GOODS else "ride"
+
+    def get_route(self, obj) -> dict | None:
+        if not obj.route_geometry:
+            return None
+        return {
+            "geometry": obj.route_geometry,
+            "steps": obj.route_steps,
+            "provider": obj.route_provider,
+            "degraded": obj.route_degraded,
+            "distance_m": obj.distance_m,
+            "duration_s": obj.duration_s,
+        }
 
     def get_pickup(self, obj) -> dict:
         return {
@@ -499,6 +527,18 @@ class PartnerTripSerializer(serializers.ModelSerializer):
 
     def get_needs_loading_help(self, obj) -> bool:
         return obj.shipment.needs_loading_help if hasattr(obj, "shipment") else False
+
+    def get_route(self, obj) -> dict | None:
+        if not obj.route_geometry:
+            return None
+        return {
+            "geometry": obj.route_geometry,
+            "steps": obj.route_steps,
+            "provider": obj.route_provider,
+            "degraded": obj.route_degraded,
+            "distance_m": obj.distance_m,
+            "duration_s": obj.duration_s,
+        }
 
     def get_dev_otp_hint(self, obj) -> str | None:
         from django.conf import settings
@@ -593,6 +633,18 @@ class DispatchOfferSerializer(serializers.ModelSerializer):
             "goods_type": shipment.goods_type,
             "weight_kg": shipment.weight_kg,
             "needs_loading_help": shipment.needs_loading_help,
+        }
+
+    def get_route(self, obj) -> dict | None:
+        if not obj.route_geometry:
+            return None
+        return {
+            "geometry": obj.route_geometry,
+            "steps": obj.route_steps,
+            "provider": obj.route_provider,
+            "degraded": obj.route_degraded,
+            "distance_m": obj.distance_m,
+            "duration_s": obj.duration_s,
         }
 
     def get_dev_otp_hint(self, obj) -> str | None:

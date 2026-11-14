@@ -160,7 +160,51 @@ SPECTACULAR_SETTINGS = {
     "COMPONENT_SPLIT_REQUEST": True,
 }
 
+# --- Routing (Valhalla public demo in dev; env-swappable) --------------------
+ROUTING_PROVIDER = os.getenv(
+    "ROUTING_PROVIDER", "haversine" if _sys.argv[1:2] == ["test"] else "valhalla"
+)
+ROUTING_BASE_URL = os.getenv(
+    "ROUTING_BASE_URL", "https://valhalla1.openstreetmap.de"
+)
+ROUTING_API_KEY = os.getenv("ROUTING_API_KEY", "")
+ROUTING_TIMEOUT_MS = int(os.getenv("ROUTING_TIMEOUT_MS", "4500"))
+ROUTING_CACHE_TTL = int(os.getenv("ROUTING_CACHE_TTL", "300"))
+ROUTING_DEGRADED_TTL = int(os.getenv("ROUTING_DEGRADED_TTL", "30"))
+ROUTING_CIRCUIT_SECONDS = int(os.getenv("ROUTING_CIRCUIT_SECONDS", "60"))
+ROUTING_USER_AGENT = os.getenv(
+    "ROUTING_USER_AGENT", "Zuum/1.0 (dev demo; OpenStreetMap + Valhalla)"
+)
+DISPATCH_USE_MATRIX = os.getenv("DISPATCH_USE_MATRIX", "0") == "1"
+
+# --- Places (OSM geocoding: Photon primary, Nominatim fallback) -------------
+PLACES_PHOTON_URL = os.getenv("PLACES_PHOTON_URL", "https://photon.komoot.io")
+PHOTON_URL = os.getenv("PHOTON_URL", PLACES_PHOTON_URL)
+NOMINATIM_URL = os.getenv("NOMINATIM_URL", "https://nominatim.openstreetmap.org")
+PLACES_TIMEOUT_MS = int(os.getenv("PLACES_TIMEOUT_MS", "4000"))
+PLACES_CACHE_TTL = int(os.getenv("PLACES_CACHE_TTL", "600"))
+PLACES_REVERSE_CACHE_TTL = int(os.getenv("PLACES_REVERSE_CACHE_TTL", "86400"))
+PLACES_USER_AGENT = os.getenv(
+    "PLACES_USER_AGENT", "Zuum/1.0 (dev demo; OpenStreetMap geocoding)"
+)
+# Bengaluru metro bias (min_lon,min_lat,max_lon,max_lat)
+PLACES_BBOX = os.getenv("PLACES_BBOX", "77.35,12.75,77.85,13.20")
+
+
 REDIS_URL = os.getenv("REDIS_URL", "")
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "zuum-default",
+    }
+}
+if REDIS_URL:
+    CACHES["default"] = {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": REDIS_URL,
+    }
+
 if REDIS_URL:
     CHANNEL_LAYERS = {
         "default": {

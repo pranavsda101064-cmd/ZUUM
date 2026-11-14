@@ -405,6 +405,29 @@ paths:
               schema:
                 $ref: '#/components/schemas/Booking'
           description: ''
+  /api/v1/bookings/{booking_id}/route:
+    get:
+      operationId: bookings_route_retrieve
+      description: |-
+        Route geometry + turn-by-turn steps for a booking.
+
+        `leg=drop` returns the stored pickup→drop route (customer tracking and
+        partner after pickup). `leg=pickup` returns a fresh route from the assigned
+        driver's last known point to the pickup (partner navigation).
+      parameters:
+      - in: path
+        name: booking_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - bookings
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
   /api/v1/customers/me:
     get:
       operationId: customers_me_retrieve
@@ -1763,6 +1786,34 @@ paths:
               schema:
                 $ref: '#/components/schemas/Payment'
           description: ''
+  /api/v1/places/reverse:
+    get:
+      operationId: places_reverse_retrieve
+      tags:
+      - places
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReverseQuery'
+          description: ''
+  /api/v1/places/search:
+    get:
+      operationId: places_search_retrieve
+      tags:
+      - places
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlaceSearchQuery'
+          description: ''
   /api/v1/pricing/quote:
     post:
       operationId: pricing_quote_create
@@ -1856,6 +1907,72 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Review'
+          description: ''
+  /api/v1/routing/health:
+    get:
+      operationId: routing_health_retrieve
+      tags:
+      - routing
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RouteRequest'
+          description: ''
+  /api/v1/routing/matrix:
+    post:
+      operationId: routing_matrix_create
+      tags:
+      - routing
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MatrixRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MatrixRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MatrixRequestRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatrixRequest'
+          description: ''
+  /api/v1/routing/route:
+    post:
+      operationId: routing_route_create
+      tags:
+      - routing
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RouteRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RouteRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RouteRequestRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RouteRequest'
           description: ''
   /api/v1/safety/sos:
     post:
@@ -2109,6 +2226,11 @@ components:
           maximum: 9223372036854775807
           minimum: 0
           format: int64
+        route:
+          type: object
+          additionalProperties: {}
+          nullable: true
+          readOnly: true
       required:
       - created_at
       - driver
@@ -2117,6 +2239,7 @@ components:
       - history
       - id
       - pickup
+      - route
       - service_category
       - shipment
       - trip
@@ -2647,6 +2770,42 @@ components:
           minLength: 1
       required:
       - refresh
+    MatrixRequest:
+      type: object
+      properties:
+        profile:
+          allOf:
+          - $ref: '#/components/schemas/ProfileEnum'
+          default: auto
+        sources:
+          type: array
+          items:
+            $ref: '#/components/schemas/Waypoint'
+        targets:
+          type: array
+          items:
+            $ref: '#/components/schemas/Waypoint'
+      required:
+      - sources
+      - targets
+    MatrixRequestRequest:
+      type: object
+      properties:
+        profile:
+          allOf:
+          - $ref: '#/components/schemas/ProfileEnum'
+          default: auto
+        sources:
+          type: array
+          items:
+            $ref: '#/components/schemas/WaypointRequest'
+        targets:
+          type: array
+          items:
+            $ref: '#/components/schemas/WaypointRequest'
+      required:
+      - sources
+      - targets
     MethodEnum:
       enum:
       - cash
@@ -2899,6 +3058,11 @@ components:
           type: string
           format: date-time
           readOnly: true
+        route:
+          type: object
+          additionalProperties: {}
+          nullable: true
+          readOnly: true
         dev_otp_hint:
           type: string
           nullable: true
@@ -2919,6 +3083,7 @@ components:
       - needs_loading_help
       - pickup
       - quoted_fare_paise
+      - route
       - service_category_name
     PartnerTripRequest:
       type: object
@@ -3239,6 +3404,25 @@ components:
         * `processing` - Processing
         * `paid` - Paid
         * `failed` - Failed
+    PlaceSearchQuery:
+      type: object
+      properties:
+        q:
+          type: string
+          maxLength: 120
+        lat:
+          type: number
+          format: double
+        lng:
+          type: number
+          format: double
+        limit:
+          type: integer
+          maximum: 20
+          minimum: 1
+          default: 8
+      required:
+      - q
     PriorityEnum:
       enum:
       - low
@@ -3251,6 +3435,20 @@ components:
         * `normal` - Normal
         * `high` - High
         * `urgent` - Urgent
+    ProfileEnum:
+      enum:
+      - auto
+      - motorcycle
+      - truck
+      - bicycle
+      - pedestrian
+      type: string
+      description: |-
+        * `auto` - auto
+        * `motorcycle` - motorcycle
+        * `truck` - truck
+        * `bicycle` - bicycle
+        * `pedestrian` - pedestrian
     Promo:
       type: object
       properties:
@@ -3389,6 +3587,18 @@ components:
       - first_name
       - last_name
       - password
+    ReverseQuery:
+      type: object
+      properties:
+        lat:
+          type: number
+          format: double
+        lng:
+          type: number
+          format: double
+      required:
+      - lat
+      - lng
     Review:
       type: object
       properties:
@@ -3444,6 +3654,38 @@ components:
         * `driver` - Driver
         * `fleet_owner` - Fleet owner
         * `staff` - Staff
+    RouteRequest:
+      type: object
+      properties:
+        profile:
+          allOf:
+          - $ref: '#/components/schemas/ProfileEnum'
+          default: auto
+        waypoints:
+          type: array
+          items:
+            $ref: '#/components/schemas/Waypoint'
+        steps:
+          type: boolean
+          default: true
+      required:
+      - waypoints
+    RouteRequestRequest:
+      type: object
+      properties:
+        profile:
+          allOf:
+          - $ref: '#/components/schemas/ProfileEnum'
+          default: auto
+        waypoints:
+          type: array
+          items:
+            $ref: '#/components/schemas/WaypointRequest'
+        steps:
+          type: boolean
+          default: true
+      required:
+      - waypoints
     SavedAddress:
       type: object
       properties:
@@ -3931,6 +4173,38 @@ components:
       - amount_paise
       - balance_after
       - kind
+    Waypoint:
+      type: object
+      properties:
+        lat:
+          type: number
+          format: double
+          maximum: 90
+          minimum: -90
+        lng:
+          type: number
+          format: double
+          maximum: 180
+          minimum: -180
+      required:
+      - lat
+      - lng
+    WaypointRequest:
+      type: object
+      properties:
+        lat:
+          type: number
+          format: double
+          maximum: 90
+          minimum: -90
+        lng:
+          type: number
+          format: double
+          maximum: 180
+          minimum: -180
+      required:
+      - lat
+      - lng
   securitySchemes:
     jwtAuth:
       type: http

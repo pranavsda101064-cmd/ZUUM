@@ -15,6 +15,7 @@ from apps.api.serializers import (
 )
 from apps.bookings.models import FareQuote
 from apps.bookings.services import compute_quote
+from apps.routing.service import RoutingService, profile_for_category
 from apps.catalog.models import ServiceCategory
 from apps.core.exceptions import ApiError
 
@@ -69,12 +70,16 @@ class QuoteView(APIView):
             "needs_loading_help": data.get("needs_loading_help", False),
         }
 
+        route = RoutingService().route(
+            [pickup, drop], profile=profile_for_category(category.code)
+        )
         computed = compute_quote(
             category=category,
             pickup=pickup,
             drop=drop,
             scheduled_at=data.get("scheduled_at"),
             goods=goods if data["kind"] == "goods" else None,
+            route=route,
         )
         quote = FareQuote.objects.create(
             customer=request.user,
@@ -87,6 +92,10 @@ class QuoteView(APIView):
             breakdown=computed["breakdown"],
             total_paise=computed["total_paise"],
             valid_until=computed["valid_until"],
+            route_geometry=route.geometry,
+            route_steps=[step.__dict__ for step in route.steps],
+            route_provider=route.provider,
+            route_degraded=route.degraded,
         )
         return Response(
             {
@@ -100,6 +109,7 @@ class QuoteView(APIView):
                 "total_paise": quote.total_paise,
                 "valid_until": quote.valid_until,
                 "quoted_at": quote.created_at,
+                "route": route.as_dict(),
             },
             status=status.HTTP_201_CREATED,
         )

@@ -86,6 +86,10 @@ class Booking(TimeStampedModel):
     cancelled_by = models.CharField(max_length=12, blank=True)
     cancel_reason = models.CharField(max_length=240, blank=True)
     completed_at = models.DateTimeField(null=True, blank=True)
+    route_geometry = models.JSONField(default=list, blank=True)
+    route_steps = models.JSONField(default=list, blank=True)
+    route_provider = models.CharField(max_length=20, default="haversine")
+    route_degraded = models.BooleanField(default=True)
 
     class Meta:
         ordering = ("-created_at",)
@@ -222,6 +226,10 @@ class FareQuote(TimeStampedModel):
     breakdown = models.JSONField()
     total_paise = models.PositiveIntegerField()
     valid_until = models.DateTimeField()
+    route_geometry = models.JSONField(default=list, blank=True)
+    route_steps = models.JSONField(default=list, blank=True)
+    route_provider = models.CharField(max_length=20, default="haversine")
+    route_degraded = models.BooleanField(default=True)
     booking = models.ForeignKey(
         Booking,
         on_delete=models.SET_NULL,

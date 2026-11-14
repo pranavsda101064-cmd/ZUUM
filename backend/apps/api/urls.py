@@ -11,6 +11,8 @@ from apps.api.views import (
     money,
     ops,
     partner,
+    places,
+    routing,
     support,
 )
 
@@ -39,6 +41,7 @@ urlpatterns = [
     path("bookings/<uuid:booking_id>/receipt", bookings.BookingReceiptView.as_view()),
     path("bookings/<uuid:booking_id>/location", bookings.BookingLocationView.as_view()),
     path("bookings/<uuid:booking_id>/eta", bookings.BookingEtaView.as_view()),
+    path("bookings/<uuid:booking_id>/route", bookings.BookingRouteView.as_view()),
     path("bookings/<uuid:booking_id>/otp/verify", bookings.BookingOtpVerifyView.as_view()),
     # money
     path("payments/methods", money.PaymentMethodsView.as_view()),
@@ -58,6 +61,13 @@ urlpatterns = [
     path("notifications", support.NotificationListView.as_view()),
     path("notifications/<uuid:notification_id>/read", support.NotificationReadView.as_view()),
     path("reviews/mine", support.MyReviewsView.as_view()),
+    # places
+    path("places/search", places.PlaceSearchView.as_view()),
+    path("places/reverse", places.PlaceReverseView.as_view()),
+    # routing
+    path("routing/route", routing.RouteView.as_view()),
+    path("routing/matrix", routing.MatrixView.as_view()),
+    path("routing/health", routing.RoutingHealthView.as_view()),
     # ops / admin surface
     path("ops/overview", ops.OpsOverviewView.as_view()),
     path("ops/bookings", ops.OpsBookingListView.as_view()),
