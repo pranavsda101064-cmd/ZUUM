@@ -46,6 +46,8 @@ a fully-approved partner (documents + auto vehicle) in one tap. For kiosk demos
 add `--dart-define=AUTO_DEMO=true` to sign in automatically on launch.
 
 Demo builds: `builds/zuum-customer-mock.apk`, `builds/zuum-partner-mock.apk`.
+Both ship branded launcher icons + native splash screens, shared page
+transitions, skeleton loading and animated counters.
 
 ## Quick start (backend)
 

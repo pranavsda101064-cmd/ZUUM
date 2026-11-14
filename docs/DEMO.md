@@ -49,9 +49,11 @@ Cancelled in Activity.
 
 ## Tests (CI gate)
 ```bash
-cd packages/core && flutter test            # 28
-cd packages/design_system && flutter test   # 11
-cd apps/zuum_customer && flutter test       # 11
+cd packages/core && flutter test            # 44
+cd packages/design_system && flutter test   # 33
+cd apps/zuum_customer && flutter test       # 12
+cd apps/zuum_partner && flutter test        # 15
+cd backend && python manage.py test apps.api.tests   # 45
 ```
 All packages: `flutter analyze` clean.
 
@@ -60,6 +62,13 @@ All packages: `flutter analyze` clean.
 - Razorpay: keys → `PaymentGateway` Razorpay impl (Phase 6)
 - Backend: Django Phase 2 implements `/api/v1` per `docs/03_api_contract.md`;
   set `API_BASE_URL`/`WS_BASE_URL` + `ENV=dev`.
+
+## Partner app demo (welcome + motion)
+
+`builds/zuum-partner-mock.apk` opens on an illustrated 3-page welcome tour,
+then the animated carbon splash / login. Use **Demo partner (dev)** for a
+one-tap seeded dashboard with shimmer loading, animated counters and the new
+brand icon + native splash.
 
 ## Backend (Phase 2) demo
 

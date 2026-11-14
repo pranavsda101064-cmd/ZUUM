@@ -21,7 +21,9 @@ class SharedPrefsStore implements PrefsStore {
 
 /// In-memory prefs for `ENV=mock` and widget tests.
 class InMemoryPrefsStore implements PrefsStore {
-  bool _onboarded = false;
+  InMemoryPrefsStore({bool onboarded = false}) : _onboarded = onboarded;
+
+  bool _onboarded;
 
   @override
   Future<bool> get onboarded async => _onboarded;

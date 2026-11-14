@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 import '../tokens/colors.dart';
 import '../tokens/spacing.dart';
 import '../tokens/typography.dart';
 import 'z_button.dart';
+import 'z_illustration.dart';
 
 /// Empty state with line-art illustration. Never a fake "coming soon" screen —
 /// it states plainly what will live here.
@@ -36,10 +36,9 @@ class ZEmptyState extends StatelessWidget {
             children: [
               SizedBox(
                 height: 104,
-                child: SvgPicture.asset(
-                  'assets/illustrations/$illustration.svg',
+                child: ZIllustration(
+                  illustration,
                   height: 104,
-                  fit: BoxFit.contain,
                 ),
               ),
               const SizedBox(height: ZSpacing.lg),

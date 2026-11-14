@@ -51,12 +51,7 @@ class EarningsTab extends ConsumerWidget {
             ),
             const SizedBox(height: ZSpacing.lg),
             summary.when(
-              loading: () => const Center(
-                child: Padding(
-                  padding: EdgeInsets.all(ZSpacing.xl),
-                  child: CircularProgressIndicator(color: ZColors.primary),
-                ),
-              ),
+              loading: () => const _SummarySkeleton(),
               error: (error, _) => ZEmptyState(
                 illustration: 'empty_generic',
                 title: 'Could not load earnings',
@@ -64,11 +59,15 @@ class EarningsTab extends ConsumerWidget {
                     ? error.message
                     : 'Pull down to retry.',
               ),
-              data: (data) => _SummaryCard(range: range, summary: data),
+              data: (data) =>
+                  ZEntrance(index: 1, child: _SummaryCard(range: range, summary: data)),
             ),
             if (payouts.value?.results.isNotEmpty ?? false) ...[
               const SizedBox(height: ZSpacing.lg),
-              _PayoutCard(payout: payouts.value!.results.first),
+              ZEntrance(
+                index: 2,
+                child: _PayoutCard(payout: payouts.value!.results.first),
+              ),
             ],
             const SizedBox(height: ZSpacing.lg),
             Row(
@@ -140,8 +139,9 @@ class _SummaryCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: ZSpacing.sm),
-          Text(
-            ZFormat.inr(summary.netPaise),
+          ZAnimatedCounter(
+            value: summary.netPaise,
+            format: (value) => ZFormat.inr(value.toInt()),
             style: ZTypography.display.copyWith(color: ZColors.onDark),
           ),
           const SizedBox(height: ZSpacing.xs),
@@ -231,8 +231,9 @@ class _PayoutCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('Latest payout', style: ZTypography.caption.copyWith(color: ZColors.textSecondary)),
-                Text(
-                  ZFormat.inr(payout.amountPaise),
+                ZAnimatedCounter(
+                  value: payout.amountPaise,
+                  format: (value) => ZFormat.inr(value.toInt()),
                   style: ZTypography.numericLg,
                 ),
                 Text(
@@ -308,6 +309,40 @@ class _TripEntryTile extends StatelessWidget {
               ),
             ],
           ),
+        ],
+      ),
+    );
+  }
+}
+
+
+/// Skeleton matching the summary card geometry while earnings load.
+class _SummarySkeleton extends StatelessWidget {
+  const _SummarySkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(ZSpacing.lg),
+      decoration: BoxDecoration(
+        color: ZColors.surface,
+        borderRadius: BorderRadius.circular(ZRadii.lg),
+        border: Border.all(color: ZColors.divider),
+      ),
+      child: const Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ZSkeleton(width: 90, height: 10),
+          SizedBox(height: ZSpacing.md),
+          ZSkeleton(width: 160, height: 30),
+          SizedBox(height: ZSpacing.sm),
+          ZSkeleton(width: 120, height: 10),
+          SizedBox(height: ZSpacing.xl),
+          ZSkeleton(width: double.infinity, height: 10),
+          SizedBox(height: ZSpacing.sm),
+          ZSkeleton(width: double.infinity, height: 10),
+          SizedBox(height: ZSpacing.sm),
+          ZSkeleton(width: 200, height: 10),
         ],
       ),
     );

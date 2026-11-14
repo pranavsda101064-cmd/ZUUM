@@ -6,10 +6,11 @@ import 'package:zuum_core/core.dart';
 import 'package:zuum_design_system/design_system.dart';
 
 import '../../app/auth_controller.dart';
+import '../onboarding/welcome_controller.dart';
 
-/// Partner launch screen — carbon canvas, brand lockup with the lime
-/// "PARTNER" flag, brief hold, then session restore. The router redirect
-/// decides between login, KYC onboarding and the shell.
+/// Partner launch screen — animated carbon-ink brand reveal while the session
+/// restores and the partner intro flag hydrates. Routing is owned by the
+/// router redirect (splash → welcome / login / KYC / shell).
 class PartnerSplash extends ConsumerStatefulWidget {
   const PartnerSplash({super.key});
 
@@ -26,6 +27,7 @@ class _PartnerSplashState extends ConsumerState<PartnerSplash> {
 
   Future<void> _boot() async {
     final auth = ref.read(partnerAuthProvider.notifier);
+    await ref.read(partnerWelcomeProvider.notifier).hydrate();
     await auth.bootstrap();
     if (!mounted) return;
     if (_autoDemo &&
@@ -50,56 +52,11 @@ class _PartnerSplashState extends ConsumerState<PartnerSplash> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: ZColors.dark,
-      body: SafeArea(
-        child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const ZBrandMark(scale: 1.4, onDark: true),
-              const SizedBox(height: 12),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(
-                  color: ZColors.highlight,
-                  borderRadius: BorderRadius.circular(999),
-                ),
-                child: Text(
-                  'PARTNER',
-                  style: ZTypography.overline.copyWith(
-                    color: ZColors.dark,
-                    letterSpacing: 1.4,
-                  ),
-                ),
-              ),
-              const SizedBox(height: ZSpacing.xxl),
-              Text(
-                'Old Bengaluru soul. New Bengaluru movement.',
-                style: ZTypography.caption.copyWith(color: ZColors.accent),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: ZSpacing.xs),
-              Text(
-                'Earn on every street in the city.',
-                style: ZTypography.caption.copyWith(
-                  color: ZColors.onDarkSecondary,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: ZSpacing.z40),
-              const SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: ZColors.highlight,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+    return const ZBrandSplash(
+      badge: 'PARTNER',
+      kannada: 'ಸುಸ್ವಾಗತ',
+      tagline: 'Old Bengaluru soul. New Bengaluru movement.',
+      footnote: 'Earn on every street in the city · v1.0',
     );
   }
 }

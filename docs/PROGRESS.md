@@ -98,6 +98,23 @@ Legend: ⬜ not started · 🟨 in progress · ✅ done · ⛔ blocked
       analyze clean
 
 
+## Production polish — motion, brand & loading (2026-11-14)
+- [x] Design-system motion kit: shared page transitions (fade + rise + scale),
+      `ZEntrance` stagger, `ZAnimatedCounter`, `ZPressable`, branded
+      `ZBrandSplash` (animated logo reveal, lime glow, travel-line loader),
+      `ZBottomNav` (animated pill + icon spring), `ZIllustration` package-aware
+      SVG loader (fixes illustrations in both apps)
+- [x] Partner app: 3-page illustrated welcome tour (persisted), animated
+      carbon splash, shimmer skeletons on home/earnings/vehicles/fleet/account,
+      animated earnings counters, staggered entrances, trip stage crossfades +
+      completion pop, custom bottom nav; 15 e2e tests
+- [x] Customer app: shared page transitions, package-driven illustrations,
+      branded bottom nav; 12 tests
+- [x] New brand icons + native splash (dark canvas, lime dot) generated for
+      both apps (adaptive Android + iOS sets); 3 partner line-art illustrations
+- [x] Test totals: customer 12 · partner 15 · design-system 33 · core 44 ·
+      backend 45 (149 green); analyze clean in every package
+
 ## Phase 5 — Admin Dashboard (Flutter Web) ⬜
 - [ ] Live ops map, bookings, drivers, customers, finance, analytics, config, audit
 

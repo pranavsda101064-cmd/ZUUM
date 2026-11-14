@@ -162,9 +162,30 @@ class _TripScreenState extends ConsumerState<TripScreen> {
                 actionLabel: 'Back to home',
                 onAction: () => context.go('/home'),
               )
-            : trip.status == PartnerTripStatus.completed
-                ? _CompletedView(trip: trip)
-                : _body(trip),
+            : AnimatedSwitcher(
+                duration: ZMotion.base,
+                switchInCurve: ZMotion.standard,
+                switchOutCurve: Curves.easeIn,
+                transitionBuilder: (child, animation) => FadeTransition(
+                  opacity: animation,
+                  child: SlideTransition(
+                    position: Tween<Offset>(
+                      begin: const Offset(0, 0.02),
+                      end: Offset.zero,
+                    ).animate(animation),
+                    child: child,
+                  ),
+                ),
+                child: trip.status == PartnerTripStatus.completed
+                    ? _CompletedView(
+                        key: ValueKey('done-${trip.bookingId}'),
+                        trip: trip,
+                      )
+                    : KeyedSubtree(
+                        key: ValueKey(trip.status),
+                        child: _body(trip),
+                      ),
+              ),
       ),
     );
   }
@@ -534,7 +555,7 @@ class _GoodsCard extends StatelessWidget {
 }
 
 class _CompletedView extends StatelessWidget {
-  const _CompletedView({required this.trip});
+  const _CompletedView({super.key, required this.trip});
 
   final PartnerTrip trip;
 
@@ -546,17 +567,26 @@ class _CompletedView extends StatelessWidget {
         children: [
           const SizedBox(height: ZSpacing.lg),
           Center(
-            child: Container(
-              width: 72,
-              height: 72,
-              decoration: const BoxDecoration(
-                color: ZColors.successTint,
-                shape: BoxShape.circle,
+            child: TweenAnimationBuilder<double>(
+              tween: Tween(begin: 0.4, end: 1),
+              duration: const Duration(milliseconds: 620),
+              curve: Curves.elasticOut,
+              builder: (context, scale, child) => Transform.scale(
+                scale: scale,
+                child: child,
               ),
-              child: const Icon(
-                Icons.check_rounded,
-                size: 36,
-                color: ZColors.success,
+              child: Container(
+                width: 72,
+                height: 72,
+                decoration: const BoxDecoration(
+                  color: ZColors.successTint,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.check_rounded,
+                  size: 36,
+                  color: ZColors.success,
+                ),
               ),
             ),
           ),

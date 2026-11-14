@@ -5,11 +5,17 @@ import 'package:zuum_core/core.dart';
 import 'package:zuum_design_system/design_system.dart';
 import 'package:zuum_partner/app/app.dart';
 
-Widget buildPartnerApp({MockPartnerApi? api, TokenStorage? storage}) {
+Widget buildPartnerApp({
+  MockPartnerApi? api,
+  TokenStorage? storage,
+  bool welcomeSeen = true,
+}) {
   return ProviderScope(
     overrides: [
       tokenStorageProvider
           .overrideWithValue(storage ?? InMemoryTokenStorage()),
+      prefsStoreProvider
+          .overrideWithValue(InMemoryPrefsStore(onboarded: welcomeSeen)),
       if (api != null) partnerApiProvider.overrideWithValue(api),
     ],
     child: const PartnerApp(),
@@ -570,6 +576,21 @@ void main() {
     expect(find.text('Vehicle assigned to Lakshmi R.'), findsOneWidget);
     expect(find.text('KA05AB1234'), findsWidgets);
     await tearDownHome(tester);
+  });
+
+  testWidgets('new partners see the welcome tour before login',
+      (tester) async {
+    final api = MockPartnerApi(latency: Duration.zero);
+    await tester.pumpWidget(buildPartnerApp(api: api, welcomeSeen: false));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 1300));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Your day, your earnings.'), findsOneWidget);
+    expect(find.text('PARTNER'), findsWidgets);
+    await tester.tap(find.text('Skip'));
+    await tester.pumpAndSettle();
+    expect(find.text('Partner sign in'), findsWidgets);
   });
 
   testWidgets('demo sign-in lands on the dashboard in mock builds',

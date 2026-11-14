@@ -2,9 +2,11 @@
 library zuum_design_system;
 
 export 'src/brand/z_brand_mark.dart';
+export 'src/brand/z_brand_splash.dart';
 export 'src/components/z_app_bar.dart';
 export 'src/components/z_avatar.dart';
 export 'src/components/z_badge.dart';
+export 'src/components/z_bottom_nav.dart';
 export 'src/components/z_button.dart';
 export 'src/components/z_card.dart';
 export 'src/components/z_chip.dart';
@@ -21,6 +23,7 @@ export 'src/components/z_empty_state.dart';
 export 'src/components/z_error_state.dart';
 export 'src/components/z_fare_breakdown.dart';
 export 'src/components/z_icon_button.dart';
+export 'src/components/z_illustration.dart';
 export 'src/components/z_list_tile.dart';
 export 'src/components/z_odometer_text.dart';
 export 'src/components/z_pin_pill.dart';
@@ -39,6 +42,7 @@ export 'src/components/z_ticket_card.dart';
 export 'src/components/z_toggle.dart';
 export 'src/format/z_format.dart';
 export 'src/map/z_map_view.dart';
+export 'src/motion/z_motion.dart';
 export 'src/theme/zuum_theme.dart';
 export 'src/tokens/colors.dart';
 export 'src/tokens/motion.dart';

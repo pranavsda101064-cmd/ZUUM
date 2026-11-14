@@ -43,12 +43,7 @@ class FleetScreen extends ConsumerWidget {
           padding: const EdgeInsets.all(ZSpacing.lg),
           children: [
             overview.when(
-              loading: () => const Center(
-                child: Padding(
-                  padding: EdgeInsets.all(ZSpacing.xl),
-                  child: CircularProgressIndicator(color: ZColors.primary),
-                ),
-              ),
+              loading: () => const _FleetStatsSkeleton(),
               error: (error, _) => ZEmptyState(
                 illustration: 'empty_generic',
                 title: 'Could not load the fleet',
@@ -111,13 +106,12 @@ class FleetScreen extends ConsumerWidget {
             ),
             const SizedBox(height: ZSpacing.sm),
             ...drivers.when(
-              loading: () => [
-                const Padding(
-                  padding: EdgeInsets.all(ZSpacing.xl),
-                  child: Center(
-                    child: CircularProgressIndicator(color: ZColors.primary),
-                  ),
-                ),
+              loading: () => const [
+                _DriverSkeleton(),
+                SizedBox(height: ZSpacing.sm),
+                _DriverSkeleton(),
+                SizedBox(height: ZSpacing.sm),
+                _DriverSkeleton(),
               ],
               error: (error, _) => [
                 ZEmptyState(
@@ -298,6 +292,59 @@ class _DriverCardState extends ConsumerState<_DriverCard> {
               ),
             ],
           ),
+        ],
+      ),
+    );
+  }
+}
+
+
+class _FleetStatsSkeleton extends StatelessWidget {
+  const _FleetStatsSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Row(
+      children: [
+        Expanded(child: ZSkeleton(height: 112, radius: ZRadii.md)),
+        SizedBox(width: ZSpacing.sm),
+        Expanded(child: ZSkeleton(height: 112, radius: ZRadii.md)),
+      ],
+    );
+  }
+}
+
+class _DriverSkeleton extends StatelessWidget {
+  const _DriverSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(ZSpacing.md),
+      decoration: BoxDecoration(
+        color: ZColors.surface,
+        borderRadius: BorderRadius.circular(ZRadii.lg),
+        border: Border.all(color: ZColors.divider),
+      ),
+      child: const Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              ZSkeleton(width: 40, height: 40, radius: 20),
+              SizedBox(width: ZSpacing.md),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ZSkeleton(width: 120, height: 14),
+                  SizedBox(height: 6),
+                  ZSkeleton(width: 160, height: 10),
+                ],
+              ),
+            ],
+          ),
+          SizedBox(height: ZSpacing.md),
+          ZSkeleton(width: 220, height: 12),
         ],
       ),
     );

@@ -16,10 +16,14 @@ class ZStatCard extends StatelessWidget {
     this.icon,
     this.accent = false,
     this.onTap,
+    this.valueWidget,
   });
 
   final String label;
   final String value;
+
+  /// Optional animated value (e.g. [ZAnimatedCounter]); falls back to [value].
+  final Widget? valueWidget;
   final String? caption;
   final IconData? icon;
 
@@ -56,12 +60,13 @@ class ZStatCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: ZSpacing.sm),
-          Text(
-            value,
-            style: ZTypography.numericLg.copyWith(fontSize: 20),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
+          valueWidget ??
+              Text(
+                value,
+                style: ZTypography.numericLg.copyWith(fontSize: 20),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
           if (caption != null) ...[
             const SizedBox(height: 2),
             Text(

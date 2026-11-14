@@ -30,8 +30,25 @@ class AccountTab extends ConsumerWidget {
       return Scaffold(
         backgroundColor: ZColors.background,
         appBar: const ZAppBar(title: 'Account'),
-        body: const Center(
-          child: CircularProgressIndicator(color: ZColors.primary),
+        body: ListView(
+          padding: const EdgeInsets.all(ZSpacing.lg),
+          children: const [
+            _ProfileSkeleton(),
+            SizedBox(height: ZSpacing.md),
+            Row(
+              children: [
+                Expanded(child: ZSkeleton(height: 112, radius: ZRadii.md)),
+                SizedBox(width: ZSpacing.sm),
+                Expanded(child: ZSkeleton(height: 112, radius: ZRadii.md)),
+              ],
+            ),
+            SizedBox(height: ZSpacing.lg),
+            ZSkeleton(width: 120, height: 14),
+            SizedBox(height: ZSpacing.md),
+            ZSkeleton(width: double.infinity, height: 64, radius: ZRadii.md),
+            SizedBox(height: ZSpacing.sm),
+            ZSkeleton(width: double.infinity, height: 64, radius: ZRadii.md),
+          ],
         ),
       );
     }
@@ -328,5 +345,36 @@ class AccountTab extends ConsumerWidget {
     if (confirmed == true) {
       await ref.read(partnerAuthProvider.notifier).signOut();
     }
+  }
+}
+
+
+class _ProfileSkeleton extends StatelessWidget {
+  const _ProfileSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(ZSpacing.lg),
+      decoration: BoxDecoration(
+        color: ZColors.surface,
+        borderRadius: BorderRadius.circular(ZRadii.lg),
+        border: Border.all(color: ZColors.divider),
+      ),
+      child: const Row(
+        children: [
+          ZSkeleton(width: 56, height: 56, radius: 28),
+          SizedBox(width: ZSpacing.md),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ZSkeleton(width: 140, height: 16),
+              SizedBox(height: 6),
+              ZSkeleton(width: 190, height: 10),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 }

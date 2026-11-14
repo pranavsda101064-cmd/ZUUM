@@ -152,59 +152,80 @@ class _HomeTabState extends ConsumerState<HomeTab> {
         child: ListView(
           padding: const EdgeInsets.all(ZSpacing.lg),
           children: [
-            ZOnlineHero(
-              online: online,
-              busy: _toggling,
-              onChanged: _toggleOnline,
-              earningsLabel: earnings.value == null
-                  ? null
-                  : '${ZFormat.inr(earnings.value!.netPaise)} today',
-              subtitle: online
-                  ? 'You are visible to riders nearby'
-                  : 'Go online to start earning',
+            ZEntrance(
+              index: 0,
+              child: ZOnlineHero(
+                online: online,
+                busy: _toggling,
+                onChanged: _toggleOnline,
+                earningsLabel: earnings.value == null
+                    ? null
+                    : '${ZFormat.inr(earnings.value!.netPaise)} today',
+                subtitle: online
+                    ? 'You are visible to riders nearby'
+                    : 'Go online to start earning',
+              ),
             ),
             const SizedBox(height: ZSpacing.lg),
-            _MapCard(position: _position, online: online),
+            ZEntrance(
+              index: 1,
+              child: _MapCard(position: _position, online: online),
+            ),
             const SizedBox(height: ZSpacing.lg),
-            Row(
-              children: [
-                Expanded(
-                  child: ZStatCard(
-                    label: 'Net today',
-                    value: earnings.value == null
-                        ? '—'
-                        : ZFormat.inr(earnings.value!.netPaise),
-                    caption: earnings.value == null
-                        ? 'Loading…'
-                        : '${earnings.value!.trips} trips',
-                    icon: Icons.account_balance_wallet_outlined,
-                    accent: true,
+            ZEntrance(
+              index: 2,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: earnings.value == null
+                        ? const _StatSkeleton()
+                        : ZStatCard(
+                            label: 'Net today',
+                            value: ZFormat.inr(earnings.value!.netPaise),
+                            valueWidget: ZAnimatedCounter(
+                              value: earnings.value!.netPaise,
+                              format: (value) => ZFormat.inr(value.toInt()),
+                              style: ZTypography.numericLg.copyWith(fontSize: 20),
+                            ),
+                            caption: '${earnings.value!.trips} trips',
+                            icon: Icons.account_balance_wallet_outlined,
+                            accent: true,
+                          ),
                   ),
-                ),
-                const SizedBox(width: ZSpacing.sm),
-                Expanded(
-                  child: ZStatCard(
-                    label: 'Acceptance',
-                    value: acceptance.value == null
-                        ? '—'
-                        : '${acceptance.value!.toStringAsFixed(0)}%',
-                    caption: 'Last 30 days',
-                    icon: Icons.thumb_up_alt_outlined,
+                  const SizedBox(width: ZSpacing.sm),
+                  Expanded(
+                    child: acceptance.value == null
+                        ? const _StatSkeleton()
+                        : ZStatCard(
+                            label: 'Acceptance',
+                            value:
+                                '${acceptance.value!.toStringAsFixed(0)}%',
+                            valueWidget: ZAnimatedCounter(
+                              value: acceptance.value!.round(),
+                              format: (value) => '$value%',
+                              style: ZTypography.numericLg.copyWith(fontSize: 20),
+                            ),
+                            caption: 'Last 30 days',
+                            icon: Icons.thumb_up_alt_outlined,
+                          ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
             if (activeTrip != null) ...[
               const SizedBox(height: ZSpacing.lg),
-              _ActiveTripCard(trip: activeTrip),
+              ZEntrance(index: 3, child: _ActiveTripCard(trip: activeTrip)),
             ],
             const SizedBox(height: ZSpacing.lg),
             if (AppEnv.isMock)
-              ZButton(
-                label: 'Simulate offer (dev)',
-                variant: ZButtonVariant.secondary,
-                icon: Icons.bolt_rounded,
-                onPressed: _simulateOffer,
+              ZEntrance(
+                index: 4,
+                child: ZButton(
+                  label: 'Simulate offer (dev)',
+                  variant: ZButtonVariant.secondary,
+                  icon: Icons.bolt_rounded,
+                  onPressed: _simulateOffer,
+                ),
               ),
             if (!online) ...[
               const SizedBox(height: ZSpacing.md),
@@ -218,6 +239,33 @@ class _HomeTabState extends ConsumerState<HomeTab> {
             ],
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Placeholder with the same geometry as [ZStatCard] while earnings load.
+class _StatSkeleton extends StatelessWidget {
+  const _StatSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(ZSpacing.lg),
+      decoration: BoxDecoration(
+        color: ZColors.surface,
+        borderRadius: BorderRadius.circular(ZRadii.md),
+        border: Border.all(color: ZColors.divider),
+      ),
+      child: const Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ZSkeleton(width: 72, height: 10),
+          SizedBox(height: ZSpacing.md),
+          ZSkeleton(width: 96, height: 22),
+          SizedBox(height: ZSpacing.sm),
+          ZSkeleton(width: 54, height: 10),
+        ],
       ),
     );
   }

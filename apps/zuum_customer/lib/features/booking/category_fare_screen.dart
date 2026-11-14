@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:zuum_core/core.dart';
 import 'package:zuum_design_system/design_system.dart';
@@ -615,9 +614,8 @@ class _VehicleRow extends StatelessWidget {
               scale: selected ? 1.08 : 1.0,
               duration: const Duration(milliseconds: 200),
               curve: Curves.easeOutBack,
-              child: SvgPicture.asset(
-                'assets/illustrations/$asset.svg',
-                package: 'zuum_design_system',
+              child: ZIllustration(
+                asset,
                 width: 56,
                 height: 40,
               ),

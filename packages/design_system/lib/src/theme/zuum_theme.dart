@@ -1,6 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../motion/z_motion.dart';
 import '../tokens/colors.dart';
 import '../tokens/radius.dart';
 import '../tokens/spacing.dart';
@@ -218,12 +218,8 @@ abstract final class ZuumTheme {
         color: ZColors.primary,
         linearTrackColor: ZColors.accent,
       ),
-      pageTransitionsTheme: const PageTransitionsTheme(
-        builders: {
-          TargetPlatform.android: CupertinoPageTransitionsBuilder(),
-          TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-        },
-      ),      visualDensity: VisualDensity.standard,
+      pageTransitionsTheme: zPageTransitionsTheme,
+      visualDensity: VisualDensity.standard,
       materialTapTargetSize: MaterialTapTargetSize.padded,
     );
   }

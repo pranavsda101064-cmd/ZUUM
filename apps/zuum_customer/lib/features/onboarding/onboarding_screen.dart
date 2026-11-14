@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:zuum_core/core.dart';
 import 'package:zuum_design_system/design_system.dart';
@@ -133,8 +132,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                               border: Border.all(color: ZColors.divider),
                             ),
                             alignment: Alignment.center,
-                            child: SvgPicture.asset(
-                              'assets/illustrations/${slide.illustration}.svg',
+                            child: ZIllustration(
+                              slide.illustration,
                               width: 240,
                             ),
                           ),

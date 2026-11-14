@@ -12,36 +12,31 @@ class AppShell extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: shell,
-      bottomNavigationBar: NavigationBar(
+      bottomNavigationBar: ZBottomNav(
         selectedIndex: shell.currentIndex,
-        onDestinationSelected: (i) => shell.goBranch(
+        onSelected: (i) => shell.goBranch(
           i,
           initialLocation: i == shell.currentIndex,
         ),
-        backgroundColor: ZColors.surface,
-        indicatorColor: ZColors.accent,
-        elevation: 0,
-        height: 68,
-        labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home_rounded),
+        items: const [
+          ZBottomNavItem(
+            icon: Icons.home_outlined,
+            selectedIcon: Icons.home_rounded,
             label: 'Home',
           ),
-          NavigationDestination(
-            icon: Icon(Icons.receipt_long_outlined),
-            selectedIcon: Icon(Icons.receipt_long_rounded),
+          ZBottomNavItem(
+            icon: Icons.receipt_long_outlined,
+            selectedIcon: Icons.receipt_long_rounded,
             label: 'Activity',
           ),
-          NavigationDestination(
-            icon: Icon(Icons.account_balance_wallet_outlined),
-            selectedIcon: Icon(Icons.account_balance_wallet_rounded),
+          ZBottomNavItem(
+            icon: Icons.account_balance_wallet_outlined,
+            selectedIcon: Icons.account_balance_wallet_rounded,
             label: 'Wallet',
           ),
-          NavigationDestination(
-            icon: Icon(Icons.person_outline_rounded),
-            selectedIcon: Icon(Icons.person_rounded),
+          ZBottomNavItem(
+            icon: Icons.person_outline_rounded,
+            selectedIcon: Icons.person_rounded,
             label: 'Account',
           ),
         ],

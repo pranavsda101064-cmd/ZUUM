@@ -68,13 +68,10 @@ class VehiclesTab extends ConsumerWidget {
             ),
             const SizedBox(height: ZSpacing.md),
             ...vehicles.when(
-              loading: () => [
-                const Padding(
-                  padding: EdgeInsets.all(ZSpacing.xl),
-                  child: Center(
-                    child: CircularProgressIndicator(color: ZColors.primary),
-                  ),
-                ),
+              loading: () => const [
+                _VehicleSkeleton(),
+                SizedBox(height: ZSpacing.sm),
+                _VehicleSkeleton(),
               ],
               error: (error, _) => [
                 ZEmptyState(
@@ -395,6 +392,40 @@ class _AddVehicleSheetState extends ConsumerState<_AddVehicleSheet> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+
+/// Shimmer placeholder that mirrors the vehicle card geometry.
+class _VehicleSkeleton extends StatelessWidget {
+  const _VehicleSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(ZSpacing.md),
+      decoration: BoxDecoration(
+        color: ZColors.surface,
+        borderRadius: BorderRadius.circular(ZRadii.lg),
+        border: Border.all(color: ZColors.divider),
+      ),
+      child: const Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              ZSkeleton(width: 96, height: 24),
+              SizedBox(width: ZSpacing.sm),
+              ZSkeleton(width: 58, height: 18),
+            ],
+          ),
+          SizedBox(height: ZSpacing.md),
+          ZSkeleton(width: 180, height: 14),
+          SizedBox(height: ZSpacing.sm),
+          ZSkeleton(width: 120, height: 10),
+        ],
       ),
     );
   }

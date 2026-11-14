@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="150" viewBox="0 0 200 150" fill="none">
+  <!-- phone -->
+  <rect x="62" y="18" width="76" height="116" rx="14" fill="#FFFFFF" stroke="#090D16" stroke-width="2.5"/>
+  <path d="M90 27h20" stroke="#090D16" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- offer card -->
+  <rect x="72" y="40" width="56" height="52" rx="8" fill="#F9FAFB" stroke="#090D16" stroke-width="2"/>
+  <path d="M80 52h26" stroke="#090D16" stroke-width="2" stroke-linecap="round"/>
+  <path d="M80 60h18" stroke="#6B7280" stroke-width="2" stroke-linecap="round"/>
+  <!-- lime fare pill -->
+  <rect x="80" y="70" width="30" height="12" rx="6" fill="#84CC16"/>
+  <path d="M84 76h22" stroke="#090D16" stroke-width="2" stroke-linecap="round"/>
+  <!-- accept button -->
+  <rect x="72" y="98" width="56" height="14" rx="7" fill="#111827"/>
+  <path d="M88 105h24" stroke="#F3F4F6" stroke-width="2" stroke-linecap="round"/>
+  <!-- countdown ring -->
+  <circle cx="140" cy="34" r="12" stroke="#E5E7EB" stroke-width="3"/>
+  <path d="M140 26a8 8 0 0 1 8 8" stroke="#84CC16" stroke-width="3" stroke-linecap="round"/>
+  <!-- bolt -->
+  <path d="M158 58l-8 12h7l-4 11 11-14h-7l5-9z" fill="#84CC16" stroke="#090D16" stroke-width="1.6" stroke-linejoin="round"/>
+  <!-- signal arcs -->
+  <path d="M38 62c4-6 10-10 18-11" stroke="#84CC16" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M42 74c3-4 7-7 12-8" stroke="#090D16" stroke-width="2" stroke-linecap="round" opacity="0.35"/>
+  <!-- location pin -->
+  <path d="M40 96c0-6 5-10 10-10s10 4 10 10c0 7-10 16-10 16S40 103 40 96z" fill="#FFFFFF" stroke="#090D16" stroke-width="2.2"/>
+  <circle cx="50" cy="96" r="3.2" fill="#84CC16"/>
+  <!-- dots -->
+  <circle cx="34" cy="36" r="2" fill="#090D16" opacity="0.25"/>
+  <circle cx="170" cy="112" r="2.5" fill="#84CC16"/>
+  <circle cx="26" cy="122" r="2" fill="#090D16" opacity="0.25"/>
+</svg>

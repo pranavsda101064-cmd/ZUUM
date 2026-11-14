@@ -11,6 +11,8 @@ import '../features/fleet/fleet_screen.dart';
 import '../features/home/home_tab.dart';
 import '../features/onboarding/kyc_pending_screen.dart';
 import '../features/onboarding/kyc_wizard.dart';
+import '../features/onboarding/partner_welcome_screen.dart';
+import '../features/onboarding/welcome_controller.dart';
 import '../features/shell/partner_shell.dart';
 import '../features/splash/partner_splash.dart';
 import '../features/trip/trip_screen.dart';
@@ -23,6 +25,7 @@ import 'auth_controller.dart';
 final partnerRouterProvider = Provider<GoRouter>((ref) {
   final refresh = ValueNotifier(0);
   ref.listen(partnerAuthProvider, (_, _) => refresh.value++);
+  ref.listen(partnerWelcomeProvider, (_, _) => refresh.value++);
   ref.onDispose(refresh.dispose);
 
   const authRoutes = {'/auth/login', '/auth/register'};
@@ -38,13 +41,17 @@ final partnerRouterProvider = Provider<GoRouter>((ref) {
         case PartnerAuthStatus.unknown:
           return loc == '/splash' ? null : '/splash';
         case PartnerAuthStatus.unauthenticated:
-          // Splash is only the holding screen while the session is resolving
-          // (status unknown). Once resolved, auth screens are the destination.
+          // New partners see the welcome tour before login.
+          if (!ref.read(partnerWelcomeProvider)) {
+            return loc == '/welcome' ? null : '/welcome';
+          }
+          if (loc == '/welcome') return '/auth/login';
           if (authRoutes.contains(loc)) return null;
           return '/auth/login';
         case PartnerAuthStatus.authenticated:
           if (auth.isApproved) {
             final gated = loc == '/splash' ||
+                loc == '/welcome' ||
                 loc == '/onboarding' ||
                 loc == '/onboarding/pending' ||
                 authRoutes.contains(loc);
@@ -58,6 +65,10 @@ final partnerRouterProvider = Provider<GoRouter>((ref) {
     },
     routes: [
       GoRoute(path: '/splash', builder: (_, _) => const PartnerSplash()),
+      GoRoute(
+        path: '/welcome',
+        builder: (_, _) => const PartnerWelcomeScreen(),
+      ),
       GoRoute(
         path: '/auth/login',
         builder: (_, _) => const PartnerLoginScreen(),
