@@ -16,7 +16,8 @@ services:
     plan: free
     autoDeploy: true
     healthCheckPath: /api/v1/health
-    # Boot sequence lives in backend/start.sh (Dockerfile CMD).
+    # Single executable overrides any stale dashboard Docker Command.
+    dockerCommand: /app/start.sh
     envVars:
       - key: DEBUG
         value: "0"
