@@ -266,6 +266,36 @@ def eligible_drivers(booking: Booking):
     return [driver for _, driver in ranked]
 
 
+def accept_location_ping(
+    driver, *, recorded_at, booking: Booking | None = None
+) -> bool:
+    """Server-side cadence + ordering guard (docs/04_realtime_protocol.md).
+
+    - drops out-of-order / duplicate timestamps (last-point-wins)
+    - 5 s while on an active trip, 15 s while available, 60 s otherwise
+    """
+    from .models import LocationPing
+
+    last = (
+        LocationPing.objects.filter(driver=driver)
+        .order_by("-recorded_at")
+        .first()
+    )
+    if last is not None:
+        if recorded_at <= last.recorded_at:
+            return False
+        on_trip = booking is not None and booking.status in (
+            Booking.Status.ASSIGNED,
+            Booking.Status.ARRIVED,
+            Booking.Status.IN_PROGRESS,
+        )
+        interval = 5 if on_trip else (15 if driver.online_state != "offline" else 60)
+        elapsed = (recorded_at - last.recorded_at).total_seconds()
+        if elapsed < interval * 0.8:
+            return False
+    return True
+
+
 def dispatch_offers(booking: Booking, *, limit: int = 3) -> list[DispatchOffer]:
     drivers = eligible_drivers(booking)[:limit]
     offers: list[DispatchOffer] = []

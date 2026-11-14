@@ -178,6 +178,27 @@ CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", "cache+memory://")
 CELERY_TASK_ALWAYS_EAGER = os.getenv("CELERY_EAGER", "1" if DEBUG else "0") == "1"
 CELERY_TASK_EAGER_PROPAGATES = True
 
+from celery.schedules import crontab  # noqa: E402
+
+CELERY_BEAT_SCHEDULE = {
+    "expire-dispatch-offers": {
+        "task": "apps.bookings.tasks.expire_offers",
+        "schedule": 15.0,
+    },
+    "fail-stale-searches": {
+        "task": "apps.bookings.tasks.fail_stale_searches",
+        "schedule": crontab(minute="*/5"),
+    },
+    "prune-location-pings": {
+        "task": "apps.bookings.tasks.prune_location_pings",
+        "schedule": crontab(hour=4, minute=0),
+    },
+    "weekly-payouts": {
+        "task": "apps.payments.tasks.generate_weekly_payouts",
+        "schedule": crontab(hour=2, minute=0, day_of_week=1),
+    },
+}
+
 CORS_ALLOW_ALL_ORIGINS = DEBUG
 CORS_ALLOWED_ORIGINS = [
     o for o in os.getenv("CORS_ALLOWED_ORIGINS", "").split(",") if o

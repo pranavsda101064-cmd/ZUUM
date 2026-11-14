@@ -310,6 +310,11 @@ class PartnerLocationView(APIView):
             )
         except ValueError:
             recorded_at = timezone.now()
+        from apps.bookings.services import accept_location_ping
+
+        booking = assigned_trip(driver)
+        if not accept_location_ping(driver, recorded_at=recorded_at, booking=booking):
+            return Response(status=status.HTTP_204_NO_CONTENT)
         LocationPing.objects.create(
             driver=driver,
             lat=float(lat),

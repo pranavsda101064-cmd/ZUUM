@@ -226,10 +226,16 @@ class Command(BaseCommand):
                     },
                 )
 
+        ops = self._user("ops@zuum.in", "Ops", "Desk", "9845099999", "staff")
+        ops.is_staff = True
+        ops.is_superuser = True
+        ops.save(update_fields=["is_staff", "is_superuser"])
+
         self.stdout.write(self.style.SUCCESS("Seeded Zuum demo data."))
         self.stdout.write("  customer@zuum.in / zuum1234")
         self.stdout.write("  partner@zuum.in  / zuum1234")
         self.stdout.write("  fleet@zuum.in    / zuum1234")
+        self.stdout.write("  ops@zuum.in      / zuum1234  (staff)")
 
     def _user(self, email, first, last, phone, role) -> User:
         user = User.objects.filter(email=email).first()

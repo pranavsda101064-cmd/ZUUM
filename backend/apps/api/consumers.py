@@ -139,6 +139,10 @@ class TopicConsumer(AsyncJsonWebsocketConsumer):
         booking = None
         if content.get("booking_id"):
             booking = Booking.objects.filter(pk=content["booking_id"]).first()
+        from apps.bookings.services import accept_location_ping
+
+        if not accept_location_ping(profile, recorded_at=recorded_at, booking=booking):
+            return
         LocationPing.objects.create(
             driver=profile,
             booking=booking,

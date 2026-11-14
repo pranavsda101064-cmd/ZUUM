@@ -125,7 +125,11 @@ Legend: ⬜ not started · 🟨 in progress · ✅ done · ⛔ blocked
 - [x] Realtime: Channels consumer (JWT handshake, topic authz, hello/pong/
       resume, offer + status push, location/presence uplink)
 - [x] OpenAPI via drf-spectacular (`schema.yml`, 0 errors) + Swagger UI
-- [x] `seed_demo` personas (customer / partner / fleet) + 32 tests green
+- [x] Ops/admin API: overview, bookings, driver decisions, customers,
+      finance, payouts mark-paid, promo CRUD, settings, tickets, audit
+- [x] Celery beat jobs: offer sweep, stale searches, ping retention, weekly
+      payouts; location cadence enforcement (REST + WS)
+- [x] `seed_demo` personas (customer / partner / fleet / ops) + 45 tests green
 - [ ] Production swaps (Phase 6): Postgres+PostGIS, Redis, Razorpay live,
       Celery workers, admin dashboard consumption
 

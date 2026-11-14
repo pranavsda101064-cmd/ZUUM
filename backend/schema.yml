@@ -744,6 +744,405 @@ paths:
               schema:
                 $ref: '#/components/schemas/Notification'
           description: ''
+  /api/v1/ops/audit:
+    get:
+      operationId: ops_audit_retrieve
+      tags:
+      - ops
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/v1/ops/bookings:
+    get:
+      operationId: ops_bookings_retrieve
+      tags:
+      - ops
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+          description: ''
+  /api/v1/ops/bookings/{booking_id}:
+    get:
+      operationId: ops_bookings_retrieve_2
+      parameters:
+      - in: path
+        name: booking_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - ops
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+          description: ''
+  /api/v1/ops/bookings/{booking_id}/cancel:
+    post:
+      operationId: ops_bookings_cancel_create
+      parameters:
+      - in: path
+        name: booking_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - ops
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BookingRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BookingRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+          description: ''
+  /api/v1/ops/customers:
+    get:
+      operationId: ops_customers_retrieve
+      tags:
+      - ops
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/v1/ops/drivers:
+    get:
+      operationId: ops_drivers_retrieve
+      tags:
+      - ops
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DriverProfile'
+          description: ''
+  /api/v1/ops/drivers/{driver_id}/{action}:
+    post:
+      operationId: ops_drivers_create
+      parameters:
+      - in: path
+        name: action
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: driver_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - ops
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DriverProfileRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DriverProfileRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DriverProfileRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DriverProfile'
+          description: ''
+  /api/v1/ops/finance/summary:
+    get:
+      operationId: ops_finance_summary_retrieve
+      tags:
+      - ops
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payout'
+          description: ''
+  /api/v1/ops/overview:
+    get:
+      operationId: ops_overview_retrieve
+      tags:
+      - ops
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/v1/ops/payouts:
+    get:
+      operationId: ops_payouts_retrieve
+      tags:
+      - ops
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payout'
+          description: ''
+  /api/v1/ops/payouts/{payout_id}/mark-paid:
+    post:
+      operationId: ops_payouts_mark_paid_create
+      parameters:
+      - in: path
+        name: payout_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - ops
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PayoutRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PayoutRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PayoutRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payout'
+          description: ''
+  /api/v1/ops/promos:
+    get:
+      operationId: ops_promos_retrieve
+      tags:
+      - ops
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OpsPromo'
+          description: ''
+    post:
+      operationId: ops_promos_create
+      tags:
+      - ops
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OpsPromoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OpsPromoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OpsPromoRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OpsPromo'
+          description: ''
+  /api/v1/ops/promos/{promo_id}:
+    patch:
+      operationId: ops_promos_partial_update
+      parameters:
+      - in: path
+        name: promo_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - ops
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedOpsPromoRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedOpsPromoRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedOpsPromoRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OpsPromo'
+          description: ''
+  /api/v1/ops/settings:
+    get:
+      operationId: ops_settings_retrieve
+      tags:
+      - ops
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    put:
+      operationId: ops_settings_update
+      tags:
+      - ops
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/v1/ops/tickets:
+    get:
+      operationId: ops_tickets_retrieve
+      tags:
+      - ops
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/v1/ops/tickets/{ticket_id}:
+    get:
+      operationId: ops_tickets_retrieve_2
+      parameters:
+      - in: path
+        name: ticket_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - ops
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    post:
+      operationId: ops_tickets_create
+      parameters:
+      - in: path
+        name: ticket_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - ops
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
   /api/v1/partner/availability:
     post:
       operationId: partner_availability_create
@@ -2116,6 +2515,14 @@ components:
           maxLength: 10
       required:
       - name
+    KindD01Enum:
+      enum:
+      - percent
+      - flat
+      type: string
+      description: |-
+        * `percent` - Percent
+        * `flat` - Flat
     KycDocument:
       type: object
       properties:
@@ -2315,6 +2722,117 @@ components:
         * `offline` - Offline
         * `available` - Available
         * `busy` - Busy
+    OpsPromo:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        code:
+          type: string
+          maxLength: 24
+        kind:
+          $ref: '#/components/schemas/KindD01Enum'
+        value:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          description: Percent (0-100) or paise for flat
+        max_discount_paise:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        min_fare_paise:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        usage_limit:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        per_user_limit:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        used_count:
+          type: integer
+          readOnly: true
+        valid_from:
+          type: string
+          format: date-time
+          nullable: true
+        valid_to:
+          type: string
+          format: date-time
+          nullable: true
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - code
+      - created_at
+      - id
+      - kind
+      - used_count
+      - value
+    OpsPromoRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 1
+          maxLength: 24
+        kind:
+          $ref: '#/components/schemas/KindD01Enum'
+        value:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          description: Percent (0-100) or paise for flat
+        max_discount_paise:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        min_fare_paise:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        usage_limit:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        per_user_limit:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        valid_from:
+          type: string
+          format: date-time
+          nullable: true
+        valid_to:
+          type: string
+          format: date-time
+          nullable: true
+        is_active:
+          type: boolean
+      required:
+      - code
+      - kind
+      - value
     PartnerTrip:
       type: object
       description: Booking as seen by the assigned driver (contract section 06).
@@ -2457,6 +2975,51 @@ components:
       required:
       - password
       - token
+    PatchedOpsPromoRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 1
+          maxLength: 24
+        kind:
+          $ref: '#/components/schemas/KindD01Enum'
+        value:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          description: Percent (0-100) or paise for flat
+        max_discount_paise:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        min_fare_paise:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        usage_limit:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        per_user_limit:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        valid_from:
+          type: string
+          format: date-time
+          nullable: true
+        valid_to:
+          type: string
+          format: date-time
+          nullable: true
+        is_active:
+          type: boolean
     PatchedSavedAddressRequest:
       type: object
       properties:
@@ -2641,6 +3204,29 @@ components:
       - amount_paise
       - created_at
       - id
+    PayoutRequest:
+      type: object
+      properties:
+        amount_paise:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+        status:
+          $ref: '#/components/schemas/PayoutStatusEnum'
+        method:
+          type: string
+          minLength: 1
+          maxLength: 10
+        paid_at:
+          type: string
+          format: date-time
+          nullable: true
+        batch_ref:
+          type: string
+          maxLength: 80
+      required:
+      - amount_paise
     PayoutStatusEnum:
       enum:
       - pending
@@ -2672,7 +3258,7 @@ components:
           type: string
           maxLength: 24
         kind:
-          $ref: '#/components/schemas/PromoKindEnum'
+          $ref: '#/components/schemas/KindD01Enum'
         value:
           type: integer
           maximum: 9223372036854775807
@@ -2697,14 +3283,6 @@ components:
       - code
       - kind
       - value
-    PromoKindEnum:
-      enum:
-      - percent
-      - flat
-      type: string
-      description: |-
-        * `percent` - Percent
-        * `flat` - Flat
     PromoRequest:
       type: object
       properties:
@@ -2713,7 +3291,7 @@ components:
           minLength: 1
           maxLength: 24
         kind:
-          $ref: '#/components/schemas/PromoKindEnum'
+          $ref: '#/components/schemas/KindD01Enum'
         value:
           type: integer
           maximum: 9223372036854775807

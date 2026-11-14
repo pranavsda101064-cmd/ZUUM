@@ -22,6 +22,7 @@ python manage.py runserver
 | Customer | `customer@zuum.in` | `zuum1234` |
 | Partner (approved, auto) | `partner@zuum.in` | `zuum1234` |
 | Fleet owner ("Namma Fleet") | `fleet@zuum.in` | `zuum1234` |
+| Ops desk (staff, admin API) | `ops@zuum.in` | `zuum1234` |
 
 - REST: `http://127.0.0.1:8000/api/v1/`
 - OpenAPI: `/api/v1/schema/` · Swagger UI: `/api/v1/docs/`
@@ -54,6 +55,13 @@ python manage.py runserver
   aggregate earnings.
 - **Platform** — support topics/tickets, SOS alerts, notifications
   (list/read), reviews, audit log model, feature-flag settings.
+- **Ops/admin** — live overview, booking search + detail + cancel, driver
+  approve/reject/suspend, customers, finance summary, payouts mark-paid,
+  promo CRUD, feature settings, ticket replies, audit trail (staff JWT).
+- **Jobs** — Celery beat: offer expiry sweep (15 s), stale-search failure, raw
+  ping retention (72 h), weekly payout generation (idempotent per ISO week).
+- **Location governance** — server-enforced cadence (5 s on trip / 15 s
+  available / 60 s otherwise) with out-of-order drop on REST + WS uplinks.
 - **Realtime** — JWT websocket handshake, per-topic authorization
   (`customer/{id}`, `driver/{id}`, `booking/{id}`), `hello`, heartbeat `pong`,
   `resume` ack, offer/status push, driver location + presence uplink.
@@ -61,12 +69,13 @@ python manage.py runserver
 ## Tests
 
 ```bash
-python manage.py test apps.api.tests      # 32 tests
+python manage.py test apps.api.tests      # 45 tests
 ```
 
 Covers auth/session rotation, quote→book→dispatch→lifecycle→receipt→rating,
 promos, wallet/payments, partner onboarding/KYC/vehicles/offers, fleet console,
-support/SOS/notifications and the websocket protocol.
+support/SOS/notifications, the ops/admin surface, scheduled jobs, location
+cadence and the websocket protocol.
 
 ## Environment
 

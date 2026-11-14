@@ -1,7 +1,18 @@
 """API routes — contract paths exactly as documented (no trailing slashes)."""
 from django.urls import path
 
-from apps.api.views import auth, bookings, catalog, customer, fleet, health, money, partner, support
+from apps.api.views import (
+    auth,
+    bookings,
+    catalog,
+    customer,
+    fleet,
+    health,
+    money,
+    ops,
+    partner,
+    support,
+)
 
 urlpatterns = [
     path("health", health.HealthView.as_view()),
@@ -47,6 +58,24 @@ urlpatterns = [
     path("notifications", support.NotificationListView.as_view()),
     path("notifications/<uuid:notification_id>/read", support.NotificationReadView.as_view()),
     path("reviews/mine", support.MyReviewsView.as_view()),
+    # ops / admin surface
+    path("ops/overview", ops.OpsOverviewView.as_view()),
+    path("ops/bookings", ops.OpsBookingListView.as_view()),
+    path("ops/bookings/<uuid:booking_id>", ops.OpsBookingDetailView.as_view()),
+    path("ops/bookings/<uuid:booking_id>/cancel", ops.OpsBookingCancelView.as_view()),
+    path("ops/drivers", ops.OpsDriverListView.as_view()),
+    path("ops/drivers/<uuid:driver_id>/<str:action>", ops.OpsDriverDecisionView.as_view()),
+    path("ops/customers", ops.OpsCustomerListView.as_view()),
+    path("ops/finance/summary", ops.OpsFinanceSummaryView.as_view()),
+    path("ops/payouts", ops.OpsPayoutListView.as_view()),
+    path("ops/payouts/<uuid:payout_id>/mark-paid", ops.OpsPayoutMarkPaidView.as_view()),
+    path("ops/promos", ops.OpsPromoListCreateView.as_view()),
+    path("ops/promos/<uuid:promo_id>", ops.OpsPromoDetailView.as_view()),
+    path("ops/settings", ops.OpsSettingsView.as_view()),
+    path("ops/tickets", ops.OpsTicketListView.as_view()),
+    path("ops/tickets/<uuid:ticket_id>", ops.OpsTicketDetailView.as_view()),
+    path("ops/audit", ops.OpsAuditListView.as_view()),
+
     # partner surface
     path("partner/profile", partner.PartnerProfileView.as_view()),
     path("partner/kyc", partner.PartnerKycView.as_view()),
