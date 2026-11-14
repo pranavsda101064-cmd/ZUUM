@@ -5,12 +5,15 @@ import 'package:zuum_core/core.dart';
 
 import '../features/auth/login_screen.dart';
 import '../features/auth/register_screen.dart';
+import '../features/earnings/earnings_tab.dart';
+import '../features/fleet/fleet_screen.dart';
 import '../features/home/home_tab.dart';
 import '../features/onboarding/kyc_pending_screen.dart';
 import '../features/onboarding/kyc_wizard.dart';
 import '../features/shell/partner_shell.dart';
 import '../features/splash/partner_splash.dart';
 import '../features/trip/trip_screen.dart';
+import '../features/vehicles/vehicles_tab.dart';
 import '../shared/placeholder_page.dart';
 import 'auth_controller.dart';
 
@@ -69,6 +72,7 @@ final partnerRouterProvider = Provider<GoRouter>((ref) {
         builder: (_, _) => const KycPendingScreen(),
       ),
       GoRoute(path: '/trip', builder: (_, _) => const TripScreen()),
+      GoRoute(path: '/fleet', builder: (_, _) => const FleetScreen()),
       StatefulShellRoute.indexedStack(
         builder: (_, _, shell) => PartnerShell(shell: shell),
         branches: [
@@ -81,25 +85,13 @@ final partnerRouterProvider = Provider<GoRouter>((ref) {
           StatefulShellBranch(routes: [
             GoRoute(
               path: '/earnings',
-              builder: (_, _) => const PlaceholderPage(
-                title: 'Earnings',
-                subtitle:
-                    'Daily / weekly / monthly earnings, commission split and '
-                    'payouts land in Batch 7.',
-                illustration: 'empty_tumbler',
-              ),
+              builder: (_, _) => const EarningsTab(),
             ),
           ]),
           StatefulShellBranch(routes: [
             GoRoute(
               path: '/vehicles',
-              builder: (_, _) => const PlaceholderPage(
-                title: 'Vehicles & fleet',
-                subtitle:
-                    'Vehicle management, document expiry and the fleet console '
-                    'land in Batch 7.',
-                illustration: 'veh_ace',
-              ),
+              builder: (_, _) => const VehiclesTab(),
             ),
           ]),
           StatefulShellBranch(routes: [

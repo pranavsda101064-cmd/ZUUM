@@ -82,7 +82,12 @@ Legend: ⬜ not started · 🟨 in progress · ✅ done · ⛔ blocked
       masked phone, cancel-with-reason dialog, goods POD delivery-OTP gate
       (`pod_missing` surfaced), completion receipt with commission breakdown;
       2 new e2e tests (9 partner total), analyze clean
-- [ ] Batch 7 — earnings + vehicles + fleet console
+- [x] Batch 7 — earnings + vehicles + fleet console: earnings tab (range
+      segmented control, net/gross/commission/acceptance summary, latest
+      payout, ledger filtered by range), vehicles tab (availability toggles,
+      insurance expiry warnings, add-vehicle sheet with category chips), fleet
+      console (overview stats, driver roster, assign-vehicle sheet); 3 new
+      e2e tests (12 partner total), analyze clean
 - [ ] Batch 8 — account/polish → APK → install → docs → commit/push
 
 

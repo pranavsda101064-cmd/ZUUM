@@ -473,4 +473,102 @@ void main() {
     expect(find.text('Trip completed'), findsOneWidget);
     await tearDownHome(tester);
   });
+
+  testWidgets('earnings tab shows the commission split and range totals',
+      (tester) async {
+    final api = MockPartnerApi(
+      latency: Duration.zero,
+      kycReviewDelay: Duration.zero,
+    );
+    final storage = await seedApprovedPartner(api);
+    await pumpSeededHome(tester, api, storage);
+
+    await tester.tap(find.text('Earnings'));
+    await settleAction(tester);
+    expect(find.text('NET EARNINGS'), findsOneWidget);
+    expect(find.text('Recent trips'), findsOneWidget);
+    expect(find.text('Auto'), findsWidgets);
+
+    await tester.tap(find.text('This month'));
+    await settleAction(tester);
+    expect(find.text('Tata Ace'), findsWidgets);
+    await tearDownHome(tester);
+  });
+
+  testWidgets('vehicles tab toggles availability and adds a vehicle',
+      (tester) async {
+    final api = MockPartnerApi(
+      latency: Duration.zero,
+      kycReviewDelay: Duration.zero,
+    );
+    final storage = await seedApprovedPartner(api);
+    await pumpSeededHome(tester, api, storage);
+
+    await tester.tap(find.text('Vehicles'));
+    await settleAction(tester);
+    expect(find.text('KA05AB1234'), findsOneWidget);
+    expect(find.text('ACTIVE'), findsOneWidget);
+
+    await tester.tap(find.byType(Switch));
+    await settleAction(tester);
+    expect(find.text('PAUSED'), findsOneWidget);
+
+    await tester.tap(find.text('Add vehicle'));
+    await settleAction(tester);
+    await tester.tap(find.text('SUV'));
+    await tester.pump();
+    await tester.enterText(
+      find.widgetWithText(ZTextField, 'Registration number'),
+      'KA 09 XY 9999',
+    );
+    await tester.enterText(
+      find.widgetWithText(ZTextField, 'Make'),
+      'Toyota',
+    );
+    await tester.enterText(
+      find.widgetWithText(ZTextField, 'Model'),
+      'Innova',
+    );
+    await tester.enterText(
+      find.widgetWithText(ZTextField, 'Colour'),
+      'White',
+    );
+    await tester.tap(find.text('Save vehicle'));
+    await settleAction(tester);
+
+    expect(find.text('KA09XY9999'), findsOneWidget);
+    await tearDownHome(tester);
+  });
+
+  testWidgets('fleet console lists drivers and assigns a vehicle',
+      (tester) async {
+    final api = MockPartnerApi(
+      latency: Duration.zero,
+      kycReviewDelay: Duration.zero,
+    );
+    final storage = await seedApprovedPartner(api);
+    await pumpSeededHome(tester, api, storage);
+
+    await tester.tap(find.text('Vehicles'));
+    await settleAction(tester);
+    await tester.tap(find.text('Open fleet console'));
+    await settleAction(tester);
+
+    expect(find.text('Fleet console'), findsWidgets);
+    expect(find.text('Suresh Babu'), findsOneWidget);
+    expect(find.text('Manjunath H'), findsOneWidget);
+    expect(find.text('Lakshmi R'), findsOneWidget);
+    expect(find.text('DRIVERS ONLINE'), findsOneWidget);
+
+    // Lakshmi has no vehicle — assign the garage's Active.
+    await tester.tap(find.byIcon(Icons.link_rounded).last);
+    await settleAction(tester);
+    expect(find.textContaining('Assign a vehicle to Lakshmi R'), findsOneWidget);
+    await tester.tap(find.textContaining('Bajaj RE Auto'));
+    await settleAction(tester);
+
+    expect(find.text('Vehicle assigned to Lakshmi R.'), findsOneWidget);
+    expect(find.text('KA05AB1234'), findsWidgets);
+    await tearDownHome(tester);
+  });
 }
