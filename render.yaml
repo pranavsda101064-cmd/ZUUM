@@ -4,7 +4,7 @@
 #   - spins down after 15 min idle (~1 min cold start; WebSockets reconnect)
 #   - ephemeral filesystem (KYC/POD uploads are lost on restart)
 #   - free Postgres expires 30 days after creation
-#   - no shell access: migrations + seed run on every boot via dockerCommand
+#   - no shell access: migrations + seed run on every boot via backend/start.sh
 #   - no Celery worker/beat (CELERY_EAGER=1; offer expiry is lazy)
 #
 # For the full production blueprint use `render.production.yaml` (Starter plans).
