@@ -131,10 +131,15 @@ class _CategoryFareScreenState extends ConsumerState<CategoryFareScreen>
                   draft.pickup!.lat,
                   draft.pickup!.lng,
                 ),
-                route: ZMapRoute([
-                  ZMapCenter(draft.pickup!.lat, draft.pickup!.lng),
-                  ZMapCenter(draft.drop!.lat, draft.drop!.lng),
-                ]),
+                route: ZMapRoute(
+                  _mapPoints(
+                    pickupLat: draft.pickup!.lat,
+                    pickupLng: draft.pickup!.lng,
+                    dropLat: draft.drop!.lat,
+                    dropLng: draft.drop!.lng,
+                    route: selected?.quote.route,
+                  ),
+                ),
                 routeProgress: _routeAnim.value,
                 markers: [
                   ZMapMarker(draft.pickup!.lat, draft.pickup!.lng),
@@ -144,6 +149,23 @@ class _CategoryFareScreenState extends ConsumerState<CategoryFareScreen>
                     color: ZColors.error,
                   ),
                 ],
+              ),
+            ),
+          ),
+
+          // Route engine status (degraded fallback is labelled honestly).
+          SafeArea(
+            child: Align(
+              alignment: Alignment.topLeft,
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  left: 72,
+                  top: ZSpacing.lg,
+                ),
+                child: ZMapStatusChip(
+                  degraded: selected?.quote.route?.degraded ?? true,
+                  provider: selected?.quote.route?.provider,
+                ),
               ),
             ),
           ),
@@ -811,4 +833,18 @@ class _Dock extends StatelessWidget {
       ),
     );
   }
+}
+
+
+List<ZMapCenter> _mapPoints({
+  required double pickupLat,
+  required double pickupLng,
+  required double dropLat,
+  required double dropLng,
+  RouteInfo? route,
+}) {
+  if (route != null && route.geometry.length > 1) {
+    return [for (final point in route.geometry) ZMapCenter(point.lat, point.lng)];
+  }
+  return [ZMapCenter(pickupLat, pickupLng), ZMapCenter(dropLat, dropLng)];
 }

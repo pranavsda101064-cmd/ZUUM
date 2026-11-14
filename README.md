@@ -19,6 +19,7 @@ transport (2W/3W/Ace/Pickup/Van/Tempo), built as one platform.
 - [API contract](docs/03_api_contract.md)
 - [Realtime protocol](docs/04_realtime_protocol.md)
 - [Design tokens](docs/05_design_tokens.md)
+- [Maps, routing & navigation ADR](docs/07_maps_routing.md)
 - [Progress tracker](docs/PROGRESS.md)
 
 ## Quick start (customer app)
@@ -28,6 +29,9 @@ cd apps/zuum_customer
 flutter pub get
 flutter run --dart-define=ENV=mock
 ```
+
+Maps use **MapLibre + OpenFreeMap (OSM)** and routing uses **Valhalla** through the
+Django API (public demo server by default; `ROUTING_BASE_URL` in production).
 
 `ENV=mock` runs the app against the **dev-only mock API adapter** (clearly labeled,
 never used in production builds). `ENV=dev|prod` points at a real backend
@@ -47,7 +51,8 @@ add `--dart-define=AUTO_DEMO=true` to sign in automatically on launch.
 
 Demo builds: `builds/zuum-customer-mock.apk`, `builds/zuum-partner-mock.apk`.
 Both ship branded launcher icons + native splash screens, shared page
-transitions, skeleton loading and animated counters.
+transitions, skeleton loading, animated counters, vector maps with routed
+geometry and (partner) turn-by-turn navigation.
 
 ## Quick start (backend)
 

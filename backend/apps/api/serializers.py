@@ -298,6 +298,7 @@ class BookingSerializer(serializers.ModelSerializer):
     shipment = serializers.SerializerMethodField()
     history = serializers.SerializerMethodField()
     route = serializers.SerializerMethodField()
+    otp = serializers.SerializerMethodField()
 
     class Meta:
         model = Booking
@@ -321,6 +322,7 @@ class BookingSerializer(serializers.ModelSerializer):
             "promo_code",
             "discount_paise",
             "route",
+            "otp",
         )
 
     def get_fare(self, obj) -> dict:
@@ -386,6 +388,14 @@ class BookingSerializer(serializers.ModelSerializer):
             "distance_m": obj.distance_m,
             "duration_s": obj.duration_s,
         }
+
+    def get_otp(self, obj) -> str | None:
+        # Customer-facing trip OTP (shared with the driver at pickup/delivery).
+        if obj.type == Booking.Type.GOODS and hasattr(obj, "shipment"):
+            return obj.shipment.delivery_otp
+        if hasattr(obj, "passenger_trip"):
+            return obj.passenger_trip.start_otp
+        return None
 
     def get_pickup(self, obj) -> dict:
         return {
@@ -477,6 +487,14 @@ class PartnerTripSerializer(serializers.ModelSerializer):
             "distance_m": obj.distance_m,
             "duration_s": obj.duration_s,
         }
+
+    def get_otp(self, obj) -> str | None:
+        # Customer-facing trip OTP (shared with the driver at pickup/delivery).
+        if obj.type == Booking.Type.GOODS and hasattr(obj, "shipment"):
+            return obj.shipment.delivery_otp
+        if hasattr(obj, "passenger_trip"):
+            return obj.passenger_trip.start_otp
+        return None
 
     def get_pickup(self, obj) -> dict:
         return {

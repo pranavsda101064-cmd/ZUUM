@@ -384,6 +384,19 @@ class ApiClient implements ApiContract {
   }
 
   @override
+  Future<RouteInfo> bookingRoute(String bookingId, {String leg = 'drop'}) async {
+    try {
+      final res = await _dio.get<dynamic>(
+        '/bookings/$bookingId/route',
+        queryParameters: {'leg': leg},
+      );
+      return RouteInfo.fromJson(_json(res.data));
+    } on DioException catch (e) {
+      _fail(e);
+    }
+  }
+
+  @override
   Future<void> cancelBooking(String id, {required String reason}) async {
     try {
       await _dio.post<dynamic>('/bookings/$id/cancel', data: {'reason': reason});

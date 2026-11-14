@@ -10,6 +10,7 @@ import 'package:zuum_design_system/design_system.dart';
 import '../../app/auth_controller.dart';
 import 'home_controllers.dart';
 import 'offer_sheet.dart';
+import 'partner_gps.dart';
 
 /// Driver dashboard: online hero, simulated live map, earnings snapshot,
 /// active-trip card and the incoming-offer sheet driven by the realtime
@@ -31,8 +32,10 @@ class _HomeTabState extends ConsumerState<HomeTab> {
   bool _toggling = false;
   bool _sheetOpen = false;
   StreamSubscription<DriverOffer>? _offerSub;
+  StreamSubscription<LocationPoint>? _gpsSub;
   Timer? _presenceTimer;
   var _tick = 0;
+  bool _gpsLive = false;
   LocationPoint _position = _base;
 
   @override
@@ -41,10 +44,11 @@ class _HomeTabState extends ConsumerState<HomeTab> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(onlineStatusProvider.notifier).hydrate();
       _offerSub = ref.read(driverRealtimeProvider).offers().listen(_onOffer);
+      _startGps();
     });
-    // Simulated GPS: gentle drift while online (real geolocator in Phase 6).
+    // Fallback: gentle drift while online until a real GPS fix arrives.
     _presenceTimer = Timer.periodic(const Duration(seconds: 5), (_) {
-      if (!mounted || !ref.read(onlineStatusProvider)) return;
+      if (!mounted || _gpsLive || !ref.read(onlineStatusProvider)) return;
       setState(() {
         _tick++;
         _position = LocationPoint(
@@ -56,9 +60,32 @@ class _HomeTabState extends ConsumerState<HomeTab> {
     });
   }
 
+  Future<void> _startGps() async {
+    final gps = ref.read(partnerGpsProvider);
+    final fix = await gps.current();
+    if (!mounted) return;
+    if (fix != null) {
+      setState(() {
+        _position = fix;
+        _gpsLive = true;
+      });
+    }
+    _gpsSub ??= gps.stream().listen(
+      (fix) {
+        if (!mounted) return;
+        setState(() {
+          _position = fix;
+          _gpsLive = true;
+        });
+      },
+      onError: (_) {},
+    );
+  }
+
   @override
   void dispose() {
     _offerSub?.cancel();
+    _gpsSub?.cancel();
     _presenceTimer?.cancel();
     super.dispose();
   }
@@ -169,7 +196,7 @@ class _HomeTabState extends ConsumerState<HomeTab> {
             const SizedBox(height: ZSpacing.lg),
             ZEntrance(
               index: 1,
-              child: _MapCard(position: _position, online: online),
+              child: _MapCard(position: _position, online: online, gpsLive: _gpsLive),
             ),
             const SizedBox(height: ZSpacing.lg),
             ZEntrance(
@@ -272,10 +299,15 @@ class _StatSkeleton extends StatelessWidget {
 }
 
 class _MapCard extends StatelessWidget {
-  const _MapCard({required this.position, required this.online});
+  const _MapCard({
+    required this.position,
+    required this.online,
+    this.gpsLive = false,
+  });
 
   final LocationPoint position;
   final bool online;
+  final bool gpsLive;
 
   @override
   Widget build(BuildContext context) {
@@ -311,7 +343,7 @@ class _MapCard extends StatelessWidget {
                   border: Border.all(color: ZColors.divider),
                 ),
                 child: Text(
-                  'SIM GPS · Koramangala',
+                  gpsLive ? 'GPS · Bengaluru' : 'SIM GPS · Koramangala',
                   style: ZTypography.overline.copyWith(letterSpacing: 0.2),
                 ),
               ),

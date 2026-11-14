@@ -24,6 +24,11 @@ python manage.py runserver
 | Fleet owner ("Namma Fleet") | `fleet@zuum.in` | `zuum1234` |
 | Ops desk (staff, admin API) | `ops@zuum.in` | `zuum1234` |
 
+Maps/routing env: `ROUTING_PROVIDER=valhalla`, `ROUTING_BASE_URL`
+(public demo by default), `ROUTING_API_KEY`, `ROUTING_TIMEOUT_MS`,
+`ROUTING_CACHE_TTL`, `PHOTON_URL`, `NOMINATIM_URL`. Self-hosting Valhalla:
+`infra/docker-compose.valhalla.yml` (Karnataka extract).
+
 - REST: `http://127.0.0.1:8000/api/v1/`
 - OpenAPI: `/api/v1/schema/` · Swagger UI: `/api/v1/docs/`
 - Realtime: `ws://127.0.0.1:8000/ws/{topic}/{id}/?token=<access>`
@@ -55,6 +60,11 @@ python manage.py runserver
   aggregate earnings.
 - **Platform** — support topics/tickets, SOS alerts, notifications
   (list/read), reviews, audit log model, feature-flag settings.
+- **Routing** — Valhalla client (`/route`, `/matrix`, `/status`) behind a
+  `RoutingService` with Redis caching, circuit breaker and haversine fallback;
+  routed quotes/bookings, `GET /bookings/{id}/route`, ETA projection and
+  turn-by-turn maneuvers.
+- **Places** — OSM Photon → Nominatim proxy with caching and Bengaluru bias.
 - **Ops/admin** — live overview, booking search + detail + cancel, driver
   approve/reject/suspend, customers, finance summary, payouts mark-paid,
   promo CRUD, feature settings, ticket replies, audit trail (staff JWT).
@@ -69,7 +79,7 @@ python manage.py runserver
 ## Tests
 
 ```bash
-python manage.py test apps.api.tests      # 45 tests
+python manage.py test apps.api.tests      # 68 tests
 ```
 
 Covers auth/session rotation, quote→book→dispatch→lifecycle→receipt→rating,

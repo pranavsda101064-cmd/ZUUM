@@ -25,6 +25,7 @@ export 'src/components/z_fare_breakdown.dart';
 export 'src/components/z_icon_button.dart';
 export 'src/components/z_illustration.dart';
 export 'src/components/z_list_tile.dart';
+export 'src/components/z_navigation_banner.dart';
 export 'src/components/z_odometer_text.dart';
 export 'src/components/z_pin_pill.dart';
 export 'src/components/z_plate_badge.dart';

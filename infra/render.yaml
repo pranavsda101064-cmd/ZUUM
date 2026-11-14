@@ -8,7 +8,7 @@ services:
     runtime: docker
     dockerfilePath: ./backend/Dockerfile
     plan: starter          # paid: WebSockets need a non-sleeping service
-    healthCheckPath: /healthz
+    healthCheckPath: /api/v1/health
     envVars:
       - key: DJANGO_SECRET_KEY
         generateValue: true
@@ -21,6 +21,14 @@ services:
           name: zuum-redis
           type: redis
           property: connectionString
+      - key: ROUTING_PROVIDER
+        value: valhalla
+      - key: ROUTING_BASE_URL
+        sync: false
+      - key: ROUTING_API_KEY
+        sync: false
+      - key: PHOTON_URL
+        value: https://photon.komoot.io
 
   - type: worker
     name: zuum-worker

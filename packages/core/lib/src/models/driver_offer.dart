@@ -1,3 +1,5 @@
+import 'route.dart';
+
 import 'booking.dart';
 import 'location.dart';
 
@@ -118,6 +120,7 @@ class PartnerTrip {
     this.startedAt,
     this.completedAt,
     this.devOtpHint,
+    this.route,
   });
 
   final String bookingId;
@@ -140,14 +143,35 @@ class PartnerTrip {
   /// DEV-ONLY single-app demo hint (see [DriverOffer.devOtpHint]).
   final String? devOtpHint;
 
+  /// Pickup → drop route (geometry + steps) for the trip map/navigation.
+  final RouteInfo? route;
+
+  static PartnerTripStatus statusFromApi(String? raw) {
+    switch ((raw ?? '').toUpperCase()) {
+      case 'ASSIGNED':
+        return PartnerTripStatus.assigned;
+      case 'ARRIVED':
+      case 'DRIVER_ARRIVING':
+        return PartnerTripStatus.arrived;
+      case 'IN_PROGRESS':
+        return PartnerTripStatus.inProgress;
+      case 'COMPLETED':
+        return PartnerTripStatus.completed;
+      case 'CANCELLED':
+        return PartnerTripStatus.cancelled;
+      default:
+        return PartnerTripStatus.values
+                .asNameMap()[raw] ??
+            PartnerTripStatus.assigned;
+    }
+  }
+
   factory PartnerTrip.fromJson(Map<String, dynamic> json) => PartnerTrip(
         bookingId: json['booking_id'] as String,
         kind: (json['kind'] as String?) == 'goods'
             ? OfferKind.goods
             : OfferKind.ride,
-        status: PartnerTripStatus.values
-                .asNameMap()[json['status'] as String?] ??
-            PartnerTripStatus.assigned,
+        status: statusFromApi(json['status'] as String?),
         pickup: LocationPoint.fromJson(json['pickup'] as Map<String, dynamic>),
         drop: LocationPoint.fromJson(json['drop'] as Map<String, dynamic>),
         farePaise: (json['fare_paise'] as num?)?.toInt() ?? 0,
@@ -167,6 +191,9 @@ class PartnerTrip {
         completedAt: json['completed_at'] == null
             ? null
             : DateTime.tryParse(json['completed_at'] as String),
+        route: json['route'] is Map<String, dynamic>
+            ? RouteInfo.fromJson(json['route'] as Map<String, dynamic>)
+            : null,
       );
 
   Map<String, dynamic> toJson() => {
@@ -186,5 +213,6 @@ class PartnerTrip {
         'needs_loading_help': needsLoadingHelp,
         'started_at': startedAt?.toIso8601String(),
         'completed_at': completedAt?.toIso8601String(),
+        'route': route?.toJson(),
       };
 }

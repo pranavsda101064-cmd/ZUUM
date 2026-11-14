@@ -115,6 +115,30 @@ Legend: ⬜ not started · 🟨 in progress · ✅ done · ⛔ blocked
 - [x] Test totals: customer 12 · partner 15 · design-system 33 · core 44 ·
       backend 45 (149 green); analyze clean in every package
 
+## Maps & routing upgrade — MapLibre + OSM + Valhalla (2026-11-14)
+- [x] Backend routing app: Valhalla client (route/matrix/status), haversine
+      fallback, Redis/locmem cache, circuit breaker, `/api/v1/routing/*`
+      endpoints, routed quotes/bookings, stored geometry/maneuvers,
+      `/bookings/{id}/route`, ETA projection
+- [x] Places proxy: Photon → Nominatim with cache/rate limits and Bengaluru
+      bias (`/api/v1/places/search|reverse`)
+- [x] Design system: MapLibre GL engine with OpenFreeMap style, route casing +
+      progress, marker kinds, fit/follow/tilt camera, zoom/recentre controls,
+      navigation banner, route status chip, deterministic canvas fallback for
+      tests/web
+- [x] Core: RouteInfo/RouteStep DTOs, nested API parsing, mock Valhalla-shaped
+      geometry, booking route endpoint, partner trip routes
+- [x] Customer app: routed quote map + honest degraded chip, routed tracking
+      and receipt maps, foreground GPS for "current location"
+- [x] Partner app: foreground GPS (labelled demo fallback), trip route preview,
+      full-screen navigation (next-turn banner, ETA, recentre, throttled
+      off-route reroute, arrival geofence), navigate actions for pickup/drop
+- [x] Infra/docs: backend Dockerfile (daphne ASGI), dev + Valhalla compose
+      files (Karnataka extract), Render routing env, ADR-002, API contract,
+      attribution policy
+- [x] Tests: backend 68 · core 48 · design-system 37 · customer 12 · partner 15
+      (180 green)
+
 ## Phase 5 — Admin Dashboard (Flutter Web) ⬜
 - [ ] Live ops map, bookings, drivers, customers, finance, analytics, config, audit
 

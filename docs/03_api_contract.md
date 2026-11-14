@@ -60,6 +60,22 @@ This document is the frozen contract the Flutter apps code against.
 {base_paise, distance_paise, time_paise, surge_paise, toll_paise,
 waiting_paise, discount_paise, total_paise}, valid_until}`
 
+## Routing & places (Phase 2 additions)
+
+| Method | Path | Notes |
+|---|---|---|
+| POST | `/routing/route` | `{profile: auto|motorcycle|truck, waypoints:[{lat,lng}], steps}` → `{distance_m, duration_s, geometry, encoded_polyline, steps[], bbox, provider, degraded, cached}` |
+| POST | `/routing/matrix` | `{profile, sources[], targets[]}` → `{durations_s, distances_m, provider, degraded}` |
+| GET | `/routing/health` | provider, reachability, latency, cache TTL, circuit state (public) |
+| GET | `/places/search?q=&lat=&lng=&limit=` | OSM Photon → Nominatim, cached; `{results:[{name,address,lat,lng}], provider}` |
+| GET | `/places/reverse?lat=&lng=` | Reverse geocode with the same providers |
+
+Quote responses add `route { geometry, provider, degraded }`; bookings add
+`route { geometry, steps, provider, degraded, distance_m, duration_s }` and the
+customer trip `otp`. `GET /bookings/{id}/route?leg=drop|pickup` returns the
+stored route or a fresh driver-approach route. See
+[ADR-002](07_maps_routing.md) for fallback and attribution policy.
+
 ## Bookings
 
 | Method | Path | Notes |

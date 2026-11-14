@@ -3,6 +3,7 @@ import '../../realtime/realtime_service.dart';
 import '../api_contract.dart';
 import '../api_exception.dart';
 import 'mock_data.dart';
+import 'mock_route.dart';
 
 /// ============================================================
 /// DEV-ONLY MOCK API — reachable only when `ENV=mock`.
@@ -289,9 +290,9 @@ class MockApiAdapter implements ApiContract {
         code: 'validation_error',
       );
     }
-    final distanceM = MockData.haversineM(pickup.lat, pickup.lng, drop.lat, drop.lng);
-    // Mock assumes ~22 km/h average city speed.
-    final durationS = (distanceM / 22 * 3.6).round().clamp(120, 7200).toInt();
+    final route = mockCurvedRoute(pickup, drop);
+    final distanceM = route.distanceM;
+    final durationS = route.durationS;
     final km = distanceM / 1000.0;
     final minutes = durationS / 60.0;
 
@@ -311,6 +312,7 @@ class MockApiAdapter implements ApiContract {
       serviceCategory: serviceCategory,
       distanceM: distanceM.round(),
       durationS: durationS,
+      route: route,
       breakdown: FareBreakdown(
         basePaise: base,
         distancePaise: distance,
@@ -366,8 +368,9 @@ class MockApiAdapter implements ApiContract {
         code: 'validation_error',
       );
     }
-    final distanceM = MockData.haversineM(pickup.lat, pickup.lng, drop.lat, drop.lng);
-    final durationS = (distanceM / 22 * 3.6).round().clamp(120, 7200).toInt();
+    final route = mockCurvedRoute(pickup, drop);
+    final distanceM = route.distanceM;
+    final durationS = route.durationS;
     final km = distanceM / 1000.0;
     final minutes = durationS / 60.0;
     final base = rates.basePaise;
@@ -414,6 +417,7 @@ class MockApiAdapter implements ApiContract {
       senderPhone: senderPhone,
       receiverName: receiverName,
       receiverPhone: receiverPhone,
+      route: route,
     );
     _bookings[_requireUser().id] = [...?_bookings[_requireUser().id], booking];
     return booking;
@@ -441,6 +445,41 @@ class MockApiAdapter implements ApiContract {
       throw const ApiException(message: 'Booking not found', statusCode: 404, code: 'not_found');
     }
     return found;
+  }
+
+  @override
+  Future<RouteInfo> bookingRoute(String bookingId, {String leg = 'drop'}) async {
+    await _wait();
+    final user = _requireUser();
+    final booking = (_bookings[user.id] ?? const <Booking>[])
+        .where((b) => b.id == bookingId)
+        .firstOrNull;
+    if (booking == null) {
+      throw const ApiException(
+        message: 'Booking not found',
+        statusCode: 404,
+        code: 'not_found',
+      );
+    }
+    final pickup = LocationPoint(
+      lat: booking.pickupLat ?? 12.9352,
+      lng: booking.pickupLng ?? 77.6245,
+      address: booking.pickupAddress,
+    );
+    final drop = LocationPoint(
+      lat: booking.dropLat ?? 12.9716,
+      lng: booking.dropLng ?? 77.5946,
+      address: booking.dropAddress,
+    );
+    if (leg == 'pickup') {
+      const current = LocationPoint(
+        lat: 12.9352,
+        lng: 77.6245,
+        address: 'Koramangala',
+      );
+      return mockCurvedRoute(current, pickup).copyWith(leg: 'pickup');
+    }
+    return booking.route ?? mockCurvedRoute(pickup, drop);
   }
 
   @override

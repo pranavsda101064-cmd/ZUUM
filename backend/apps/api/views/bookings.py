@@ -322,6 +322,7 @@ class BookingOtpVerifyView(APIView):
 
 
 class BookingRouteView(APIView):
+    serializer_class = BookingSerializer
     """Route geometry + turn-by-turn steps for a booking.
 
     `leg=drop` returns the stored pickup→drop route (customer tracking and

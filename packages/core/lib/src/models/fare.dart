@@ -1,3 +1,5 @@
+import 'route.dart';
+
 class FareBreakdown {
   const FareBreakdown({
     required this.basePaise,
@@ -50,6 +52,7 @@ class FareQuote {
     required this.durationS,
     required this.breakdown,
     required this.validUntil,
+    this.route,
   });
 
   final String id;
@@ -58,6 +61,7 @@ class FareQuote {
   final int durationS;
   final FareBreakdown breakdown;
   final DateTime validUntil;
+  final RouteInfo? route;
 
   factory FareQuote.fromJson(Map<String, dynamic> json) => FareQuote(
         id: json['id'] as String,
@@ -66,6 +70,9 @@ class FareQuote {
         durationS: (json['duration_s'] as num).toInt(),
         breakdown: FareBreakdown.fromJson(json['breakdown'] as Map<String, dynamic>),
         validUntil: DateTime.parse(json['valid_until'] as String),
+        route: json['route'] == null
+            ? null
+            : RouteInfo.fromJson(json['route'] as Map<String, dynamic>),
       );
 
   Map<String, dynamic> toJson() => {
@@ -75,5 +82,6 @@ class FareQuote {
         'duration_s': durationS,
         'breakdown': breakdown.toJson(),
         'valid_until': validUntil.toIso8601String(),
+        'route': route?.toJson(),
       };
 }

@@ -1,0 +1,60 @@
+# Local stack: API + Postgres/PostGIS + Redis (+ optional Valhalla).
+#
+#   docker compose -f infra/docker-compose.dev.yml up --build
+#   docker compose -f infra/docker-compose.dev.yml exec api python manage.py migrate
+#   docker compose -f infra/docker-compose.dev.yml exec api python manage.py seed_demo
+#
+# Routing defaults to the public Valhalla demo; point ROUTING_BASE_URL at the
+# self-hosted container (http://valhalla:8002) when running the valhalla file.
+services:
+  api:
+    build:
+      context: ../backend
+    command: daphne -b 0.0.0.0 -p 8000 config.asgi:application
+    ports:
+      - "8000:8000"
+    environment:
+      SECRET_KEY: local-dev-secret
+      DEBUG: "1"
+      ALLOWED_HOSTS: "*"
+      DB_ENGINE: postgres
+      DB_NAME: zuum
+      DB_USER: zuum
+      DB_PASSWORD: zuum
+      DB_HOST: db
+      DB_PORT: "5432"
+      REDIS_URL: redis://redis:6379/0
+      ROUTING_PROVIDER: ${ROUTING_PROVIDER:-valhalla}
+      ROUTING_BASE_URL: ${ROUTING_BASE_URL:-https://valhalla1.openstreetmap.de}
+      CELERY_EAGER: "1"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - ../backend:/app
+
+  db:
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_DB: zuum
+      POSTGRES_USER: zuum
+      POSTGRES_PASSWORD: zuum
+    ports:
+      - "5432:5432"
+    volumes:
+      - zuum_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U zuum -d zuum"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+volumes:
+  zuum_pg:

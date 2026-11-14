@@ -18,7 +18,7 @@ Brand: **Zuum** — *Old Bengaluru soul. New Bengaluru movement.*
 | 2 | Backend | Django 5 + DRF + Channels + Celery | Server-authoritative business logic |
 | 3 | DB | PostgreSQL + PostGIS, Redis | Geo queries (nearby drivers), channel layer, queues |
 | 4 | Launch market | Bengaluru only | City model in DB, INR (minor units), IST |
-| 5 | Maps | Mapbox | Mobile: `mapbox_gl`; Web admin: `flutter_map` + Mapbox tiles; both behind `ZMapView` abstraction |
+| 5 | Maps | MapLibre + OpenStreetMap + Valhalla | Mobile: `maplibre_gl` + OpenFreeMap; Web admin: MapLibre GL JS; both behind `ZMapView`; routing via Django → Valhalla (see ADR-002) |
 | 6 | Payments | Cash + UPI/wallet via Razorpay | `PaymentGateway` interface; payouts in platform batches |
 | 7 | Auth (MVP) | Email + password → JWT | `phone`/`phone_verified` reserved; OTP slots in later |
 | 8 | Goods categories | 2W, 3W, Ace, Pickup, Van, Tempo | `ServiceCategory` rows; LCV/heavy flagged off |

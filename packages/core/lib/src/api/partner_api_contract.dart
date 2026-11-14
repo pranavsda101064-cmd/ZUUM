@@ -64,6 +64,9 @@ abstract interface class PartnerApiContract {
 
   // --- trip lifecycle ---
   Future<PartnerTrip?> activeTrip();
+
+  /// Route for navigation: `drop` (trip) or `pickup` (approach).
+  Future<RouteInfo> tripRoute(String bookingId, {String leg = 'drop'});
   Future<PartnerTrip> arrive(String bookingId);
   Future<PartnerTrip> verifyOtp({required String bookingId, required String otp});
   Future<PartnerTrip> verifyDeliveryOtp({

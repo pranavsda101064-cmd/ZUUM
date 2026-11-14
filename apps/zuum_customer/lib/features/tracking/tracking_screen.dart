@@ -237,16 +237,23 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen> {
                 booking.pickupLat ?? 12.9352,
                 booking.pickupLng ?? 77.6245,
               ),
-              route: ZMapRoute([
-                ZMapCenter(
-                  booking.pickupLat ?? 12.9352,
-                  booking.pickupLng ?? 77.6245,
-                ),
-                ZMapCenter(
-                  booking.dropLat ?? 12.9719,
-                  booking.dropLng ?? 77.6412,
-                ),
-              ]),
+              route: ZMapRoute(
+                booking.route != null && booking.route!.geometry.length > 1
+                    ? [
+                        for (final point in booking.route!.geometry)
+                          ZMapCenter(point.lat, point.lng),
+                      ]
+                    : [
+                        ZMapCenter(
+                          booking.pickupLat ?? 12.9352,
+                          booking.pickupLng ?? 77.6245,
+                        ),
+                        ZMapCenter(
+                          booking.dropLat ?? 12.9719,
+                          booking.dropLng ?? 77.6412,
+                        ),
+                      ],
+              ),
               markers: [
                 ZMapMarker(
                   booking.pickupLat ?? 12.9352,

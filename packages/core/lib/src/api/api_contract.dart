@@ -67,6 +67,10 @@ abstract interface class ApiContract {
   });
   Future<Paged<Booking>> bookings({int page = 1, String? status});
   Future<Booking> booking(String id);
+
+  /// Routed geometry + turn-by-turn steps for a booking.
+  /// [leg] is `drop` (trip route) or `pickup` (driver approach).
+  Future<RouteInfo> bookingRoute(String bookingId, {String leg = 'drop'});
   Future<void> cancelBooking(String id, {required String reason});
 
   /// Trip-start / delivery OTP verification (driver-side in production).

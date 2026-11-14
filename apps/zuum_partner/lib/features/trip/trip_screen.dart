@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:zuum_core/core.dart';
 import 'package:zuum_design_system/design_system.dart';
 
+import 'navigation_screen.dart';
 import 'trip_controllers.dart';
 
 /// Partner trip lifecycle: navigate → arrive → customer OTP → in-trip →
@@ -196,6 +197,10 @@ class _TripScreenState extends ConsumerState<TripScreen> {
         padding: const EdgeInsets.all(ZSpacing.lg),
         children: [
           _StatusHeader(trip: trip),
+          if (trip.route != null && trip.route!.geometry.length > 1) ...[
+            const SizedBox(height: ZSpacing.md),
+            _RoutePreview(trip: trip),
+          ],
           const SizedBox(height: ZSpacing.md),
           _CustomerRow(trip: trip, onCall: _call),
           const SizedBox(height: ZSpacing.md),
@@ -211,6 +216,15 @@ class _TripScreenState extends ConsumerState<TripScreen> {
     );
   }
 
+  Future<void> _openNavigation(PartnerTrip trip) async {
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => PartnerNavigationScreen(trip: trip),
+      ),
+    );
+    if (mounted) ref.invalidate(tripControllerProvider);
+  }
+
   List<Widget> _flow(PartnerTrip trip) {
     switch (trip.status) {
       case PartnerTripStatus.assigned:
@@ -221,6 +235,14 @@ class _TripScreenState extends ConsumerState<TripScreen> {
             expand: true,
             loading: _busy,
             onPressed: _arrive,
+          ),
+          const SizedBox(height: ZSpacing.sm),
+          ZButton(
+            label: 'Navigate to pickup',
+            icon: Icons.navigation_rounded,
+            variant: ZButtonVariant.secondary,
+            expand: true,
+            onPressed: () => _openNavigation(trip),
           ),
           const SizedBox(height: ZSpacing.sm),
           ZButton(
@@ -253,6 +275,14 @@ class _TripScreenState extends ConsumerState<TripScreen> {
             expand: true,
             loading: _busy,
             onPressed: _start,
+          ),
+          const SizedBox(height: ZSpacing.sm),
+          ZButton(
+            label: 'Navigate to pickup',
+            icon: Icons.navigation_rounded,
+            variant: ZButtonVariant.secondary,
+            expand: true,
+            onPressed: () => _openNavigation(trip),
           ),
           if (_error != null) _errorBanner(_error!),
           const SizedBox(height: ZSpacing.sm),
@@ -305,6 +335,14 @@ class _TripScreenState extends ConsumerState<TripScreen> {
             expand: true,
             loading: _busy,
             onPressed: _complete,
+          ),
+          const SizedBox(height: ZSpacing.sm),
+          ZButton(
+            label: goods ? 'Navigate delivery' : 'Navigate to drop',
+            icon: Icons.navigation_rounded,
+            variant: ZButtonVariant.secondary,
+            expand: true,
+            onPressed: () => _openNavigation(trip),
           ),
           if (_error != null) _errorBanner(_error!),
         ];
@@ -616,6 +654,42 @@ class _CompletedView extends StatelessWidget {
             onPressed: () => context.go('/home'),
           ),
         ],
+      ),
+    );
+  }
+}
+
+
+class _RoutePreview extends StatelessWidget {
+  const _RoutePreview({required this.trip});
+
+  final PartnerTrip trip;
+
+  @override
+  Widget build(BuildContext context) {
+    final route = trip.route!;
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(ZRadii.lg),
+      child: SizedBox(
+        height: 160,
+        child: ZMapView(
+          center: ZMapCenter(trip.pickup.lat, trip.pickup.lng),
+          interactive: false,
+          showAttribution: false,
+          route: ZMapRoute(
+            [for (final point in route.geometry) ZMapCenter(point.lat, point.lng)],
+            color: ZColors.highlight,
+          ),
+          markers: [
+            ZMapMarker(trip.pickup.lat, trip.pickup.lng, kind: ZMapMarkerKind.pickup),
+            ZMapMarker(
+              trip.drop.lat,
+              trip.drop.lng,
+              color: ZColors.error,
+              kind: ZMapMarkerKind.drop,
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -1,0 +1,32 @@
+# Self-hosted Valhalla for Karnataka (documented path; needs Docker + ~8 GB).
+#
+#   docker compose -f infra/docker-compose.valhalla.yml up
+#
+# First run downloads the Karnataka OSM extract and builds tiles (10-40 min).
+# Then point the backend at it:
+#   ROUTING_BASE_URL=http://localhost:8002
+#
+# Karnataka extract: ~250 MB PBF → ~4-6 GB tiles. For all-India swap the URL
+# to https://download.geofabrik.de/asia/india-latest.osm.pbf (hours, ~30+ GB).
+services:
+  valhalla:
+    image: ghcr.io/gis-ops/docker-valhalla/valhalla:latest
+    ports:
+      - "8002:8002"
+    environment:
+      tile_urls: https://download.geofabrik.de/asia/india/karnataka-latest.osm.pbf
+      use_tiles_ignore_pbf: "False"
+      force_rebuild: "False"
+      build_elevation: "False"
+      server_threads: "2"
+      serve_tiles: "True"
+    volumes:
+      - valhalla_custom_files:/custom_files
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8002/status || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+
+volumes:
+  valhalla_custom_files:

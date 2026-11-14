@@ -7,6 +7,7 @@ export 'src/api/api_exception.dart';
 export 'src/api/mock/mock_api_adapter.dart';
 export 'src/api/mock/mock_data.dart';
 export 'src/api/mock/mock_partner_api.dart';
+export 'src/api/mock/mock_route.dart';
 export 'src/api/partner_api_contract.dart';
 export 'src/auth/auth_repository.dart';
 export 'src/env/app_env.dart';

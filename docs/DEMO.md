@@ -63,6 +63,17 @@ All packages: `flutter analyze` clean.
 - Backend: Django Phase 2 implements `/api/v1` per `docs/03_api_contract.md`;
   set `API_BASE_URL`/`WS_BASE_URL` + `ENV=dev`.
 
+## Maps & navigation demo
+
+- Quotes show the routed line from Valhalla (curved geometry) with live
+  distance/time; if the engine is unreachable the map shows an honest
+  “Approximate route” chip and pricing continues on the fallback.
+- Customer tracking draws the stored trip route plus the live driver marker.
+- Partner: open an active trip → **Navigate to pickup** for the full-screen
+  navigation view (next-turn banner, ETA, recentre, demo movement when GPS is
+  unavailable). Off-route >120 m triggers a throttled reroute.
+- `GET /api/v1/routing/health` reports the routing provider/circuit state.
+
 ## Partner app demo (welcome + motion)
 
 `builds/zuum-partner-mock.apk` opens on an illustrated 3-page welcome tour,

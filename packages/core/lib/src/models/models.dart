@@ -10,6 +10,7 @@ export 'location.dart';
 export 'notification.dart';
 export 'paged.dart';
 export 'promo.dart';
+export 'route.dart';
 export 'service_category.dart';
 export 'session.dart';
 export 'support.dart';

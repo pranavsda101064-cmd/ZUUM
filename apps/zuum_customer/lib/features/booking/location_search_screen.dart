@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:zuum_core/core.dart';
+
+import '../../shared/current_place.dart';
 import 'package:zuum_design_system/design_system.dart';
 
 import '../booking/booking_controller.dart';
@@ -35,12 +37,14 @@ class _LocationSearchScreenState extends ConsumerState<LocationSearchScreen> {
   String _query = '';
 
   /// Placeholder for the real device fix (Mapbox/OSM GPS) — mock coordinates.
-  static const _currentLocation = PlaceSuggestion(
+  static const _fallbackLocation = PlaceSuggestion(
     name: 'Current location',
     address: 'Koramangala, Bengaluru',
     lat: 12.9352,
     lng: 77.6245,
   );
+
+  PlaceSuggestion _currentLocation = _fallbackLocation;
 
   @override
   void initState() {
@@ -49,6 +53,7 @@ class _LocationSearchScreenState extends ConsumerState<LocationSearchScreen> {
     _pickupController.text = draft.pickup?.name ?? '';
     _dropController.text = draft.drop?.name ?? '';
     _target = draft.pickup == null ? _Target.pickup : _Target.drop;
+    _resolveGps();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_target == _Target.pickup) {
         _pickupFocus.requestFocus();
@@ -72,6 +77,19 @@ class _LocationSearchScreenState extends ConsumerState<LocationSearchScreen> {
   void _onQueryChanged(String value) {    setState(() => _query = value);
     _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 250), () => _runSearch(value));
+  }
+
+  Future<void> _resolveGps() async {
+    final place = await currentPlace();
+    if (!mounted || place == null) return;
+    setState(() => _currentLocation = place);
+  }
+
+  Future<void> _useCurrentLocation() async {
+    final place = await currentPlace();
+    if (!mounted) return;
+    if (place != null) setState(() => _currentLocation = place);
+    _choose(_currentLocation);
   }
 
   Future<void> _runSearch(String query) async {
@@ -291,7 +309,7 @@ class _LocationSearchScreenState extends ConsumerState<LocationSearchScreen> {
                           target: _target,
                           draft: draft,
                           onChoose: _choose,
-                          onCurrentLocation: () => _choose(_currentLocation),
+                          onCurrentLocation: _useCurrentLocation,
                         )
                       : _SuggestionsList(
                           results: _results,

@@ -408,12 +408,6 @@ paths:
   /api/v1/bookings/{booking_id}/route:
     get:
       operationId: bookings_route_retrieve
-      description: |-
-        Route geometry + turn-by-turn steps for a booking.
-
-        `leg=drop` returns the stored pickup→drop route (customer tracking and
-        partner after pickup). `leg=pickup` returns a fresh route from the assigned
-        driver's last known point to the pickup (partner navigation).
       parameters:
       - in: path
         name: booking_id
@@ -427,7 +421,11 @@ paths:
       - jwtAuth: []
       responses:
         '200':
-          description: No response body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+          description: ''
   /api/v1/customers/me:
     get:
       operationId: customers_me_retrieve
@@ -2231,6 +2229,10 @@ components:
           additionalProperties: {}
           nullable: true
           readOnly: true
+        otp:
+          type: string
+          nullable: true
+          readOnly: true
       required:
       - created_at
       - driver
@@ -2238,6 +2240,7 @@ components:
       - fare
       - history
       - id
+      - otp
       - pickup
       - route
       - service_category

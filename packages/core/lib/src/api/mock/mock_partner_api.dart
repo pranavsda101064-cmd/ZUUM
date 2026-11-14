@@ -3,6 +3,7 @@ import '../../models/partner_models.dart';
 import '../api_exception.dart';
 import '../partner_api_contract.dart';
 import 'mock_data.dart';
+import 'mock_route.dart';
 
 /// ============================================================
 /// DEV-ONLY MOCK PARTNER API — `ENV=mock` only.
@@ -666,6 +667,7 @@ class MockPartnerApi implements PartnerApiContract {
       goodsType: offer.goodsType,
       needsLoadingHelp: offer.needsLoadingHelp,
       devOtpHint: offer.devOtpHint,
+      route: mockCurvedRoute(offer.pickup, offer.drop),
     );
     _activeTrips[user.id] = trip;
     _otps[user.id] = offer.devOtpHint!;
@@ -686,6 +688,23 @@ class MockPartnerApi implements PartnerApiContract {
   Future<PartnerTrip?> activeTrip() async {
     await _wait();
     return _activeTrips[_requireUser().id];
+  }
+
+  @override
+  Future<RouteInfo> tripRoute(String bookingId, {String leg = 'drop'}) async {
+    await _wait();
+    final trip = _activeTrips[_requireUser().id];
+    if (trip == null || trip.bookingId != bookingId) {
+      throw const ApiException(
+        message: 'Trip not found',
+        statusCode: 404,
+        code: 'not_found',
+      );
+    }
+    const current = LocationPoint(lat: 12.9352, lng: 77.6245, address: 'Koramangala');
+    final origin = leg == 'pickup' ? current : trip.pickup;
+    final target = leg == 'pickup' ? trip.pickup : trip.drop;
+    return mockCurvedRoute(origin, target).copyWith(leg: leg);
   }
 
   PartnerTrip _requireTrip(String bookingId) {
