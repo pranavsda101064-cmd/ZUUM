@@ -22,5 +22,5 @@ RUN DEBUG=0 python manage.py collectstatic --noinput || true
 
 EXPOSE 8000
 
-# Render provides $PORT; daphne serves HTTP + WebSockets behind the proxy.
-CMD ["sh", "-c", "daphne -b 0.0.0.0 -p ${PORT:-8000} --proxy-headers config.asgi:application"]
+# Entrypoint runs migrations (+ optional demo seed when AUTO_SEED=1) then daphne.
+CMD ["sh", "/app/start.sh"]

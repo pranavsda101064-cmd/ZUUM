@@ -16,10 +16,12 @@ services:
     plan: free
     autoDeploy: true
     healthCheckPath: /api/v1/health
-    dockerCommand: "sh -c 'python manage.py migrate --noinput && python manage.py create_ops_user && python manage.py seed_production_demo && daphne -b 0.0.0.0 -p ${PORT:-8000} --proxy-headers config.asgi:application'"
+    # Boot sequence lives in backend/start.sh (Dockerfile CMD).
     envVars:
       - key: DEBUG
         value: "0"
+      - key: AUTO_SEED
+        value: "1"
       - key: SECRET_KEY
         generateValue: true
       - key: ALLOWED_HOSTS
