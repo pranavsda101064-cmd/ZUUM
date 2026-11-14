@@ -36,3 +36,8 @@ Thumbs.db
 
 # Build deliverables (ship APK via GitHub Releases, not git)
 builds/
+
+keys/
+**/android/key.properties
+*.jks
+*.keystore
