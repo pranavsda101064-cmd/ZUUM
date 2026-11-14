@@ -1,0 +1,120 @@
+# Render blueprint — Zuum API (production)
+# Deploy: Render Dashboard → New → Blueprint → connect repo → Apply.
+# Docs: https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: zuum-api
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    plan: starter
+    autoDeploy: true
+    healthCheckPath: /api/v1/health
+    preDeployCommand: python manage.py migrate --noinput
+    envVars:
+      - key: DEBUG
+        value: "0"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ALLOWED_HOSTS
+        value: ".onrender.com,localhost,127.0.0.1"
+      - key: CSRF_TRUSTED_ORIGINS
+        value: "https://*.onrender.com"
+      - key: SECURE_SSL_REDIRECT
+        value: "0"
+      - key: NUM_PROXIES
+        value: "1"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: zuum-db
+          property: connectionString
+      - key: DB_SSL_MODE
+        value: require
+      - key: REDIS_URL
+        fromService:
+          name: zuum-redis
+          type: redis
+          property: connectionString
+      - key: DATA_DIR
+        value: /var/data
+      - key: MEDIA_ROOT
+        value: /var/data/media
+      - key: ROUTING_PROVIDER
+        value: valhalla
+      - key: ROUTING_BASE_URL
+        value: https://valhalla1.openstreetmap.de
+      - key: ROUTING_TIMEOUT_MS
+        value: "4500"
+      - key: ROUTING_CACHE_TTL
+        value: "300"
+      - key: PHOTON_URL
+        value: https://photon.komoot.io
+      - key: NOMINATIM_URL
+        value: https://nominatim.openstreetmap.org
+      - key: EMAIL_BACKEND
+        value: django.core.mail.backends.console.EmailBackend
+      - key: DJANGO_SUPERUSER_EMAIL
+        sync: false
+      - key: DJANGO_SUPERUSER_PASSWORD
+        sync: false
+      - key: SEED_PASSWORD
+        sync: false
+    disk:
+      name: zuum-media
+      mountPath: /var/data
+      sizeGB: 10
+
+  - type: worker
+    name: zuum-worker
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    plan: starter
+    autoDeploy: true
+    dockerCommand: celery -A config worker -l info
+    envVars:
+      - key: DEBUG
+        value: "0"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: zuum-db
+          property: connectionString
+      - key: DB_SSL_MODE
+        value: require
+      - key: REDIS_URL
+        fromService:
+          name: zuum-redis
+          type: redis
+          property: connectionString
+
+  - type: worker
+    name: zuum-beat
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    plan: starter
+    autoDeploy: true
+    dockerCommand: celery -A config beat -l info
+    envVars:
+      - key: DEBUG
+        value: "0"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: zuum-db
+          property: connectionString
+      - key: DB_SSL_MODE
+        value: require
+      - key: REDIS_URL
+        fromService:
+          name: zuum-redis
+          type: redis
+          property: connectionString
+
+databases:
+  - name: zuum-db
+    plan: starter
+    databaseName: zuum
+
+  - name: zuum-redis
+    plan: starter

@@ -1,5 +1,30 @@
 # Deploying Zuum to Render
 
+## Option A — Free demo (no credit card)
+
+Render's free plan supports one always-on-ish web service + free Postgres.
+Use the root `render.yaml` (free demo). It runs migrations + ops/seed commands
+on every boot (free services have no shell) and uses in-memory channels/Celery
+eager mode.
+
+Free-tier tradeoffs: spins down after 15 min idle (~1 min cold start), uploads
+are lost on restart (ephemeral disk), the free Postgres expires after 30 days,
+and there are no workers/beat.
+
+1. Render → New → Blueprint → repo → branch `main` → it picks `render.yaml`.
+2. Set `DJANGO_SUPERUSER_EMAIL`, `DJANGO_SUPERUSER_PASSWORD`, `SEED_PASSWORD`.
+3. Deploy. Check the **Logs** for the three seeded credentials printed by
+   `seed_production_demo`.
+4. Verify `https://<service>.onrender.com/api/v1/health`.
+
+## Option B — Production (Starter plans, card required)
+
+Use `render.production.yaml` as the Blueprint Path. It adds Celery worker +
+beat, Redis, a 10 GB media disk and migrations via `preDeployCommand`.
+Deployment steps are the same; you can also open a shell to run the seed
+commands manually.
+
+
 1. Push this repo to GitHub (branch `main`).
 2. Render Dashboard → **New → Blueprint** → select the repo → `infra/render.yaml`.
 3. Apply. Render creates:
