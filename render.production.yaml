@@ -6,7 +6,6 @@ services:
     name: zuum-api
     runtime: docker
     dockerfilePath: ./backend/Dockerfile
-    dockerContext: ./backend
     plan: starter
     autoDeploy: true
     healthCheckPath: /api/v1/health
@@ -68,7 +67,6 @@ services:
     name: zuum-worker
     runtime: docker
     dockerfilePath: ./backend/Dockerfile
-    dockerContext: ./backend
     plan: starter
     autoDeploy: true
     dockerCommand: celery -A config worker -l info
@@ -93,7 +91,6 @@ services:
     name: zuum-beat
     runtime: docker
     dockerfilePath: ./backend/Dockerfile
-    dockerContext: ./backend
     plan: starter
     autoDeploy: true
     dockerCommand: celery -A config beat -l info

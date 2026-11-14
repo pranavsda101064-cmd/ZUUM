@@ -10,10 +10,13 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends build-essential libpq-dev curl \
     && rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt .
+# NOTE: Render builds with the repository root as the Docker context (even when
+# this Dockerfile lives in backend/). All COPY paths are therefore repo-relative.
+# Local: docker build -f backend/Dockerfile -t zuum .
+COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+COPY backend/ .
 # Compile static assets with production settings (whitenoise).
 RUN DEBUG=0 python manage.py collectstatic --noinput || true
 
