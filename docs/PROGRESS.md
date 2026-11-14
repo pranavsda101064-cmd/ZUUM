@@ -139,6 +139,19 @@ Legend: ⬜ not started · 🟨 in progress · ✅ done · ⛔ blocked
 - [x] Tests: backend 68 · core 48 · design-system 37 · customer 12 · partner 15
       (180 green)
 
+## Production release — backend & deploy prep (2026-11-14)
+- [x] Production settings: DATABASE_URL, DEBUG=0 hardening, CSRF/proxy/HSTS,
+      secure cookies, whitenoise compressed static, media on persistent disk
+      (staff-only serving), SMTP env support (console default), throttle proxy
+- [x] Customer POD upload endpoint (`POST /bookings/{id}/pod`, multipart
+      signature/photo/receiver/OTP) + test
+- [x] Commands: `create_ops_user`, `seed_production_demo` (catalog + ops +
+      approved partner + customer, credentials shown once)
+- [x] Render blueprint rewritten: API (daphne, disk, pre-deploy migrations),
+      Celery worker + beat, Postgres, Redis, routing/places envs
+- [x] Deploy runbook: `docs/DEPLOY_RENDER.md`
+- [ ] Live clients (partner/customer), visual pass, signed APK/AAB
+
 ## Phase 5 — Admin Dashboard (Flutter Web) ⬜
 - [ ] Live ops map, bookings, drivers, customers, finance, analytics, config, audit
 

@@ -87,6 +87,19 @@ promos, wallet/payments, partner onboarding/KYC/vehicles/offers, fleet console,
 support/SOS/notifications, the ops/admin surface, scheduled jobs, location
 cadence and the websocket protocol.
 
+## Deploying (Render)
+
+Production deploy runbook: [docs/DEPLOY_RENDER.md](../docs/DEPLOY_RENDER.md).
+After the first deploy, run in the Render shell:
+
+```bash
+python manage.py create_ops_user
+python manage.py seed_production_demo
+```
+
+Both are idempotent; `seed_production_demo` prints the seeded credentials once.
+Media (KYC/POD) lives on a persistent disk and is served staff-only.
+
 ## Environment
 
 Copy `.env.example` → `.env` for overrides. Key flags:

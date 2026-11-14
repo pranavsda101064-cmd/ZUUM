@@ -7,6 +7,7 @@ Redis and secrets from the environment (`infra/render.yaml`).
 from __future__ import annotations
 
 import os
+import urllib.parse
 from datetime import timedelta
 from pathlib import Path
 
@@ -15,9 +16,29 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
 
-SECRET_KEY = os.getenv("SECRET_KEY", "dev-insecure-zuum-secret-change-me")
+SECRET_KEY = (
+    os.getenv("SECRET_KEY")
+    or os.getenv("DJANGO_SECRET_KEY")
+    or "dev-insecure-zuum-secret-change-me"
+)
 DEBUG = os.getenv("DEBUG", "1") == "1"
-ALLOWED_HOSTS = [h for h in os.getenv("ALLOWED_HOSTS", "*").split(",") if h]
+ALLOWED_HOSTS = [h.strip() for h in os.getenv("ALLOWED_HOSTS", "*").split(",") if h.strip()]
+
+CSRF_TRUSTED_ORIGINS = [
+    o.strip() for o in os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",") if o.strip()
+]
+if not CSRF_TRUSTED_ORIGINS and not DEBUG:
+    CSRF_TRUSTED_ORIGINS = ["https://*.onrender.com"]
+
+# Render terminates TLS at the proxy; trust its headers.
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+USE_X_FORWARDED_HOST = True
+SECURE_SSL_REDIRECT = os.getenv("SECURE_SSL_REDIRECT", "0") == "1"
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = "DENY"
+SECURE_HSTS_SECONDS = int(os.getenv("SECURE_HSTS_SECONDS", "0"))
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -76,7 +97,22 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"
 
-if os.getenv("DB_ENGINE", "sqlite") == "postgres":
+DATABASE_URL = os.getenv("DATABASE_URL", "")
+if DATABASE_URL:
+    parsed = urllib.parse.urlsplit(DATABASE_URL)
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": (parsed.path or "/zuum").lstrip("/"),
+            "USER": parsed.username or "",
+            "PASSWORD": parsed.password or "",
+            "HOST": parsed.hostname or "",
+            "PORT": str(parsed.port or 5432),
+            "CONN_MAX_AGE": 600,
+            "OPTIONS": {"sslmode": os.getenv("DB_SSL_MODE", "prefer")},
+        }
+    }
+elif os.getenv("DB_ENGINE", "sqlite") == "postgres":
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
@@ -86,6 +122,7 @@ if os.getenv("DB_ENGINE", "sqlite") == "postgres":
             "HOST": os.getenv("DB_HOST", "localhost"),
             "PORT": os.getenv("DB_PORT", "5432"),
             "CONN_MAX_AGE": 600,
+            "OPTIONS": {"sslmode": os.getenv("DB_SSL_MODE", "prefer")},
         }
     }
 else:
@@ -105,10 +142,22 @@ TIME_ZONE = "Asia/Kolkata"
 USE_I18N = True
 USE_TZ = True
 
-STATIC_URL = "static/"
-STATIC_ROOT = BASE_DIR / "staticfiles"
-MEDIA_URL = "media/"
-MEDIA_ROOT = BASE_DIR / "media"
+STATIC_URL = "/static/"
+STATIC_ROOT = Path(os.getenv("STATIC_ROOT", BASE_DIR / "staticfiles"))
+DATA_DIR = Path(os.getenv("DATA_DIR", BASE_DIR))
+MEDIA_URL = "/media/"
+MEDIA_ROOT = Path(os.getenv("MEDIA_ROOT", DATA_DIR / "media"))
+
+STORAGES = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "staticfiles": {
+        "BACKEND": (
+            "whitenoise.storage.CompressedStaticFilesStorage"
+            if not DEBUG
+            else "django.contrib.staticfiles.storage.StaticFilesStorage"
+        )
+    },
+}
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
@@ -251,7 +300,17 @@ CORS_ALLOWED_ORIGINS = [
 EMAIL_BACKEND = os.getenv(
     "EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend"
 )
+EMAIL_HOST = os.getenv("EMAIL_HOST", "")
+if EMAIL_HOST and not os.getenv("EMAIL_BACKEND"):
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "1") == "1"
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "no-reply@zuum.in")
+
+# Rate limiting behind a single Render proxy (X-Forwarded-For aware).
+NUM_PROXIES = int(os.getenv("NUM_PROXIES", "0" if DEBUG else "1"))
 
 PASSWORD_RESET_SALT = "zuum.password.reset"
 PASSWORD_RESET_TTL_SECONDS = 60 * 30

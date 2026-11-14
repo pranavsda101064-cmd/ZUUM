@@ -6,6 +6,7 @@ from django.db.models import Avg, Count
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.generics import ListAPIView
+from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.throttling import ScopedRateThrottle
 from rest_framework.views import APIView
@@ -394,3 +395,66 @@ class BookingRouteView(APIView):
             profile=profile_for_category(booking.service_category.code),
         )
         return Response({"leg": "drop", **result.as_dict()})
+
+
+class BookingPodUploadView(APIView):
+    """Customer proof-of-delivery: receiver, delivery OTP, photo + signature."""
+
+    serializer_class = BookingSerializer
+    parser_classes = [MultiPartParser, FormParser]
+
+    def post(self, request, booking_id):
+        booking = _booking_for(request.user, booking_id)
+        if booking.type != Booking.Type.GOODS or not hasattr(booking, "shipment"):
+            raise ApiError(
+                "POD applies to goods deliveries only",
+                code="illegal_transition",
+                status_code=409,
+            )
+        if booking.status not in (
+            Booking.Status.IN_PROGRESS,
+            Booking.Status.COMPLETED,
+        ):
+            raise ApiError(
+                "POD is available once the delivery is in progress",
+                code="illegal_transition",
+                status_code=409,
+            )
+        shipment = booking.shipment
+        otp = (request.data.get("otp") or "").strip()
+        if shipment.delivery_otp_verified_at is None:
+            if not otp:
+                raise ApiError(
+                    "Enter the delivery OTP",
+                    code="otp_required",
+                    status_code=400,
+                )
+            if otp != shipment.delivery_otp:
+                raise ApiError(
+                    "Incorrect delivery OTP", code="otp_invalid", status_code=400
+                )
+            shipment.delivery_otp_verified_at = timezone.now()
+
+        receiver = (request.data.get("receiver_name") or "").strip()
+        if not receiver and not shipment.pod_receiver:
+            raise ApiError(
+                "Receiver name is required",
+                code="validation_error",
+                status_code=400,
+            )
+        if receiver:
+            shipment.pod_receiver = receiver[:80]
+        if request.FILES.get("photo"):
+            shipment.delivery_pod = request.FILES["photo"]
+        if request.FILES.get("signature"):
+            shipment.delivery_signature = request.FILES["signature"]
+        shipment.pod_signed_at = timezone.now()
+        shipment.save()
+        return Response(
+            {
+                "recorded": True,
+                "receiver": shipment.pod_receiver,
+                "otp_verified": True,
+                "signed_at": shipment.pod_signed_at,
+            }
+        )

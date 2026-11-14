@@ -1,4 +1,5 @@
 """Consumer journey: quote → book → dispatch → driver lifecycle → receipt."""
+from django.core.files.uploadedfile import SimpleUploadedFile
 from apps.api.tests.base import ZuumTestCase, make_user, make_partner
 
 
@@ -186,6 +187,26 @@ class ConsumerFlowTests(ZuumTestCase):
             format="json",
         )
         self.assertEqual(verified.status_code, 200, verified.content)
+
+        pod = self.customer.post(
+            f"/api/v1/bookings/{booking['id']}/pod",
+            {
+                "otp": shipment.delivery_otp,
+                "receiver_name": "Meera",
+                "photo": SimpleUploadedFile(
+                    "drop.jpg", b"fake-photo", content_type="image/jpeg"
+                ),
+                "signature": SimpleUploadedFile(
+                    "sig.png", b"fake-signature", content_type="image/png"
+                ),
+            },
+            format="multipart",
+        )
+        self.assertEqual(pod.status_code, 200, pod.content)
+        self.assertTrue(pod.data["recorded"])
+        shipment.refresh_from_db()
+        self.assertEqual(shipment.pod_receiver, "Meera")
+        self.assertIsNotNone(shipment.pod_signed_at)
 
         done = goods_client.post(
             f"/api/v1/partner/bookings/{booking['id']}/complete"

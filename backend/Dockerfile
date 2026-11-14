@@ -14,9 +14,10 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
-RUN python manage.py collectstatic --noinput || true
+# Compile static assets with production settings (whitenoise).
+RUN DEBUG=0 python manage.py collectstatic --noinput || true
 
 EXPOSE 8000
 
-# Channels needs an ASGI server; daphne serves HTTP + WebSockets.
-CMD ["daphne", "-b", "0.0.0.0", "-p", "8000", "config.asgi:application"]
+# Render provides $PORT; daphne serves HTTP + WebSockets behind the proxy.
+CMD ["sh", "-c", "daphne -b 0.0.0.0 -p ${PORT:-8000} --proxy-headers config.asgi:application"]

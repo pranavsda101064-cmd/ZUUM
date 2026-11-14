@@ -43,6 +43,7 @@ urlpatterns = [
     path("bookings/<uuid:booking_id>/eta", bookings.BookingEtaView.as_view()),
     path("bookings/<uuid:booking_id>/route", bookings.BookingRouteView.as_view()),
     path("bookings/<uuid:booking_id>/otp/verify", bookings.BookingOtpVerifyView.as_view()),
+    path("bookings/<uuid:booking_id>/pod", bookings.BookingPodUploadView.as_view()),
     # money
     path("payments/methods", money.PaymentMethodsView.as_view()),
     path("payments/orders", money.PaymentOrderView.as_view()),
