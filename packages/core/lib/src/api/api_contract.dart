@@ -1,4 +1,6 @@
 import '../models/models.dart';
+import '../places/place_search.dart';
+import '../realtime/realtime_service.dart';
 
 /// Frozen consumer API surface (`docs/03_api_contract.md`).
 ///
@@ -67,6 +69,30 @@ abstract interface class ApiContract {
   });
   Future<Paged<Booking>> bookings({int page = 1, String? status});
   Future<Booking> booking(String id);
+
+  /// Last known driver point for a booking (REST snapshot).
+  Future<DriverLocation?> bookingLocation(String bookingId);
+
+  /// Customer POD: receiver name + delivery OTP + optional photo/signature.
+  Future<void> submitPod({
+    required String bookingId,
+    required String receiverName,
+    required String otp,
+    String? photoPath,
+    String? signaturePath,
+  });
+
+  /// OSM places via the Django proxy (Photon → Nominatim).
+  Future<List<PlaceSuggestion>> searchPlaces(
+    String query, {
+    required double lat,
+    required double lng,
+    int limit = 8,
+  });
+  Future<PlaceSuggestion?> reversePlace({
+    required double lat,
+    required double lng,
+  });
 
   /// Routed geometry + turn-by-turn steps for a booking.
   /// [leg] is `drop` (trip route) or `pickup` (driver approach).

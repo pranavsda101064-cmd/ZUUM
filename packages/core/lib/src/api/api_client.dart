@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 
 import '../models/models.dart';
+import '../places/place_search.dart';
+import '../realtime/realtime_service.dart';
 import '../storage/token_storage.dart';
 import 'api_contract.dart';
 import 'api_exception.dart';
@@ -378,6 +380,98 @@ class ApiClient implements ApiContract {
     try {
       final res = await _dio.get<dynamic>('/bookings/$id');
       return Booking.fromJson(_json(res.data));
+    } on DioException catch (e) {
+      _fail(e);
+    }
+  }
+
+  @override
+  Future<DriverLocation?> bookingLocation(String bookingId) async {
+    try {
+      final res = await _dio.get<dynamic>('/bookings/$bookingId/location');
+      final json = _json(res.data);
+      return DriverLocation(
+        lat: (json['lat'] as num?)?.toDouble() ?? 0,
+        lng: (json['lng'] as num?)?.toDouble() ?? 0,
+        heading: (json['heading'] as num?)?.toDouble() ?? 0,
+        recordedAt: DateTime.tryParse(json['recorded_at'] as String? ?? '') ??
+            DateTime.now(),
+      );
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 404 || e.response?.statusCode == 409) {
+        return null;
+      }
+      _fail(e);
+    }
+  }
+
+  @override
+  Future<void> submitPod({
+    required String bookingId,
+    required String receiverName,
+    required String otp,
+    String? photoPath,
+    String? signaturePath,
+  }) async {
+    final form = FormData.fromMap({
+      'receiver_name': receiverName,
+      'otp': otp,
+      if (photoPath != null)
+        'photo': await MultipartFile.fromFile(
+          photoPath,
+          contentType: DioMediaType('image', 'jpeg'),
+        ),
+      if (signaturePath != null)
+        'signature': await MultipartFile.fromFile(
+          signaturePath,
+          contentType: DioMediaType('image', 'png'),
+        ),
+    });
+    try {
+      await _dio.post<dynamic>('/bookings/$bookingId/pod', data: form);
+    } on DioException catch (e) {
+      _fail(e);
+    }
+  }
+
+  @override
+  Future<List<PlaceSuggestion>> searchPlaces(
+    String query, {
+    required double lat,
+    required double lng,
+    int limit = 8,
+  }) async {
+    try {
+      final res = await _dio.get<dynamic>(
+        '/places/search',
+        queryParameters: {
+          'q': query,
+          'lat': lat,
+          'lng': lng,
+          'limit': limit,
+        },
+      );
+      final rows = (_json(res.data)['results'] as List<dynamic>?) ?? const [];
+      return [
+        for (final row in rows)
+          PlaceSuggestion.fromJson(row as Map<String, dynamic>),
+      ];
+    } on DioException catch (e) {
+      _fail(e);
+    }
+  }
+
+  @override
+  Future<PlaceSuggestion?> reversePlace({
+    required double lat,
+    required double lng,
+  }) async {
+    try {
+      final res = await _dio.get<dynamic>(
+        '/places/reverse',
+        queryParameters: {'lat': lat, 'lng': lng},
+      );
+      return PlaceSuggestion.fromJson(_json(res.data));
     } on DioException catch (e) {
       _fail(e);
     }

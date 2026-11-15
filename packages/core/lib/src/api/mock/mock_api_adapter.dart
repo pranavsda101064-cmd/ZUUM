@@ -1,5 +1,6 @@
 import '../../models/models.dart';
 import '../../realtime/realtime_service.dart';
+import '../../places/place_search.dart';
 import '../api_contract.dart';
 import '../api_exception.dart';
 import 'mock_data.dart';
@@ -446,6 +447,61 @@ class MockApiAdapter implements ApiContract {
     }
     return found;
   }
+
+  @override
+  Future<DriverLocation?> bookingLocation(String bookingId) async {
+    await _wait();
+    _requireUser();
+    return null; // the mock realtime service plays the driver side
+  }
+
+  @override
+  Future<void> submitPod({
+    required String bookingId,
+    required String receiverName,
+    required String otp,
+    String? photoPath,
+    String? signaturePath,
+  }) async {
+    await _wait();
+    final user = _requireUser();
+    final booking = _find(user.id, bookingId);
+    if (booking.type != BookingType.goods) {
+      throw const ApiException(
+        message: 'POD applies to goods deliveries only',
+        statusCode: 409,
+        code: 'illegal_transition',
+      );
+    }
+    if (booking.otp != null && otp != booking.otp) {
+      throw const ApiException(
+        message: 'Incorrect delivery OTP',
+        statusCode: 400,
+        code: 'otp_invalid',
+      );
+    }
+  }
+
+  @override
+  Future<List<PlaceSuggestion>> searchPlaces(
+    String query, {
+    required double lat,
+    required double lng,
+    int limit = 8,
+  }) =>
+      MockPlaceSearch().search(
+        query,
+        proximityLat: lat,
+        proximityLng: lng,
+        limit: limit,
+      );
+
+  @override
+  Future<PlaceSuggestion?> reversePlace({
+    required double lat,
+    required double lng,
+  }) async =>
+      null;
 
   @override
   Future<RouteInfo> bookingRoute(String bookingId, {String leg = 'drop'}) async {

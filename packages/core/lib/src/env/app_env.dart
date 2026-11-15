@@ -8,9 +8,11 @@ import '../api/mock/mock_partner_api.dart';
 import '../api/partner_api_contract.dart';
 import '../payments/payment_gateway.dart';
 import '../places/place_search.dart';
+import '../places/backend_place_search.dart';
 import '../realtime/driver_realtime_service.dart';
 import '../realtime/polling_driver_realtime_service.dart';
 import '../realtime/realtime_service.dart';
+import '../realtime/polling_customer_realtime_service.dart';
 import '../storage/prefs_store.dart';
 import '../storage/token_storage.dart';
 
@@ -60,13 +62,21 @@ final apiContractProvider = Provider<ApiContract>((ref) {
 /// Place search - Mapbox when a token is configured, Nominatim (OSM, free)
 /// otherwise. Widget tests override with the deterministic MockPlaceSearch.
 final placeSearchProvider = Provider<PlaceSearchService>((ref) {
+  if (!AppEnv.isMock) {
+    return BackendPlaceSearch(api: ref.watch(apiContractProvider));
+  }
   if (AppEnv.mapboxAccessToken.isNotEmpty) return MapboxPlaceSearch();
   return NominatimPlaceSearch();
 });
 
 /// Realtime trip feed. Mock dispatch simulator until the WS backend (Phase 6).
 final realtimeServiceProvider = Provider<RealtimeService>((ref) {
-  return MockRealtimeService();
+  if (AppEnv.isMock) return MockRealtimeService();
+  final service = PollingCustomerRealtimeService(
+    api: ref.watch(apiContractProvider),
+  );
+  ref.onDispose(service.dispose);
+  return service;
 });
 
 /// Payment gateway seam. Mock until Razorpay keys are configured.

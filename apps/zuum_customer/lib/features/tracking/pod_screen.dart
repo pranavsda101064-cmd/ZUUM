@@ -111,11 +111,25 @@ class _PodScreenState extends ConsumerState<PodScreen> {
       _error = null;
     });
     try {
+      await _captureSignature();
       await ref.read(apiContractProvider).verifyOtp(
             bookingId: booking.id,
             otp: otp,
           );
-      await _captureSignature();
+      String? signaturePath;
+      if (_signaturePng != null) {
+        final dir = await io.Directory.systemTemp.createTemp('zuum_pod');
+        final file = io.File('${dir.path}/signature.png');
+        await file.writeAsBytes(_signaturePng!, flush: true);
+        signaturePath = file.path;
+      }
+      await ref.read(apiContractProvider).submitPod(
+            bookingId: booking.id,
+            receiverName: receiver,
+            otp: otp,
+            photoPath: _dropPhoto,
+            signaturePath: signaturePath,
+          );
       ref.read(podProofProvider.notifier).set(
             PodProof(
               pickupPhotoPath: _pickupPhoto,
