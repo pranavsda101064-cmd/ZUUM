@@ -197,7 +197,7 @@ class _TripScreenState extends ConsumerState<TripScreen> {
       ..hideCurrentSnackBar()
       ..showSnackBar(
         const SnackBar(
-          content: Text('Calls the customer from a masked number (mock build).'),
+          content: Text('Calls are connected through Zuum.'),
         ),
       );
   }
@@ -348,7 +348,6 @@ class _TripScreenState extends ConsumerState<TripScreen> {
             keyboardType: TextInputType.number,
             prefixIcon: Icons.lock_outline_rounded,
           ),
-          if (trip.devOtpHint != null) _devOtpHint(trip),
           const SizedBox(height: ZSpacing.md),
           ZButton(
             label: 'Start trip',
@@ -391,7 +390,6 @@ class _TripScreenState extends ConsumerState<TripScreen> {
               keyboardType: TextInputType.number,
               prefixIcon: Icons.verified_outlined,
             ),
-            if (trip.devOtpHint != null) _devOtpHint(trip),
             const SizedBox(height: ZSpacing.md),
             ZButton(
               label: 'Verify delivery OTP',
@@ -489,26 +487,6 @@ class _TripScreenState extends ConsumerState<TripScreen> {
       ),
       const SizedBox(height: ZSpacing.md),
     ];
-  }
-
-  Widget _devOtpHint(PartnerTrip trip) {
-    return Padding(
-      padding: const EdgeInsets.only(top: ZSpacing.sm),
-      child: Container(
-        padding: const EdgeInsets.all(ZSpacing.sm),
-        decoration: const BoxDecoration(
-          color: ZColors.accent,
-          borderRadius: BorderRadius.all(Radius.circular(ZRadii.sm)),
-        ),
-        child: Text(
-          'DEV · demo OTP ${trip.devOtpHint}',
-          style: ZTypography.overline.copyWith(
-            color: ZColors.textSecondary,
-            letterSpacing: 0.4,
-          ),
-        ),
-      ),
-    );
   }
 
   Widget _errorBanner(String message) {
@@ -823,7 +801,7 @@ class _RoutePreview extends StatelessWidget {
             ZMapMarker(
               trip.drop.lat,
               trip.drop.lng,
-              color: ZColors.error,
+              color: ZColors.textSecondary,
               kind: ZMapMarkerKind.drop,
             ),
           ],

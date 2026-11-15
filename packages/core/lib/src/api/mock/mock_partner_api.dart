@@ -75,6 +75,8 @@ class MockPartnerApi implements PartnerApiContract {
   final _offersSeen = <String, int>{};
   final _offersAccepted = <String, int>{};
   final _tripsCancelled = <String, int>{};
+  final _notificationsEnabled = <String, bool>{};
+  final _payoutAccounts = <String, (String, String, String)>{};
   var _seq = 0;
   String? _currentEmail;
 
@@ -151,6 +153,7 @@ class MockPartnerApi implements PartnerApiContract {
     _offersSeen.putIfAbsent(id, () => 0);
     _offersAccepted.putIfAbsent(id, () => 0);
     _tripsCancelled.putIfAbsent(id, () => 0);
+    _notificationsEnabled.putIfAbsent(id, () => true);
     _online.putIfAbsent(id, () => false);
     _ledger.putIfAbsent(id, () {
       final now = _now;
@@ -321,6 +324,7 @@ class MockPartnerApi implements PartnerApiContract {
       ratingCount: 214,
       acceptanceRate: _acceptanceRate(user.id),
       documentCount: docs.length,
+      notificationsEnabled: _notificationsEnabled[user.id] ?? true,
     );
   }
 
@@ -342,6 +346,7 @@ class MockPartnerApi implements PartnerApiContract {
     String? lastName,
     String? phone,
     List<String>? languages,
+    bool? notificationsEnabled,
   }) async {
     await _wait();
     final user = _requireUser();
@@ -351,7 +356,21 @@ class MockPartnerApi implements PartnerApiContract {
       phone: phone?.trim(),
     );
     _users[updated.email] = updated;
+    if (notificationsEnabled != null) {
+      _notificationsEnabled[user.id] = notificationsEnabled;
+    }
     return _profileFor(updated);
+  }
+
+  @override
+  Future<void> savePayoutAccount({
+    required String holderName,
+    required String accountNumber,
+    required String ifsc,
+  }) async {
+    await _wait();
+    final user = _requireUser();
+    _payoutAccounts[user.id] = (holderName, accountNumber, ifsc);
   }
 
   @override

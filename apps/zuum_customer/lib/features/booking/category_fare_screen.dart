@@ -25,21 +25,6 @@ class _CategoryFareScreenState extends ConsumerState<CategoryFareScreen>
   )..forward();
   bool _booking = false;
 
-  static const _vehicleAssets = {
-    'bike': 'veh_bike',
-    'auto': 'veh_auto',
-    'hatchback': 'veh_hatchback',
-    'sedan': 'veh_sedan',
-    'suv': 'veh_suv',
-    'premium': 'veh_sedan',
-    'goods_2w': 'veh_2w_goods',
-    'goods_3w': 'veh_3w_goods',
-    'ace': 'veh_ace',
-    'pickup': 'veh_pickup',
-    'van': 'veh_ace',
-    'tempo': 'veh_tempo',
-  };
-
   @override
   void dispose() {
     _routeAnim.dispose();
@@ -146,7 +131,7 @@ class _CategoryFareScreenState extends ConsumerState<CategoryFareScreen>
                   ZMapMarker(
                     draft.drop!.lat,
                     draft.drop!.lng,
-                    color: ZColors.error,
+                    color: ZColors.textSecondary,
                   ),
                 ],
               ),
@@ -200,7 +185,7 @@ class _CategoryFareScreenState extends ConsumerState<CategoryFareScreen>
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.circle, size: 8, color: ZColors.success),
+                        const Icon(Icons.circle, size: 8, color: ZColors.primary),
                         const SizedBox(width: ZSpacing.xs),
                         ConstrainedBox(
                           constraints: BoxConstraints(
@@ -301,9 +286,6 @@ class _CategoryFareScreenState extends ConsumerState<CategoryFareScreen>
                               for (final option in list) ...[
                                 _VehicleRow(
                                   option: option,
-                                  asset: _vehicleAssets[
-                                          option.category.code] ??
-                                      'veh_sedan',
                                   selected: option.category.code ==
                                       draft.selectedCategoryCode,
                                   isGoods: isGoods,
@@ -414,44 +396,37 @@ class _CategoryFareScreenState extends ConsumerState<CategoryFareScreen>
             PaymentMethod.upi,
             PaymentMethod.wallet,
           ])
-            Opacity(
-              opacity: method == PaymentMethod.wallet ? 0.5 : 1,
-              child: ZListTile(
-                title: switch (method) {
-                  PaymentMethod.cash => 'Cash',
-                  PaymentMethod.upi => 'UPI',
-                  PaymentMethod.card => 'Card (on delivery)',
-                  PaymentMethod.wallet => 'Zuum Wallet',
+            ZListTile(
+              title: switch (method) {
+                PaymentMethod.cash => 'Cash',
+                PaymentMethod.upi => 'UPI',
+                PaymentMethod.card => 'Card (on delivery)',
+                PaymentMethod.wallet => 'Zuum Wallet',
+              },
+              leading: Icon(
+                switch (method) {
+                  PaymentMethod.cash => Icons.payments_outlined,
+                  PaymentMethod.upi => Icons.account_balance_outlined,
+                  PaymentMethod.card => Icons.credit_card_outlined,
+                  PaymentMethod.wallet =>
+                    Icons.account_balance_wallet_outlined,
                 },
-                leading: Icon(
-                  switch (method) {
-                    PaymentMethod.cash => Icons.payments_outlined,
-                    PaymentMethod.upi => Icons.account_balance_outlined,
-                    PaymentMethod.card => Icons.credit_card_outlined,
-                    PaymentMethod.wallet =>
-                      Icons.account_balance_wallet_outlined,
-                  },
-                  color: ZColors.textSecondary,
-                ),
-                trailing: method == PaymentMethod.wallet
-                    ? const ZBadge(label: 'Milestone F')
-                    : Icon(
-                        current == method
-                            ? Icons.radio_button_checked_rounded
-                            : Icons.radio_button_off_rounded,
-                        color: current == method
-                            ? ZColors.primary
-                            : ZColors.textTertiary,
-                      ),
-                onTap: method == PaymentMethod.wallet
-                    ? null
-                    : () {
-                        ref
-                            .read(bookingControllerProvider.notifier)
-                            .setPaymentMethod(method);
-                        Navigator.of(context).pop();
-                      },
+                color: ZColors.textSecondary,
               ),
+              trailing: Icon(
+                current == method
+                    ? Icons.radio_button_checked_rounded
+                    : Icons.radio_button_off_rounded,
+                color: current == method
+                    ? ZColors.primary
+                    : ZColors.textTertiary,
+              ),
+              onTap: () {
+                ref
+                    .read(bookingControllerProvider.notifier)
+                    .setPaymentMethod(method);
+                Navigator.of(context).pop();
+              },
             ),
         ],
       ),
@@ -587,7 +562,6 @@ class _ScheduleRow extends ConsumerWidget {
 class _VehicleRow extends StatelessWidget {
   const _VehicleRow({
     required this.option,
-    required this.asset,
     required this.selected,
     required this.isGoods,
     required this.onTap,
@@ -595,7 +569,6 @@ class _VehicleRow extends StatelessWidget {
   });
 
   final FareOption option;
-  final String asset;
   final bool selected;
   final bool isGoods;
   final VoidCallback onTap;
@@ -636,10 +609,11 @@ class _VehicleRow extends StatelessWidget {
               scale: selected ? 1.08 : 1.0,
               duration: const Duration(milliseconds: 200),
               curve: Curves.easeOutBack,
-              child: ZIllustration(
-                asset,
-                width: 56,
-                height: 40,
+              child: ZVehicleIcon(
+                categoryCode: category.code,
+                width: 64,
+                height: 42,
+                semanticLabel: category.name,
               ),
             ),
             const SizedBox(width: ZSpacing.md),

@@ -6,9 +6,8 @@ import 'package:zuum_design_system/design_system.dart';
 
 import '../../app/auth_controller.dart';
 
-/// Holds the partner while KYC is under review. The mock build auto-approves
-/// after a few seconds; the router moves the partner to the shell as soon as
-/// the profile flips to approved.
+/// Holds the partner while KYC is under review. The router moves the partner
+/// to the shell as soon as the profile flips to approved.
 class KycPendingScreen extends ConsumerStatefulWidget {
   const KycPendingScreen({super.key});
 
@@ -100,10 +99,6 @@ class _KycPendingScreenState extends ConsumerState<KycPendingScreen> {
                   ),
                 ),
                 const SizedBox(height: ZSpacing.sm),
-                const ZBadge(
-                  label: 'Mock build · auto-approves in ~3 s',
-                  tone: ZBadgeTone.highlight,
-                ),
               ],
             ),
           ),

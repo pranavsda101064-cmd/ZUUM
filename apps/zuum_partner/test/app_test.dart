@@ -4,10 +4,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:zuum_core/core.dart';
 import 'package:zuum_design_system/design_system.dart';
 import 'package:zuum_partner/app/app.dart';
+import 'package:zuum_partner/app/auth_controller.dart';
 
 Widget buildPartnerApp({
   MockPartnerApi? api,
   TokenStorage? storage,
+  DriverRealtimeService? realtime,
   bool welcomeSeen = true,
 }) {
   return ProviderScope(
@@ -17,6 +19,7 @@ Widget buildPartnerApp({
       prefsStoreProvider
           .overrideWithValue(InMemoryPrefsStore(onboarded: welcomeSeen)),
       if (api != null) partnerApiProvider.overrideWithValue(api),
+      if (realtime != null) driverRealtimeProvider.overrideWithValue(realtime),
     ],
     child: const PartnerApp(),
   );
@@ -38,8 +41,9 @@ Future<void> pumpThroughSplash(
 Future<void> pumpSeededHome(
   WidgetTester tester,
   MockPartnerApi api,
-  TokenStorage storage,
-) async {
+  TokenStorage storage, {
+  DriverRealtimeService? realtime,
+}) async {
   // Tall viewport keeps every home section on screen — the map preview
   // swallows drag gestures, so scrolling it in tests is unreliable.
   tester.view.physicalSize = const Size(900, 1600);
@@ -47,7 +51,9 @@ Future<void> pumpSeededHome(
   addTearDown(tester.view.resetPhysicalSize);
   addTearDown(tester.view.resetDevicePixelRatio);
 
-  await tester.pumpWidget(buildPartnerApp(api: api, storage: storage));
+  await tester.pumpWidget(
+    buildPartnerApp(api: api, storage: storage, realtime: realtime),
+  );
   await tester.pump();
   await tester.pump(const Duration(milliseconds: 1300)); // brand hold
   for (var i = 0; i < 8; i++) {
@@ -138,7 +144,7 @@ Future<void> registerViaUi(WidgetTester tester) async {
   expect(find.text('Personal details'), findsOneWidget);
 }
 
-Future<void> completeWizard(WidgetTester tester) async {
+Future<void> completeWizard(WidgetTester tester, MockPartnerApi api) async {
   // Step 1 — details are prefilled from registration.
   await tester.tap(find.text('Continue'));
   await tester.pumpAndSettle();
@@ -164,13 +170,19 @@ Future<void> completeWizard(WidgetTester tester) async {
   await tester.tap(find.text('Continue'));
   await tester.pumpAndSettle();
 
-  // Step 4 — documents via the demo option (deterministic, no plugins).
-  for (final doc in ['Driving licence', 'Vehicle RC', 'Insurance']) {
-    await tester.tap(find.text(doc));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Use demo document (dev)'));
-    await tester.pumpAndSettle();
+  // Step 4 — documents uploaded through the API (no media plugins in tests).
+  for (final type in [
+    KycDocType.licence,
+    KycDocType.rc,
+    KycDocType.insurance,
+  ]) {
+    await api.uploadDocument(type: type, filePath: 'test://${type.name}.jpg');
   }
+  final container = ProviderScope.containerOf(
+    tester.element(find.text('Documents').first),
+  );
+  container.invalidate(partnerDocumentsProvider);
+  await tester.pumpAndSettle();
   await tester.tap(find.text('Continue'));
   await tester.pumpAndSettle();
 
@@ -200,7 +212,10 @@ Future<void> goOnline(WidgetTester tester) async {
   expect(find.text('ONLINE'), findsOneWidget);
 }
 
-Future<void> openSimulatedOffer(WidgetTester tester) async {
+Future<void> openSimulatedOffer(
+  WidgetTester tester,
+  DriverRealtimeService realtime,
+) async {
   if (find.text('OFFLINE').evaluate().isNotEmpty) {
     await tester.tap(find.byType(Switch));
     await tester.pump();
@@ -209,10 +224,12 @@ Future<void> openSimulatedOffer(WidgetTester tester) async {
     }
     expect(find.text('ONLINE'), findsOneWidget);
   }
-  await tester.tap(find.text('Simulate offer (dev)'));
-  await tester.pump();
-  await tester.pump(const Duration(milliseconds: 400));
+  for (var i = 0; i < 20; i++) {
+    await tester.pump(const Duration(milliseconds: 100));
+    if (find.text('NEW TRIP REQUEST').evaluate().isNotEmpty) break;
+  }
   expect(find.text('NEW TRIP REQUEST'), findsOneWidget);
+  realtime.dispose();
 }
 
 /// Unmounts the tree so provider-held timers (offer simulator, GPS ticker)
@@ -290,7 +307,7 @@ void main() {
     );
     await pumpThroughSplash(tester, api);
     await registerViaUi(tester);
-    await completeWizard(tester);
+    await completeWizard(tester, api);
 
     expect(find.text('Verification in progress'), findsOneWidget);
     expect(find.text('ಪರಿಶೀಲನೆ ನಡೆಯುತ್ತಿದೆ'), findsOneWidget);
@@ -345,9 +362,14 @@ void main() {
       kycReviewDelay: Duration.zero,
     );
     final storage = await seedApprovedPartner(api);
-    await pumpSeededHome(tester, api, storage);
+    final realtime = MockDriverRealtimeService(
+      api: api,
+      offerEvery: const Duration(milliseconds: 150),
+    );
+    addTearDown(realtime.dispose);
+    await pumpSeededHome(tester, api, storage, realtime: realtime);
 
-    await openSimulatedOffer(tester);
+    await openSimulatedOffer(tester, realtime);
     expect(find.text('Accept trip'), findsOneWidget);
     await tester.tap(find.text('Accept trip'));
     await tester.pump();
@@ -368,9 +390,14 @@ void main() {
       kycReviewDelay: Duration.zero,
     );
     final storage = await seedApprovedPartner(api);
-    await pumpSeededHome(tester, api, storage);
+    final realtime = MockDriverRealtimeService(
+      api: api,
+      offerEvery: const Duration(milliseconds: 150),
+    );
+    addTearDown(realtime.dispose);
+    await pumpSeededHome(tester, api, storage, realtime: realtime);
 
-    await openSimulatedOffer(tester);
+    await openSimulatedOffer(tester, realtime);
     await tester.tap(find.text('Decline'));
     await tester.pump();
     for (var i = 0; i < 6; i++) {
@@ -598,21 +625,28 @@ void main() {
     expect(find.text('Partner sign in'), findsWidgets);
   });
 
-  testWidgets('demo sign-in lands on the dashboard in mock builds',
-      (tester) async {
+  testWidgets('registered partner signs in to the dashboard', (tester) async {
     final api = MockPartnerApi(
       latency: Duration.zero,
       kycReviewDelay: Duration.zero,
     );
-    await pumpThroughSplash(tester, api);
+    await seedApprovedPartner(api);
+    await pumpThroughSplash(tester, api, storage: InMemoryTokenStorage());
 
-    await tester.ensureVisible(find.text('Demo partner (dev)'));
-    await tester.tap(find.text('Demo partner (dev)'));
+    await tester.enterText(
+      find.widgetWithText(ZTextField, 'Email'),
+      'captain@zuum.in',
+    );
+    await tester.enterText(
+      find.widgetWithText(ZTextField, 'Password'),
+      'secret12',
+    );
+    await tester.tap(find.text('Sign in'));
     await settleAction(tester);
     await settleAction(tester);
 
     expect(find.text('OFFLINE'), findsOneWidget);
-    expect(find.text('Demo Partner'), findsWidgets);
+    expect(find.text('Ravi Kumar'), findsWidgets);
     await tearDownHome(tester);
   });
 
@@ -632,7 +666,7 @@ void main() {
     expect(find.text('Driving licence'), findsOneWidget);
     expect(find.text('Vehicle RC'), findsOneWidget);
     expect(find.text('RATING'), findsOneWidget);
-    expect(find.text('MOCK'), findsOneWidget);
+    expect(find.text('Zuum Partner 1.0.0'), findsOneWidget);
 
     await tester.tap(find.text('Sign out'));
     await settleAction(tester);

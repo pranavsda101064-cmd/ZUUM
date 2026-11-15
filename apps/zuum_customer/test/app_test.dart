@@ -699,4 +699,55 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('42, 7th Cross, Jayanagar'), findsWidgets); // seeded + new
   });
+
+  testWidgets('GST and trusted contacts persist through the API',
+      (tester) async {
+    await pumpToLogin(tester, api: seededApi());
+    await enterCredentials(tester);
+    await tester.tap(find.widgetWithText(ZButton, 'Log in'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+    await tester.tap(find.text('Account'));
+    await tester.pumpAndSettle();
+
+    await tester.ensureVisible(find.text('Business GST details'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Business GST details'));
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.widgetWithText(ZTextField, 'GSTIN (15 characters)'),
+      '29ABCDE1234F1Z5',
+    );
+    await tester.enterText(
+      find.widgetWithText(ZTextField, 'Business name'),
+      'Rao Traders',
+    );
+    await tester.tap(find.text('Save details'));
+    await tester.pumpAndSettle();
+
+    await tester.ensureVisible(find.text('Business GST details'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Business GST details'));
+    await tester.pumpAndSettle();
+    expect(find.text('29ABCDE1234F1Z5'), findsWidgets);
+    expect(find.text('Rao Traders'), findsWidgets);
+    await tester.tap(find.byIcon(Icons.arrow_back_rounded));
+    await tester.pumpAndSettle();
+
+    await tester.ensureVisible(find.text('Trusted contacts'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Trusted contacts'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Add contact'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.widgetWithText(ZTextField, 'Name'), 'Amma');
+    await tester.enterText(
+      find.widgetWithText(ZTextField, 'Mobile'),
+      '9845000002',
+    );
+    await tester.tap(find.widgetWithText(ZButton, 'Add contact'));
+    await tester.pumpAndSettle();
+    expect(find.text('Amma'), findsOneWidget);
+    expect(find.text('9845000002'), findsOneWidget);
+  });
 }

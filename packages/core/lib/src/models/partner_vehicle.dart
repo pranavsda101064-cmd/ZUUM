@@ -1,3 +1,5 @@
+import 'json_value.dart';
+
 /// Partner vehicle (driver-owned or fleet-assigned).
 class PartnerVehicle {
   const PartnerVehicle({
@@ -60,7 +62,7 @@ class PartnerVehicle {
         model: json['model'] as String? ?? '',
         color: json['color'] as String? ?? '',
         capacityKg: (json['capacity_kg'] as num?)?.toInt(),
-        volumeCuft: (json['volume_cuft'] as num?)?.toDouble(),
+        volumeCuft: jsonDouble(json['volume_cuft']),
         seats: (json['seats'] as num?)?.toInt(),
         isActive: json['is_active'] as bool? ?? true,
         insuranceExpiresAt: json['insurance_expires_at'] == null

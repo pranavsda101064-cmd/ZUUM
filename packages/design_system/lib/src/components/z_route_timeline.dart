@@ -4,8 +4,8 @@ import '../tokens/colors.dart';
 import '../tokens/spacing.dart';
 import '../tokens/typography.dart';
 
-/// Vertical pickup → drop route timeline: success circle, dashed connector,
-/// primary/error square (Gemini spec §2g / §3.9).
+/// Vertical pickup → drop route timeline: filled circle, dashed connector,
+/// hollow square. Monochrome so it works on light and dark surfaces.
 class ZRouteTimeline extends StatelessWidget {
   const ZRouteTimeline({
     super.key,
@@ -28,7 +28,7 @@ class ZRouteTimeline extends StatelessWidget {
         Column(
           children: [
             const _Endpoint(
-              color: ZColors.success,
+              color: ZColors.primary,
               filled: true,
             ),
             _DashedLine(height: connectorHeight),

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../api/api_client.dart';
@@ -20,25 +21,32 @@ import '../storage/token_storage.dart';
 enum AppEnvironment { mock, dev, prod }
 
 abstract final class AppEnv {
-  static const String _raw = String.fromEnvironment('ENV', defaultValue: 'mock');
+  static const String _raw = String.fromEnvironment('ENV');
   static const String apiBaseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'https://api.zuum.in/api/v1',
+    defaultValue: 'https://zuum-api.onrender.com/api/v1',
   );
   static const String wsBaseUrl = String.fromEnvironment(
     'WS_BASE_URL',
-    defaultValue: 'wss://api.zuum.in/ws',
+    defaultValue: 'wss://zuum-api.onrender.com/ws',
   );
   static const String mapboxAccessToken = String.fromEnvironment(
     'MAPBOX_ACCESS_TOKEN',
     defaultValue: '',
   );
 
-  static AppEnvironment get environment => switch (_raw) {
-        'dev' => AppEnvironment.dev,
-        'prod' => AppEnvironment.prod,
-        _ => AppEnvironment.mock,
-      };
+  /// Release builds fail closed to the live backend. Debug/test builds stay
+  /// on the in-memory mock unless an environment is passed explicitly.
+  static AppEnvironment get environment {
+    if (_raw.isEmpty) {
+      return kReleaseMode ? AppEnvironment.prod : AppEnvironment.mock;
+    }
+    return switch (_raw) {
+      'dev' => AppEnvironment.dev,
+      'prod' => AppEnvironment.prod,
+      _ => AppEnvironment.mock,
+    };
+  }
 
   static bool get isMock => environment == AppEnvironment.mock;
   static bool get isProd => environment == AppEnvironment.prod;
@@ -59,14 +67,12 @@ final apiContractProvider = Provider<ApiContract>((ref) {
   return ApiClient(baseUrl: AppEnv.apiBaseUrl, tokenStorage: ref.watch(tokenStorageProvider));
 });
 
-/// Place search - Mapbox when a token is configured, Nominatim (OSM, free)
-/// otherwise. Widget tests override with the deterministic MockPlaceSearch.
+/// Place search - mock builds use the curated Bengaluru dataset; live builds
+/// use the backend proxy (Mapbox when a token is configured).
 final placeSearchProvider = Provider<PlaceSearchService>((ref) {
-  if (!AppEnv.isMock) {
-    return BackendPlaceSearch(api: ref.watch(apiContractProvider));
-  }
+  if (AppEnv.isMock) return MockPlaceSearch();
   if (AppEnv.mapboxAccessToken.isNotEmpty) return MapboxPlaceSearch();
-  return NominatimPlaceSearch();
+  return BackendPlaceSearch(api: ref.watch(apiContractProvider));
 });
 
 /// Realtime trip feed. Mock dispatch simulator until the WS backend (Phase 6).

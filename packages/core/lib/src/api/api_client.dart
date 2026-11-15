@@ -201,7 +201,7 @@ class ApiClient implements ApiContract {
   Future<ZUser> me() async {
     try {
       final res = await _dio.get<dynamic>('/auth/me');
-      return ZUser.fromJson(_json(res.data));
+      return ZUser.fromJson(_json(_json(res.data)['user']));
     } on DioException catch (e) {
       _fail(e);
     }
@@ -731,6 +731,71 @@ class ApiClient implements ApiContract {
   }
 
   @override
+  Future<GstDetails> gstDetails() async {
+    try {
+      final res = await _dio.get<dynamic>('/customers/me');
+      return GstDetails.fromJson(_json(res.data));
+    } on DioException catch (e) {
+      _fail(e);
+    }
+  }
+
+  @override
+  Future<GstDetails> saveGstDetails({
+    required String gstin,
+    required String businessName,
+  }) async {
+    try {
+      final res = await _dio.put<dynamic>(
+        '/customers/me',
+        data: {'gstin': gstin, 'business_name': businessName},
+      );
+      return GstDetails.fromJson(_json(res.data));
+    } on DioException catch (e) {
+      _fail(e);
+    }
+  }
+
+  @override
+  Future<List<TrustedContact>> trustedContacts() async {
+    try {
+      final res = await _dio.get<dynamic>('/customers/me/trusted-contacts');
+      final list = res.data as List<dynamic>? ?? const [];
+      return [
+        for (final row in list)
+          TrustedContact.fromJson(row as Map<String, dynamic>),
+      ];
+    } on DioException catch (e) {
+      _fail(e);
+    }
+  }
+
+  @override
+  Future<TrustedContact> addTrustedContact({
+    required String name,
+    required String phone,
+  }) async {
+    try {
+      final res = await _dio.post<dynamic>(
+        '/customers/me/trusted-contacts',
+        data: {'name': name, 'phone': phone},
+      );
+      return TrustedContact.fromJson(_json(res.data));
+    } on DioException catch (e) {
+      _fail(e);
+    }
+  }
+
+  @override
+  Future<void> deleteTrustedContact(String id) async {
+    try {
+      await _dio.delete<dynamic>('/customers/me/trusted-contacts/$id');
+    } on DioException catch (e) {
+      _fail(e);
+    }
+  }
+
+  @override
   Future<ZUser> updateProfile({
     String? firstName,
     String? lastName,
@@ -738,14 +803,14 @@ class ApiClient implements ApiContract {
   }) async {
     try {
       final res = await _dio.put<dynamic>(
-        '/customers/me',
+        '/auth/me',
         data: {
           if (firstName != null) 'first_name': firstName,
           if (lastName != null) 'last_name': lastName,
           if (phone != null) 'phone': phone,
         },
       );
-      return ZUser.fromJson(_json(res.data));
+      return ZUser.fromJson(_json(_json(res.data)['user']));
     } on DioException catch (e) {
       _fail(e);
     }

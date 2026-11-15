@@ -6,13 +6,15 @@ import '../tokens/radius.dart';
 import '../tokens/spacing.dart';
 import '../tokens/typography.dart';
 import 'z_badge.dart';
+import 'z_vehicle_icon.dart';
 
-/// Incoming offer card — category + kind badge, lime surge pill, countdown
-/// ring, route block, metrics and accept/decline actions.
+/// Incoming offer card — vehicle art, category + kind badge, surge pill,
+/// countdown ring, route block, metrics and accept/decline actions.
 class ZOfferCard extends StatelessWidget {
   const ZOfferCard({
     super.key,
     required this.serviceCategoryName,
+    this.vehicleCategoryCode,
     required this.isGoods,
     required this.pickupAddress,
     required this.dropAddress,
@@ -30,6 +32,7 @@ class ZOfferCard extends StatelessWidget {
   });
 
   final String serviceCategoryName;
+  final String? vehicleCategoryCode;
   final bool isGoods;
   final String pickupAddress;
   final String dropAddress;
@@ -80,6 +83,15 @@ class ZOfferCard extends StatelessWidget {
               Expanded(
                 child: Row(
                   children: [
+                    if (vehicleCategoryCode != null) ...[
+                      ZVehicleIcon(
+                        categoryCode: vehicleCategoryCode!,
+                        width: 48,
+                        height: 30,
+                        semanticLabel: serviceCategoryName,
+                      ),
+                      const SizedBox(width: ZSpacing.sm),
+                    ],
                     Text(serviceCategoryName, style: ZTypography.titleMd),
                     const SizedBox(width: ZSpacing.sm),
                     ZBadge(label: isGoods ? 'GOODS' : 'RIDE'),

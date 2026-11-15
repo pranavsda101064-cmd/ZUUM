@@ -82,7 +82,7 @@ class _PartnerNavigationScreenState
         _loading = false;
       });
       _startGps(gps);
-      if (fix == null) _startSimulation();
+      if (fix == null && AppEnv.isMock) _startSimulation();
     } on ApiException catch (e) {
       if (mounted) {
         setState(() {
@@ -130,7 +130,7 @@ class _PartnerNavigationScreenState
         .catchError((_) {});
   }
 
-  /// Demo movement when GPS is unavailable so the screen is still testable.
+  /// Test-only movement when GPS is unavailable in mock builds.
   void _startSimulation() {
     final route = _route;
     if (route == null || route.geometry.length < 2) return;
@@ -287,6 +287,8 @@ class _PartnerNavigationScreenState
               bearing: _bearing(),
               initialZoom: 16.5,
               showControls: true,
+              styleUrl:
+                  'asset:packages/zuum_design_system/assets/map/positron_dark_mono.json',
               route: ZMapRoute(
                 [for (final point in route.geometry) ZMapCenter(point.lat, point.lng)],
                 color: ZColors.onDark,
@@ -301,7 +303,7 @@ class _PartnerNavigationScreenState
                 ZMapMarker(
                   target.lat,
                   target.lng,
-                  color: ZColors.error,
+                  color: ZColors.onDarkSecondary,
                   kind: ZMapMarkerKind.drop,
                 ),
               ],
@@ -342,7 +344,7 @@ class _PartnerNavigationScreenState
                           ),
                         ),
                         Text(
-                          _gpsLive ? 'GPS live' : 'Demo location',
+                          _gpsLive ? 'GPS live' : 'Location unavailable',
                           style: ZTypography.overline.copyWith(
                             color: _gpsLive
                                 ? ZColors.success

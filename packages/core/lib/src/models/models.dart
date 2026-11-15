@@ -5,7 +5,9 @@
 library;
 
 export 'booking.dart';
+export 'customer_settings.dart';
 export 'fare.dart';
+export 'json_value.dart';
 export 'location.dart';
 export 'notification.dart';
 export 'paged.dart';

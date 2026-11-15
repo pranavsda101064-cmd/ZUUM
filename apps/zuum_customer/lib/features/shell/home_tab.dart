@@ -94,7 +94,7 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                               width: 8,
                               height: 8,
                               decoration: const BoxDecoration(
-                                color: ZColors.success,
+                                color: ZColors.primary,
                                 shape: BoxShape.circle,
                               ),
                             ),
@@ -228,9 +228,9 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                   ),
                   const SizedBox(height: ZSpacing.lg),
 
-                  // Quick category strip (dev-labeled mock ETAs).
+                  // Quick category strip.
                   SizedBox(
-                    height: 76,
+                    height: 82,
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
                       itemCount: goodsMode
@@ -258,7 +258,6 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                         return ZQuickVehicleCard(
                           label: item.$1,
                           assetName: item.$2,
-                          etaLabel: item.$3, // mock ETA (dev data)
                           selected:
                               draft.selectedCategoryCode == codes[i],
                           onTap: () => _quickSelect(codes[i]),

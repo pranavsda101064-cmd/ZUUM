@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:zuum_core/core.dart';
 import 'package:zuum_design_system/design_system.dart';
 
 import '../../app/auth_controller.dart';
@@ -19,23 +18,12 @@ class PartnerSplash extends ConsumerStatefulWidget {
 }
 
 class _PartnerSplashState extends ConsumerState<PartnerSplash> {
-  /// Kiosk/judge demo: `--dart-define=AUTO_DEMO=true` signs into the seeded
-  /// demo partner on launch (mock builds only).
-  static const _autoDemo = bool.fromEnvironment('AUTO_DEMO');
-
   Timer? _timer;
 
   Future<void> _boot() async {
     final auth = ref.read(partnerAuthProvider.notifier);
     await ref.read(partnerWelcomeProvider.notifier).hydrate();
     await auth.bootstrap();
-    if (!mounted) return;
-    if (_autoDemo &&
-        AppEnv.isMock &&
-        ref.read(partnerAuthProvider).status ==
-            PartnerAuthStatus.unauthenticated) {
-      await auth.enterDemoPartner();
-    }
   }
 
   @override

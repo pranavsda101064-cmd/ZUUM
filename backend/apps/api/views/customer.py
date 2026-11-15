@@ -5,8 +5,12 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.accounts.models import CustomerProfile, SavedAddress
-from apps.api.serializers import CustomerProfileSerializer, SavedAddressSerializer
+from apps.accounts.models import CustomerProfile, SavedAddress, TrustedContact
+from apps.api.serializers import (
+    CustomerProfileSerializer,
+    SavedAddressSerializer,
+    TrustedContactSerializer,
+)
 
 
 def _profile(user) -> CustomerProfile:
@@ -76,4 +80,35 @@ class AddressDetailView(APIView):
                 status=status.HTTP_404_NOT_FOUND,
             )
         address.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+class TrustedContactListCreateView(APIView):
+    serializer_class = TrustedContactSerializer
+
+    def get(self, request):
+        contacts = _profile(request.user).trusted_contacts.all()
+        return Response(TrustedContactSerializer(contacts, many=True).data)
+
+    def post(self, request):
+        serializer = TrustedContactSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        contact = serializer.save(customer=_profile(request.user))
+        return Response(
+            TrustedContactSerializer(contact).data,
+            status=status.HTTP_201_CREATED,
+        )
+
+
+class TrustedContactDetailView(APIView):
+    serializer_class = TrustedContactSerializer
+
+    def delete(self, request, contact_id):
+        deleted, _ = TrustedContact.objects.filter(
+            pk=contact_id, customer__user=request.user
+        ).delete()
+        if not deleted:
+            return Response(
+                {"code": "not_found", "message": "Contact not found"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
         return Response(status=status.HTTP_204_NO_CONTENT)

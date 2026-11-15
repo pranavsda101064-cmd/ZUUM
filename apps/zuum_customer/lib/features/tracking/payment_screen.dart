@@ -33,7 +33,6 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
     setState(() => _busy = true);
     try {
       if (_method == PaymentMethod.upi || _method == PaymentMethod.card) {
-        // Simulated gateway checkout (Razorpay drops in behind PaymentGateway).
         final gatewayResult = await ref.read(paymentGatewayProvider).payTrip(
               bookingId: booking.id,
               amountPaise: booking.quotedFarePaise + _tipPaise,
@@ -322,9 +321,6 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
             ),
           ),
           const SizedBox(height: ZSpacing.lg),
-          const ZBadge(
-            label: 'Payments run on a mock gateway until Razorpay keys land',
-          ),
         ],
       ),
       bottomNavigationBar: SafeArea(

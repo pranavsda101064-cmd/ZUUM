@@ -1,3 +1,5 @@
+import 'json_value.dart';
+
 class FleetOverview {
   const FleetOverview({
     required this.driversActive,
@@ -24,7 +26,7 @@ class FleetOverview {
         vehiclesTotal: (json['vehicles_total'] as num?)?.toInt() ?? 0,
         earningsTodayPaise:
             (json['earnings_today_paise'] as num?)?.toInt() ?? 0,
-        utilisation: (json['utilisation'] as num?)?.toDouble() ?? 0,
+        utilisation: jsonDouble(json['utilisation']) ?? 0,
       );
 }
 
@@ -56,7 +58,7 @@ class FleetDriver {
         name: json['name'] as String? ?? '',
         phoneMasked: json['phone_masked'] as String? ?? '',
         online: json['online'] as bool? ?? false,
-        ratingAvg: (json['rating_avg'] as num?)?.toDouble() ?? 0,
+        ratingAvg: jsonDouble(json['rating_avg']) ?? 0,
         tripsToday: (json['trips_today'] as num?)?.toInt() ?? 0,
         earningsTodayPaise:
             (json['earnings_today_paise'] as num?)?.toInt() ?? 0,

@@ -86,7 +86,7 @@ class SettingsScreen extends ConsumerWidget {
           ),
           const ZListTile(
             title: 'App version',
-            subtitle: 'Zuum 0.1.0 (mock API build)',
+            subtitle: 'Zuum 1.0.0',
             leading: Icon(Icons.info_outline_rounded, color: ZColors.textSecondary),
             showChevron: false,
           ),
@@ -368,7 +368,7 @@ class SavedAddressesScreen extends ConsumerWidget {
   }
 }
 
-/// Payment methods management (display + mock wallet/UPI info).
+/// Payment methods management.
 class PaymentMethodsScreen extends StatelessWidget {
   const PaymentMethodsScreen({super.key});
 
@@ -400,8 +400,6 @@ class PaymentMethodsScreen extends StatelessWidget {
                 color: ZColors.textSecondary),
             onTap: () => context.go('/wallet'),
           ),
-          const Divider(indent: 16, endIndent: 16),
-          const ZBadge(label: 'Saved UPI IDs & cards arrive with Razorpay keys'),
         ],
       ),
     );

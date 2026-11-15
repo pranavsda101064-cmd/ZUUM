@@ -82,7 +82,20 @@ class CustomerProfile(TimeStampedModel):
     default_payment_method = models.CharField(
         max_length=10, choices=PaymentMethod.choices, default=PaymentMethod.CASH
     )
+    gstin = models.CharField(max_length=15, blank=True)
+    business_name = models.CharField(max_length=160, blank=True)
     is_restricted = models.BooleanField(default=False)
+
+
+class TrustedContact(TimeStampedModel):
+    customer = models.ForeignKey(
+        CustomerProfile, on_delete=models.CASCADE, related_name="trusted_contacts"
+    )
+    name = models.CharField(max_length=80)
+    phone = models.CharField(max_length=20)
+
+    class Meta:
+        ordering = ("created_at",)
 
 
 class FleetPartner(TimeStampedModel):
@@ -152,6 +165,10 @@ class DriverProfile(TimeStampedModel):
         max_length=20, choices=APPROVAL_CHOICES, default=APPROVAL_PENDING
     )
     bank_account_ref = models.CharField(max_length=120, blank=True)
+    bank_account_holder = models.CharField(max_length=120, blank=True)
+    bank_account_number = models.CharField(max_length=24, blank=True)
+    bank_ifsc = models.CharField(max_length=11, blank=True)
+    notifications_enabled = models.BooleanField(default=True)
     rating_avg = models.DecimalField(max_digits=3, decimal_places=2, default=0)
     rating_count = models.PositiveIntegerField(default=0)
     online_state = models.CharField(

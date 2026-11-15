@@ -36,7 +36,7 @@ class _LocationSearchScreenState extends ConsumerState<LocationSearchScreen> {
   bool _searching = false;
   String _query = '';
 
-  /// Placeholder for the real device fix (Mapbox/OSM GPS) — mock coordinates.
+  /// Fallback centre until the device fix resolves.
   static const _fallbackLocation = PlaceSuggestion(
     name: 'Current location',
     address: 'Koramangala, Bengaluru',
@@ -359,7 +359,7 @@ class _TimelineDots extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Column(
       children: [
-        Icon(Icons.circle, size: 10, color: ZColors.success),
+        Icon(Icons.circle, size: 10, color: ZColors.primary),
         SizedBox(height: 6),
         SizedBox(
           width: 2,
@@ -367,7 +367,7 @@ class _TimelineDots extends StatelessWidget {
           child: CustomPaint(painter: _DashPainter()),
         ),
         SizedBox(height: 6),
-        Icon(Icons.location_on_rounded, size: 16, color: ZColors.error),
+        Icon(Icons.location_on_rounded, size: 16, color: ZColors.primary),
       ],
     );
   }
@@ -469,7 +469,7 @@ class _SuggestionsList extends StatelessWidget {
   }
 
   static double _distanceKm(PlaceSuggestion p) {
-    // Haversine against the mock current location (dev coordinates).
+    // Haversine against the current map centre.
     const lat1 = 12.9352, lng1 = 77.6245;
     const r = 6371.0;
     final dLat = (p.lat - lat1) * math.pi / 180;

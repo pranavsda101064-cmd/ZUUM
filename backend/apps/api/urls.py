@@ -30,6 +30,14 @@ urlpatterns = [
     path("customers/me", customer.CustomerMeView.as_view()),
     path("customers/me/addresses", customer.AddressListCreateView.as_view()),
     path("customers/me/addresses/<uuid:address_id>", customer.AddressDetailView.as_view()),
+    path(
+        "customers/me/trusted-contacts",
+        customer.TrustedContactListCreateView.as_view(),
+    ),
+    path(
+        "customers/me/trusted-contacts/<uuid:contact_id>",
+        customer.TrustedContactDetailView.as_view(),
+    ),
     # catalog + pricing
     path("service-categories", catalog.ServiceCategoryListView.as_view()),
     path("pricing/quote", catalog.QuoteView.as_view()),
@@ -90,6 +98,7 @@ urlpatterns = [
 
     # partner surface
     path("partner/profile", partner.PartnerProfileView.as_view()),
+    path("partner/payout-account", partner.PartnerPayoutAccountView.as_view()),
     path("partner/kyc", partner.PartnerKycView.as_view()),
     path("partner/kyc/submit", partner.PartnerKycSubmitView.as_view()),
     path("partner/documents", partner.PartnerDocumentListCreateView.as_view()),

@@ -23,7 +23,7 @@ class PlaceholderPage extends StatelessWidget {
       body: Column(
         children: [
           const SizedBox(height: ZSpacing.sm),
-          const ZBadge(label: 'In progress · mock build'),
+          const ZBadge(label: 'Coming soon'),
           Expanded(
             child: ZEmptyState(
               illustration: illustration,

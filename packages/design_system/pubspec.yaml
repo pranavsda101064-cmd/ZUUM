@@ -20,6 +20,7 @@ flutter:
   assets:
     - assets/illustrations/
     - assets/photos/
+    - assets/map/
   fonts:
     - family: Inter
       fonts:

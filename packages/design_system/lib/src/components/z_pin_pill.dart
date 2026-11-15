@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../tokens/colors.dart';
 
-/// Boarding PIN pill — Highlight fill with Dark ink (10.4:1 contrast),
-/// mimicking the black-and-yellow auto fare metre. Lives on dark headers.
+/// Boarding PIN pill — white fill with near-black ink, high contrast on the
+/// dark trip status banner.
 class ZPinPill extends StatelessWidget {
   const ZPinPill({super.key, required this.pin, this.label = 'PIN'});
 
@@ -16,7 +16,7 @@ class ZPinPill extends StatelessWidget {
       height: 28,
       padding: const EdgeInsets.symmetric(horizontal: 10),
       decoration: BoxDecoration(
-        color: ZColors.primary,
+        color: ZColors.surface,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Center(

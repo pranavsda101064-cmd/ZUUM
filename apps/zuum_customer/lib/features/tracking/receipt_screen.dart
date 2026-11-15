@@ -266,7 +266,7 @@ class _ReceiptScreenState extends ConsumerState<ReceiptScreen> {
                         ZMapMarker(
                           booking.dropLat ?? 12.9719,
                           booking.dropLng ?? 77.6412,
-                          color: ZColors.error,
+                          color: ZColors.textSecondary,
                         ),
                       ],
                     ),

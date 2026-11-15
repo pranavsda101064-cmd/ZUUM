@@ -262,13 +262,13 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen> {
                 ZMapMarker(
                   booking.dropLat ?? 12.9719,
                   booking.dropLng ?? 77.6412,
-                  color: ZColors.error,
+                  color: ZColors.textSecondary,
                 ),
                 if (trip.location != null)
                   ZMapMarker(
                     trip.location!.lat,
                     trip.location!.lng,
-                    color: ZColors.success,
+                    color: ZColors.primary,
                   ),
               ],
               follow: trip.location == null

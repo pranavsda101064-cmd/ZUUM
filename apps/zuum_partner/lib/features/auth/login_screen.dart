@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:zuum_core/core.dart';
 import 'package:zuum_design_system/design_system.dart';
 
 import '../../app/auth_controller.dart';
@@ -135,20 +134,6 @@ class _PartnerLoginScreenState extends ConsumerState<PartnerLoginScreen> {
                       loading: auth.busy,
                       onPressed: auth.busy ? null : _submit,
                     ),
-                    if (AppEnv.isMock) ...[
-                      const SizedBox(height: ZSpacing.md),
-                      ZButton(
-                        label: 'Demo partner (dev)',
-                        variant: ZButtonVariant.secondary,
-                        icon: Icons.bolt_rounded,
-                        loading: auth.busy,
-                        onPressed: auth.busy
-                            ? null
-                            : () => ref
-                                .read(partnerAuthProvider.notifier)
-                                .enterDemoPartner(),
-                      ),
-                    ],
                     const SizedBox(height: ZSpacing.xxl),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,

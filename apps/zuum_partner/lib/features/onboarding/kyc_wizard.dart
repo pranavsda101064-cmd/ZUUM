@@ -183,6 +183,11 @@ class _KycWizardState extends ConsumerState<KycWizard> {
     if (_step == 4) {
       setState(() => _busy = true);
       try {
+        await _api.savePayoutAccount(
+          holderName: _holder.text.trim(),
+          accountNumber: _account.text.trim(),
+          ifsc: _ifsc.text.trim().toUpperCase(),
+        );
         await _api.submitKyc();
         ref.invalidate(partnerDocumentsProvider);
         ref.invalidate(partnerVehiclesProvider);
@@ -408,9 +413,17 @@ class _KycWizardState extends ConsumerState<KycWizard> {
   }
 
   Widget _vehicleStep() {
-    final categories = MockData.serviceCategories;
-    String labelFor(String code) =>
-        categories.where((c) => c.code == code).firstOrNull?.name ?? code;
+    String labelFor(String code) => const {
+          'auto': 'Auto',
+          'bike': 'Bike',
+          'sedan': 'Sedan',
+          'suv': 'SUV',
+          'ace': 'Tata Ace',
+          'pickup': 'Pickup',
+          'van': 'Van',
+          'tempo': 'Tempo',
+        }[code] ??
+        code;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -519,7 +532,7 @@ class _KycWizardState extends ConsumerState<KycWizard> {
           onTap: () => _pickDocument(KycDocType.insurance),
         ),
         const SizedBox(height: ZSpacing.lg),
-        ZBadge(label: AppEnv.isMock ? 'Mock build: files stay on this device' : 'Uploaded securely to Zuum'),
+        const ZBadge(label: 'Uploaded securely to Zuum'),
       ],
     );
   }
@@ -593,13 +606,6 @@ class _KycWizardState extends ConsumerState<KycWizard> {
               title: const Text('Choose from gallery'),
               onTap: () => Navigator.of(sheetContext).pop('gallery'),
             ),
-            if (AppEnv.isMock)
-              ListTile(
-                leading: const Icon(Icons.science_outlined),
-                title: const Text('Use demo document (dev)'),
-                subtitle: const Text('Adds a placeholder file for mock builds'),
-                onTap: () => Navigator.of(sheetContext).pop('demo'),
-              ),
           ],
         ),
       ),
@@ -607,32 +613,26 @@ class _KycWizardState extends ConsumerState<KycWizard> {
     if (choice == null || !mounted) return;
 
     String? path;
-    if (choice == 'demo') {
-      path = 'demo://${type.name}.jpg';
-    } else {
-      try {
-        final picked = await ImagePicker().pickImage(
-          source: choice == 'camera' ? ImageSource.camera : ImageSource.gallery,
-          maxWidth: 1600,
-          imageQuality: 80,
-        );
-        path = picked?.path;
-      } catch (_) {
-        path = null;
-      }
-      if (path == null) {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              AppEnv.isMock
-                  ? 'Camera/gallery unavailable — use the demo document.'
-                  : 'Camera/gallery unavailable. Check permissions and try again.',
-            ),
+    try {
+      final picked = await ImagePicker().pickImage(
+        source: choice == 'camera' ? ImageSource.camera : ImageSource.gallery,
+        maxWidth: 1600,
+        imageQuality: 80,
+      );
+      path = picked?.path;
+    } catch (_) {
+      path = null;
+    }
+    if (path == null) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Camera or gallery unavailable. Check permissions and try again.',
           ),
-        );
-        return;
-      }
+        ),
+      );
+      return;
     }
 
     try {

@@ -5,9 +5,9 @@ import 'package:zuum_design_system/design_system.dart';
 
 import '../wallet/wallet_providers.dart';
 
-/// Wallet tab — Gemini spec §2m: dark hero balance card with quick-add
-/// chips and preview, linked UPI row, filtered transaction ledger with
-/// tinted icon containers, tumbler empty state.
+/// Wallet tab — dark hero balance card with quick-add chips and preview,
+/// filtered transaction ledger with tinted icon containers, tumbler empty
+/// state.
 class WalletTab extends ConsumerStatefulWidget {
   const WalletTab({super.key});
 
@@ -130,44 +130,30 @@ class _WalletTabState extends ConsumerState<WalletTab> {
             ),
             const SizedBox(height: ZSpacing.lg),
 
-            // Linked UPI (mock identity — dev data).
-            ZCard(
-              padding: const EdgeInsets.symmetric(
-                horizontal: ZSpacing.lg,
-                vertical: ZSpacing.md,
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.account_balance_outlined,
-                      color: ZColors.primary),
-                  const SizedBox(width: ZSpacing.md),
-                  Expanded(
-                    child: Text('Linked UPI · zuum@okaxis',
-                        style: ZTypography.bodyStrong),
-                  ),
-                  Text(
-                    'Manage',
-                    style: ZTypography.captionStrong
-                        .copyWith(color: ZColors.primary),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: ZSpacing.xl),
-
             // Filters + ledger.
             Row(
               children: [
                 Text('RECENT TRANSACTIONS', style: ZTypography.overline),
                 const Spacer(),
-                for (final f in _filters) ...[
-                  ZChip(
-                    label: f,
-                    selected: _filter == f,
-                    onTap: () => setState(() => _filter = f),
+                Expanded(
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    reverse: true,
+                    child: Row(
+                      children: [
+                        for (final f in _filters) ...[
+                          ZChip(
+                            label: f,
+                            selected: _filter == f,
+                            onTap: () => setState(() => _filter = f),
+                          ),
+                          if (f != _filters.last)
+                            const SizedBox(width: 4),
+                        ],
+                      ],
+                    ),
                   ),
-                  if (f != _filters.last) const SizedBox(width: 4),
-                ],
+                ),
               ],
             ),
             const SizedBox(height: ZSpacing.sm),
@@ -208,8 +194,7 @@ class _WalletTabState extends ConsumerState<WalletTab> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              'Add money via UPI. Payments run on a mock gateway until '
-              'Razorpay keys land.',
+              'Add money via UPI. Your wallet balance updates instantly.',
               style: ZTypography.caption.copyWith(color: ZColors.textSecondary),
             ),
             const SizedBox(height: ZSpacing.xl),

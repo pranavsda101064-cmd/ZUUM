@@ -203,18 +203,18 @@ class _PastCard extends StatelessWidget {
           Row(
             children: [
               Container(
-                width: 36,
-                height: 36,
+                width: 48,
+                height: 40,
+                alignment: Alignment.center,
                 decoration: const BoxDecoration(
                   color: ZColors.background,
                   borderRadius: BorderRadius.all(Radius.circular(8)),
                 ),
-                child: Icon(
-                  isGoods
-                      ? Icons.inventory_2_outlined
-                      : Icons.local_taxi_outlined,
-                  size: 20,
-                  color: ZColors.primary,
+                child: ZVehicleIcon(
+                  categoryCode: booking.serviceCategoryCode,
+                  width: 44,
+                  height: 30,
+                  semanticLabel: booking.serviceCategoryName,
                 ),
               ),
               const SizedBox(width: ZSpacing.md),

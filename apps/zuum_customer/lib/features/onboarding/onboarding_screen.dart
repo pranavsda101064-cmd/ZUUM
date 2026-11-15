@@ -4,8 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:zuum_core/core.dart';
 import 'package:zuum_design_system/design_system.dart';
 
-/// Onboarding — Gemini spec §2b: brand pill + Skip top bar, illustration
-/// cards, Kannada micro-headers, pill indicators, CTA that widens on slide 3.
+/// Onboarding — brand mark + Skip top bar, editorial city photography,
+/// Kannada micro-headers, pill indicators, CTA that widens on slide 3.
 class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
 
@@ -19,7 +19,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   static const _slides = [
     _Slide(
-      illustration: 'onb_auto',
+      photo: 'blr_street_autos',
+      caption: 'THE EVERYDAY COMMUTE',
       kannada: 'ಮೀಟರ್ ಹಾಕಿ, ಹೊರಡೋಣ',
       title: 'From Jayanagar filter coffee to Whitefield standups.',
       body:
@@ -27,7 +28,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           'fares — no haggling at the signal.',
     ),
     _Slide(
-      illustration: 'onb_goods',
+      photo: 'blr_goods_auto',
+      caption: 'GOODS ON THE MOVE',
       kannada: 'ಸಾಗಾಟ ಈಗ ಸುಲಭ',
       title: 'Move a tiffin box or a 1BHK house.',
       body:
@@ -35,7 +37,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           'the same map in under 3 minutes.',
     ),
     _Slide(
-      illustration: 'onb_metro',
+      photo: 'blr_metro',
+      caption: 'NEXT STOP, NAMMA METRO',
       kannada: 'ನಂಬಿಕೆಯ ನಗರ ಸಂಚಾರ',
       title: "Built for Bengaluru's rhythm.",
       body:
@@ -79,23 +82,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               ),
               child: Row(
                 children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: ZSpacing.sm,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: ZColors.accent,
-                      borderRadius: BorderRadius.circular(999),
-                    ),
-                    child: Text(
-                      'ZUUM',
-                      style: ZTypography.overline.copyWith(
-                        color: ZColors.primary,
-                        letterSpacing: 1.2,
-                      ),
-                    ),
-                  ),
+                  const ZBrandMark(scale: 0.8),
                   const Spacer(),
                   TextButton(
                     onPressed: _finish,
@@ -121,24 +108,15 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(height: ZSpacing.lg),
-                        // Illustration card (rounded, bordered, no gradients).
+                        // Editorial photo card with caption over a scrim.
                         Expanded(
-                          child: Container(
-                            constraints: const BoxConstraints(minHeight: 180),
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: ZColors.background,
-                              borderRadius: BorderRadius.circular(ZRadii.lg),
-                              border: Border.all(color: ZColors.divider),
-                            ),
-                            alignment: Alignment.center,
-                            child: ZIllustration(
-                              slide.illustration,
-                              width: 240,
-                            ),
+                          child: ZPhotoHero(
+                            photo: slide.photo,
+                            height: double.infinity,
+                            caption: slide.caption,
                           ),
                         ),
-                        const SizedBox(height: ZSpacing.lg),
+                        const SizedBox(height: ZSpacing.xl),
                         Text(
                           slide.kannada,
                           style: ZTypography.kannada(
@@ -213,13 +191,15 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
 class _Slide {
   const _Slide({
-    required this.illustration,
+    required this.photo,
+    required this.caption,
     required this.kannada,
     required this.title,
     required this.body,
   });
 
-  final String illustration;
+  final String photo;
+  final String caption;
   final String kannada;
   final String title;
   final String body;

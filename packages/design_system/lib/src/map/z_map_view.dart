@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
 
 import '../tokens/colors.dart';
@@ -56,7 +57,8 @@ class ZMapView extends StatefulWidget {
 
   static const defaultStyleUrl = String.fromEnvironment(
     'MAP_STYLE_URL',
-    defaultValue: 'https://tiles.openfreemap.org/styles/liberty',
+    defaultValue:
+        'asset:packages/zuum_design_system/assets/map/positron_mono.json',
   );
 
   static List<ZMapCenter> progressPoints(List<ZMapCenter> points, double t) {
@@ -99,6 +101,31 @@ class _ZMapViewState extends State<ZMapView> {
   bool _styleLoaded = false;
   bool _fittedRoute = false;
   int _lastProgressBucket = -1;
+  String? _style;
+
+  @override
+  void initState() {
+    super.initState();
+    _resolveStyle();
+  }
+
+  Future<void> _resolveStyle() async {
+    final requested = widget.styleUrl ?? ZMapView.defaultStyleUrl;
+    if (!requested.startsWith('asset:')) {
+      if (mounted) setState(() => _style = requested);
+      return;
+    }
+    try {
+      final json = await rootBundle.loadString(requested.substring(6));
+      if (!mounted) return;
+      setState(() => _style = json);
+    } catch (_) {
+      if (!mounted) return;
+      setState(
+        () => _style = 'https://tiles.openfreemap.org/styles/positron',
+      );
+    }
+  }
 
   static String _hex(Color color) {
     final value = color.toARGB32();
@@ -128,12 +155,15 @@ class _ZMapViewState extends State<ZMapView> {
           .map((p) => LatLng(p.lat, p.lng))
           .toList();
       if (points.length >= 2) {
+        final casing = route.color.computeLuminance() > 0.7
+            ? ZColors.dark
+            : ZColors.surface;
         await _lines!.add(
           Line(
             'route-casing',
             LineOptions(
               geometry: points,
-              lineColor: _hex(ZColors.surface),
+              lineColor: _hex(casing),
               lineWidth: 9,
               lineOpacity: 0.95,
               lineJoin: 'round',
@@ -236,6 +266,11 @@ class _ZMapViewState extends State<ZMapView> {
     super.didUpdateWidget(oldWidget);
     if (!ZMapView._usesNativeEngine) return;
 
+    if (widget.styleUrl != oldWidget.styleUrl) {
+      _style = null;
+      _resolveStyle();
+    }
+
     final follow = widget.follow;
     if (follow != null &&
         (follow.lat != oldWidget.follow?.lat ||
@@ -268,12 +303,16 @@ class _ZMapViewState extends State<ZMapView> {
       );
     }
 
+    if (_style == null) {
+      return const ColoredBox(color: ZColors.background);
+    }
+
     final target = widget.follow ?? widget.center;
     return Stack(
       fit: StackFit.expand,
       children: [
         MapLibreMap(
-          styleString: widget.styleUrl ?? ZMapView.defaultStyleUrl,
+          styleString: _style!,
           initialCameraPosition: CameraPosition(
             target: LatLng(target.lat, target.lng),
             zoom: widget.initialZoom,

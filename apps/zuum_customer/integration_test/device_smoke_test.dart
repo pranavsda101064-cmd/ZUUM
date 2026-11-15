@@ -60,15 +60,20 @@ void main() {
 
     await hold(tester, 'home');
 
-    // Plan a ride: current location → Whitefield.
+    // Plan a ride: Koramangala → Whitefield.
     await tester.tap(find.text('Where to?'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Current location'));
+    await tester.enterText(find.byType(TextField).first, 'koramangala');
+    await tester.pump(const Duration(milliseconds: 1200));
     await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextField).at(1), 'whitefield');
-    await tester.pump(const Duration(milliseconds: 400));
+    expect(find.textContaining('Koramangala'), findsWidgets);
+    await tester.tap(find.textContaining('Koramangala').last);
     await tester.pumpAndSettle();
-    await tester.tap(find.textContaining('Whitefield').first);
+    await tester.enterText(find.byType(TextField).last, 'whitefield');
+    await tester.pump(const Duration(milliseconds: 1200));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Whitefield'), findsWidgets);
+    await tester.tap(find.textContaining('Whitefield').last);
     await tester.pumpAndSettle();
 
     // Fare screen: routed geometry should be on the map.

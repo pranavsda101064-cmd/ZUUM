@@ -118,6 +118,7 @@ class _OfferSheetState extends ConsumerState<OfferSheet> {
             const SizedBox(height: ZSpacing.md),
             ZOfferCard(
               serviceCategoryName: offer.serviceCategoryName,
+              vehicleCategoryCode: offer.serviceCategoryCode,
               isGoods: offer.kind == OfferKind.goods,
               pickupAddress: offer.pickup.address ?? 'Pickup',
               dropAddress: offer.drop.address ?? 'Drop',

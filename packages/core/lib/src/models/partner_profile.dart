@@ -1,3 +1,5 @@
+import 'json_value.dart';
+
 enum KycStatus { draft, submitted, approved, rejected }
 
 enum ApprovalStatus { pending, active, suspended }
@@ -68,6 +70,7 @@ class PartnerProfile {
     this.documentCount = 0,
     this.requiredDocumentCount = 3,
     this.onlineState = 'offline',
+    this.notificationsEnabled = true,
   });
 
   final String id;
@@ -87,6 +90,8 @@ class PartnerProfile {
 
   /// Backend availability: `offline | available | busy`.
   final String onlineState;
+
+  final bool notificationsEnabled;
 
   String get fullName => '$firstName $lastName'.trim();
   String get initials => '${firstName.isNotEmpty ? firstName[0] : ''}'
@@ -118,9 +123,9 @@ class PartnerProfile {
         approvalStatus: ApprovalStatus.values
                 .asNameMap()[json['approval_status'] as String?] ??
             ApprovalStatus.pending,
-        ratingAvg: (json['rating_avg'] as num?)?.toDouble() ?? 0,
+        ratingAvg: jsonDouble(json['rating_avg']) ?? 0,
         ratingCount: (json['rating_count'] as num?)?.toInt() ?? 0,
-        acceptanceRate: (json['acceptance_rate'] as num?)?.toDouble() ?? 0,
+        acceptanceRate: jsonDouble(json['acceptance_rate']) ?? 0,
         languages: (json['languages'] as List<dynamic>?)
                 ?.map((e) => e as String)
                 .toList() ??
@@ -130,6 +135,8 @@ class PartnerProfile {
         requiredDocumentCount:
             (json['required_document_count'] as num?)?.toInt() ?? 3,
         onlineState: json['online_state'] as String? ?? 'offline',
+        notificationsEnabled:
+            json['notifications_enabled'] as bool? ?? true,
       );
   }
 
@@ -148,5 +155,6 @@ class PartnerProfile {
         'rejection_reason': rejectionReason,
         'document_count': documentCount,
         'required_document_count': requiredDocumentCount,
+        'notifications_enabled': notificationsEnabled,
       };
 }

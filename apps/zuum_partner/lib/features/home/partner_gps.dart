@@ -7,12 +7,15 @@ import 'package:zuum_core/core.dart';
 /// Foreground-only GPS for the partner app.
 ///
 /// Requests while-in-use permission, exposes a position stream and fails
-/// quietly (the UI keeps a labelled demo location instead).
+/// quietly when location is unavailable.
 class PartnerGps {
   static bool get _isTest => Platform.environment.containsKey('FLUTTER_TEST');
 
+  static const _mockPoint = LocationPoint(lat: 12.9352, lng: 77.6245);
+
   Future<bool> ensurePermission() async {
     if (_isTest) return false;
+    if (AppEnv.isMock) return true;
     try {
       if (!await Geolocator.isLocationServiceEnabled()) return false;
       var permission = await Geolocator.checkPermission();
@@ -28,6 +31,7 @@ class PartnerGps {
 
   Future<LocationPoint?> current() async {
     if (_isTest) return null;
+    if (AppEnv.isMock) return _mockPoint;
     if (!await ensurePermission()) return null;
     try {
       final position = await Geolocator.getCurrentPosition(
@@ -44,6 +48,10 @@ class PartnerGps {
 
   Stream<LocationPoint> stream() async* {
     if (_isTest) return;
+    if (AppEnv.isMock) {
+      yield _mockPoint;
+      return;
+    }
     if (!await ensurePermission()) return;
     yield* Geolocator.getPositionStream(
       locationSettings: const LocationSettings(

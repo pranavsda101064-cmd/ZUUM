@@ -24,6 +24,17 @@ abstract interface class ApiContract {
   Future<ZUser> updateProfile({String? firstName, String? lastName, String? phone});
 
   // --- profile & addresses ---
+  Future<GstDetails> gstDetails();
+  Future<GstDetails> saveGstDetails({
+    required String gstin,
+    required String businessName,
+  });
+  Future<List<TrustedContact>> trustedContacts();
+  Future<TrustedContact> addTrustedContact({
+    required String name,
+    required String phone,
+  });
+  Future<void> deleteTrustedContact(String id);
   Future<List<SavedAddress>> savedAddresses();
   Future<SavedAddress> createSavedAddress({
     required String label,

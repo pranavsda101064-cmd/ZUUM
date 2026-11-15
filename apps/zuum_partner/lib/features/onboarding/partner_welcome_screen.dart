@@ -183,21 +183,23 @@ class _SlideView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
+    return Padding(
       padding: const EdgeInsets.symmetric(horizontal: ZSpacing.xxl),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: ZSpacing.md),
-          AnimatedScale(
-            scale: active ? 1 : 0.94,
-            duration: ZMotion.slow,
-            curve: ZMotion.standard,
-            child: ZPhotoHero(
-              photo: slide.photo,
-              height: 220,
-              borderRadius: BorderRadius.circular(ZRadii.xl),
-              caption: 'BENGALURU · LIVE',
+          Expanded(
+            child: AnimatedScale(
+              scale: active ? 1 : 0.94,
+              duration: ZMotion.slow,
+              curve: ZMotion.standard,
+              child: ZPhotoHero(
+                photo: slide.photo,
+                height: double.infinity,
+                borderRadius: BorderRadius.circular(ZRadii.xl),
+                caption: 'BENGALURU · LIVE',
+              ),
             ),
           ),
           const SizedBox(height: ZSpacing.xl),
@@ -215,6 +217,7 @@ class _SlideView extends StatelessWidget {
             slide.body,
             style: ZTypography.body.copyWith(color: ZColors.textSecondary),
           ),
+          const SizedBox(height: ZSpacing.lg),
         ],
       ),
     );

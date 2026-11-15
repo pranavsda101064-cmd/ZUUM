@@ -18,7 +18,7 @@ class FleetScreen extends ConsumerWidget {
       backgroundColor: ZColors.background,
       appBar: ZAppBar(
         title: 'Fleet console',
-        subtitle: 'Mock org · live roster',
+        subtitle: 'Drivers and vehicles',
         showBack: true,
         actions: [
           ZIconButton(
@@ -182,13 +182,19 @@ class _DriverCardState extends ConsumerState<_DriverCard> {
             for (final vehicle in vehicles)
               ListTile(
                 contentPadding: EdgeInsets.zero,
-                leading: ZPlateBadge(plate: vehicle.registrationNumber),
+                leading: ZVehicleIcon(
+                  categoryCode: vehicle.categoryCode,
+                  width: 56,
+                  height: 36,
+                  semanticLabel: vehicle.categoryName,
+                ),
                 title: Text(
                   '${vehicle.categoryName} · ${vehicle.displayName}',
                   style: ZTypography.bodyStrong,
                 ),
                 subtitle: Text(
-                  vehicle.isActive ? 'Active' : 'Paused',
+                  '${vehicle.registrationNumber} · '
+                  '${vehicle.isActive ? 'Active' : 'Paused'}',
                   style: ZTypography.caption
                       .copyWith(color: ZColors.textSecondary),
                 ),

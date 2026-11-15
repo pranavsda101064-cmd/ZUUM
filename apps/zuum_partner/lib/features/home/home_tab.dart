@@ -12,9 +12,8 @@ import 'home_controllers.dart';
 import 'offer_sheet.dart';
 import 'partner_gps.dart';
 
-/// Driver dashboard: online hero, simulated live map, earnings snapshot,
-/// active-trip card and the incoming-offer sheet driven by the realtime
-/// simulator.
+/// Driver dashboard: online hero, live map, earnings snapshot, active-trip
+/// card and the incoming-offer sheet driven by the realtime feed.
 class HomeTab extends ConsumerStatefulWidget {
   const HomeTab({super.key});
 
@@ -154,18 +153,6 @@ class _HomeTabState extends ConsumerState<HomeTab> {
     }
   }
 
-  void _simulateOffer() {
-    final api = ref.read(partnerApiProvider);
-    if (api is! MockPartnerApi) return;
-    try {
-      _onOffer(api.createSimulatedOffer());
-    } on ApiException catch (e) {
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(SnackBar(content: Text(e.message)));
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final profile = ref.watch(partnerAuthProvider).profile;
@@ -269,16 +256,6 @@ class _HomeTabState extends ConsumerState<HomeTab> {
               ZEntrance(index: 3, child: _ActiveTripCard(trip: activeTrip)),
             ],
             const SizedBox(height: ZSpacing.lg),
-            if (AppEnv.isMock)
-              ZEntrance(
-                index: 4,
-                child: ZButton(
-                  label: 'Simulate offer (dev)',
-                  variant: ZButtonVariant.secondary,
-                  icon: Icons.bolt_rounded,
-                  onPressed: _simulateOffer,
-                ),
-              ),
             if (!online) ...[
               const SizedBox(height: ZSpacing.md),
               Text(
@@ -352,7 +329,7 @@ class _MapCard extends StatelessWidget {
                 ZMapMarker(
                   position.lat,
                   position.lng,
-                  color: online ? ZColors.success : ZColors.textTertiary,
+                  color: online ? ZColors.primary : ZColors.textTertiary,
                 ),
               ],
             ),

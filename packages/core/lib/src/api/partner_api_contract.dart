@@ -26,6 +26,12 @@ abstract interface class PartnerApiContract {
     String? lastName,
     String? phone,
     List<String>? languages,
+    bool? notificationsEnabled,
+  });
+  Future<void> savePayoutAccount({
+    required String holderName,
+    required String accountNumber,
+    required String ifsc,
   });
   Future<List<KycDocumentInfo>> documents();
   Future<KycDocumentInfo> uploadDocument({

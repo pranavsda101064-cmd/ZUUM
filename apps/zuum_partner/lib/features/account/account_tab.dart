@@ -5,16 +5,6 @@ import 'package:zuum_design_system/design_system.dart';
 
 import '../../app/auth_controller.dart';
 
-class NotificationsEnabled extends Notifier<bool> {
-  @override
-  bool build() => true;
-
-  void toggle(bool value) => state = value;
-}
-
-final notificationsEnabledProvider =
-    NotifierProvider<NotificationsEnabled, bool>(NotificationsEnabled.new);
-
 /// Partner account: profile, KYC documents, rating, settings and sign-out.
 class AccountTab extends ConsumerWidget {
   const AccountTab({super.key});
@@ -24,7 +14,6 @@ class AccountTab extends ConsumerWidget {
     final auth = ref.watch(partnerAuthProvider);
     final profile = auth.profile;
     final docs = ref.watch(partnerDocumentsProvider).value ?? const [];
-    final notifications = ref.watch(notificationsEnabledProvider);
 
     if (profile == null) {
       return Scaffold(
@@ -185,10 +174,28 @@ class AccountTab extends ConsumerWidget {
                   leading: const Icon(Icons.notifications_outlined, size: 20),
                   showChevron: false,
                   trailing: Switch(
-                    value: notifications,
-                    onChanged: (value) => ref
-                        .read(notificationsEnabledProvider.notifier)
-                        .toggle(value),
+                    value: profile.notificationsEnabled,
+                    onChanged: (value) async {
+                      try {
+                        await ref
+                            .read(partnerApiProvider)
+                            .updateProfile(notificationsEnabled: value);
+                        await ref
+                            .read(partnerAuthProvider.notifier)
+                            .refreshProfile();
+                      } catch (e) {
+                        if (!context.mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              e is ApiException
+                                  ? e.message
+                                  : 'Could not update notifications',
+                            ),
+                          ),
+                        );
+                      }
+                    },
                     activeTrackColor: ZColors.primary,
                     inactiveTrackColor: ZColors.accent,
                   ),
@@ -207,7 +214,7 @@ class AccountTab extends ConsumerWidget {
                   leading: const Icon(Icons.support_agent_outlined, size: 20),
                   onTap: () => _snack(
                     context,
-                    'Call +91 80 4000 0000 or use in-app chat (Phase 2).',
+                    'Call +91 80 4000 0000 for immediate help.',
                   ),
                 ),
                 const ZDivider(),
@@ -228,21 +235,11 @@ class AccountTab extends ConsumerWidget {
               borderRadius: BorderRadius.circular(ZRadii.lg),
               border: Border.all(color: ZColors.divider),
             ),
-            child: Column(
+            child: const Column(
               children: [
                 ZListTile(
-                  title: 'Environment',
-                  subtitle: AppEnv.isMock
-                      ? 'Offers simulator active'
-                      : 'Live backend · ${AppEnv.apiBaseUrl}',
-                  leading: const Icon(Icons.science_outlined, size: 20),
-                  showChevron: false,
-                  trailing: ZBadge(label: AppEnv.isMock ? 'MOCK' : 'LIVE'),
-                ),
-                const ZDivider(),
-                const ZListTile(
                   title: 'App version',
-                  subtitle: '1.0.0 · Partner build',
+                  subtitle: 'Zuum Partner 1.0.0',
                   leading: Icon(Icons.info_outline_rounded, size: 20),
                   showChevron: false,
                 ),
@@ -256,13 +253,6 @@ class AccountTab extends ConsumerWidget {
             icon: Icons.logout_rounded,
             expand: true,
             onPressed: () => _confirmSignOut(context, ref),
-          ),
-          const SizedBox(height: ZSpacing.lg),
-          Text(
-            'Zuum Partner · Mock build for the Phase 1 demo. No live payments '
-            'or background location.',
-            textAlign: TextAlign.center,
-            style: ZTypography.overline.copyWith(color: ZColors.textTertiary),
           ),
         ],
       ),

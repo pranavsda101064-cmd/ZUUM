@@ -24,6 +24,8 @@ class MockApiAdapter implements ApiContract {
   final _accessToEmail = <String, String>{};
   final _refreshToEmail = <String, String>{};
   final _addresses = <String, List<SavedAddress>>{}; // user id → addresses
+  final _gst = <String, GstDetails>{}; // user id → GST details
+  final _trusted = <String, List<TrustedContact>>{}; // user id → contacts
   final _bookings = <String, List<Booking>>{}; // user id → bookings
   final _wallets = <String, Wallet>{}; // user id → wallet
   final _walletTx = <String, List<WalletTransaction>>{};
@@ -576,6 +578,58 @@ class MockApiAdapter implements ApiContract {
   }
 
   // --- profile -----------------------------------------------------------------
+
+  @override
+  Future<GstDetails> gstDetails() async {
+    await _wait();
+    final user = _requireUser();
+    return _gst[user.id] ?? const GstDetails();
+  }
+
+  @override
+  Future<GstDetails> saveGstDetails({
+    required String gstin,
+    required String businessName,
+  }) async {
+    await _wait();
+    final user = _requireUser();
+    final details = GstDetails(
+      gstin: gstin.trim().isEmpty ? null : gstin.trim(),
+      businessName: businessName.trim().isEmpty ? null : businessName.trim(),
+    );
+    _gst[user.id] = details;
+    return details;
+  }
+
+  @override
+  Future<List<TrustedContact>> trustedContacts() async {
+    await _wait();
+    final user = _requireUser();
+    return List.unmodifiable(_trusted[user.id] ?? const []);
+  }
+
+  @override
+  Future<TrustedContact> addTrustedContact({
+    required String name,
+    required String phone,
+  }) async {
+    await _wait();
+    final user = _requireUser();
+    final contact = TrustedContact(
+      id: _nextId('contact'),
+      name: name.trim(),
+      phone: phone.trim(),
+    );
+    _trusted[user.id] = [...?_trusted[user.id], contact];
+    return contact;
+  }
+
+  @override
+  Future<void> deleteTrustedContact(String id) async {
+    await _wait();
+    final user = _requireUser();
+    _trusted[user.id]?.removeWhere((c) => c.id == id);
+  }
 
   @override
   Future<ZUser> updateProfile({

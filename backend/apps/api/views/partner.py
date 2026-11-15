@@ -17,6 +17,7 @@ from apps.api.serializers import (
     DriverProfileSerializer,
     KycDocumentSerializer,
     PartnerTripSerializer,
+    PayoutAccountSerializer,
     PayoutSerializer,
     VehicleSerializer,
 )
@@ -80,13 +81,62 @@ class PartnerProfileView(APIView):
         if changed_user:
             user.save(update_fields=["first_name", "last_name", "phone"])
         user_fields = []
-        for field in ("languages", "home_lat", "home_lng", "bank_account_ref"):
+        for field in (
+            "languages",
+            "home_lat",
+            "home_lng",
+            "bank_account_ref",
+            "notifications_enabled",
+        ):
             if field in request.data:
                 setattr(driver, field, request.data[field])
                 user_fields.append(field)
         if user_fields:
             driver.save(update_fields=[*user_fields, "updated_at"])
         return Response(DriverProfileSerializer(driver).data)
+
+
+class PartnerPayoutAccountView(APIView):
+    serializer_class = PayoutAccountSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        driver = partner_for(request)
+        return Response(
+            {
+                "holder_name": driver.bank_account_holder,
+                "account_last4": "".join(
+                    ch for ch in driver.bank_account_number if ch.isdigit()
+                )[-4:],
+                "ifsc": driver.bank_ifsc,
+            }
+        )
+
+    def put(self, request):
+        driver = partner_for(request)
+        serializer = PayoutAccountSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+        driver.bank_account_holder = data["holder_name"].strip()
+        driver.bank_account_number = data["account_number"]
+        driver.bank_ifsc = data["ifsc"]
+        driver.bank_account_ref = data["account_number"][-4:]
+        driver.save(
+            update_fields=[
+                "bank_account_holder",
+                "bank_account_number",
+                "bank_ifsc",
+                "bank_account_ref",
+                "updated_at",
+            ]
+        )
+        return Response(
+            {
+                "holder_name": driver.bank_account_holder,
+                "account_last4": driver.bank_account_ref,
+                "ifsc": driver.bank_ifsc,
+            }
+        )
 
 
 class PartnerKycView(APIView):

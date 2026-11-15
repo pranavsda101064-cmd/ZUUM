@@ -1,3 +1,5 @@
+import 'json_value.dart';
+
 enum ServiceKind { ride, goods }
 
 class ServiceCategory {
@@ -27,7 +29,7 @@ class ServiceCategory {
         name: json['name'] as String? ?? json['code'] as String,
         description: json['description'] as String?,
         capacityKg: (json['capacity_kg'] as num?)?.toInt(),
-        volumeCuft: (json['volume_cuft'] as num?)?.toDouble(),
+        volumeCuft: jsonDouble(json['volume_cuft']),
         seats: (json['seats'] as num?)?.toInt(),
         isEnabled: json['is_enabled'] as bool? ?? true,
       );

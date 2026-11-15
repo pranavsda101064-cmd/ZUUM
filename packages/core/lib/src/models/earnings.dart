@@ -1,3 +1,5 @@
+import 'json_value.dart';
+
 enum EarningsRange { today, week, month }
 
 enum PayoutStatus { pending, processing, paid, failed }
@@ -30,8 +32,8 @@ class EarningsSummary {
         netPaise: (json['net_paise'] as num?)?.toInt() ?? 0,
         trips: (json['trips'] as num?)?.toInt() ?? 0,
         onlineMinutes: (json['online_minutes'] as num?)?.toInt() ?? 0,
-        acceptanceRate: (json['acceptance_rate'] as num?)?.toDouble() ?? 0,
-        cancellationRate: (json['cancellation_rate'] as num?)?.toDouble() ?? 0,
+        acceptanceRate: jsonDouble(json['acceptance_rate']) ?? 0,
+        cancellationRate: jsonDouble(json['cancellation_rate']) ?? 0,
         tipsPaise: (json['tips_paise'] as num?)?.toInt() ?? 0,
       );
 }

@@ -235,17 +235,37 @@ class _VehicleCardState extends ConsumerState<_VehicleCard> {
             ],
           ),
           const SizedBox(height: ZSpacing.sm),
-          Text(
-            '${vehicle.categoryName} · ${vehicle.displayName}',
-            style: ZTypography.bodyStrong,
-          ),
-          Text(
-            [
-              vehicle.color,
-              if (vehicle.seats != null) '${vehicle.seats} seats',
-              if (vehicle.capacityKg != null) '${vehicle.capacityKg} kg',
-            ].join(' · '),
-            style: ZTypography.caption.copyWith(color: ZColors.textSecondary),
+          Row(
+            children: [
+              ZVehicleIcon(
+                categoryCode: vehicle.categoryCode,
+                width: 68,
+                height: 44,
+                semanticLabel: vehicle.categoryName,
+              ),
+              const SizedBox(width: ZSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '${vehicle.categoryName} · ${vehicle.displayName}',
+                      style: ZTypography.bodyStrong,
+                    ),
+                    Text(
+                      [
+                        vehicle.color,
+                        if (vehicle.seats != null) '${vehicle.seats} seats',
+                        if (vehicle.capacityKg != null)
+                          '${vehicle.capacityKg} kg',
+                      ].join(' · '),
+                      style: ZTypography.caption
+                          .copyWith(color: ZColors.textSecondary),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
           if (vehicle.insuranceExpiringSoon) ...[
             const SizedBox(height: ZSpacing.sm),

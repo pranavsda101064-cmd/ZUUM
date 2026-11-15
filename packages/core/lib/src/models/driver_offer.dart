@@ -1,3 +1,4 @@
+import 'json_value.dart';
 import 'route.dart';
 
 import 'booking.dart';
@@ -71,7 +72,7 @@ class DriverOffer {
       distanceM: (json['distance_m'] as num?)?.toInt() ?? 0,
       pickupEtaS: (json['pickup_eta_s'] as num?)?.toInt() ?? 0,
       farePaise: (json['fare_paise'] as num?)?.toInt() ?? 0,
-      surgeMultiplier: (json['surge_multiplier'] as num?)?.toDouble() ?? 1,
+      surgeMultiplier: jsonDouble(json['surge_multiplier']) ?? 1,
       serviceCategoryCode: (categoryMap?['code'] as String?) ??
           json['service_category_code'] as String? ??
           '',

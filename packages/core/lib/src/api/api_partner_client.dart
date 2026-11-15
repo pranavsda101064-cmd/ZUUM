@@ -247,6 +247,7 @@ class ApiPartnerClient implements PartnerApiContract {
     String? lastName,
     String? phone,
     List<String>? languages,
+    bool? notificationsEnabled,
   }) async {
     final data = await _request(
       () => _dio.put<dynamic>(
@@ -256,10 +257,30 @@ class ApiPartnerClient implements PartnerApiContract {
           if (lastName != null) 'last_name': lastName,
           if (phone != null) 'phone': phone,
           if (languages != null) 'languages': languages,
+          if (notificationsEnabled != null)
+            'notifications_enabled': notificationsEnabled,
         },
       ),
     );
     return PartnerProfile.fromJson(data);
+  }
+
+  @override
+  Future<void> savePayoutAccount({
+    required String holderName,
+    required String accountNumber,
+    required String ifsc,
+  }) async {
+    await _request(
+      () => _dio.put<dynamic>(
+        '/partner/payout-account',
+        data: {
+          'holder_name': holderName,
+          'account_number': accountNumber,
+          'ifsc': ifsc,
+        },
+      ),
+    );
   }
 
   @override

@@ -127,6 +127,17 @@ class MeView(APIView):
     def get(self, request):
         return Response({"user": UserSerializer(request.user).data})
 
+    def put(self, request):
+        user = request.user
+        changed = []
+        for field in ("first_name", "last_name", "phone"):
+            if field in request.data:
+                setattr(user, field, str(request.data[field]).strip())
+                changed.append(field)
+        if changed:
+            user.save(update_fields=changed)
+        return Response({"user": UserSerializer(user).data})
+
 
 class ForgotPasswordView(APIView):
     serializer_class = PasswordForgotSerializer

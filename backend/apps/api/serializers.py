@@ -12,6 +12,7 @@ from apps.accounts.models import (
     FleetPartner,
     KycDocument,
     SavedAddress,
+    TrustedContact,
     User,
     Vehicle,
 )
@@ -51,8 +52,21 @@ class UserSerializer(serializers.ModelSerializer):
 class CustomerProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomerProfile
-        fields = ("id", "default_payment_method", "is_restricted")
+        fields = (
+            "id",
+            "default_payment_method",
+            "gstin",
+            "business_name",
+            "is_restricted",
+        )
         read_only_fields = ("id", "is_restricted")
+
+
+class TrustedContactSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TrustedContact
+        fields = ("id", "name", "phone")
+        read_only_fields = ("id",)
 
 
 class SavedAddressSerializer(serializers.ModelSerializer):
@@ -70,6 +84,7 @@ class DriverProfileSerializer(serializers.ModelSerializer):
     acceptance_rate = serializers.SerializerMethodField()
     document_count = serializers.SerializerMethodField()
     required_document_count = serializers.SerializerMethodField()
+    bank_account_last4 = serializers.SerializerMethodField()
 
     class Meta:
         model = DriverProfile
@@ -92,6 +107,10 @@ class DriverProfileSerializer(serializers.ModelSerializer):
             "acceptance_rate",
             "document_count",
             "required_document_count",
+            "bank_account_holder",
+            "bank_ifsc",
+            "bank_account_last4",
+            "notifications_enabled",
         )
         read_only_fields = (
             "id",
@@ -106,6 +125,7 @@ class DriverProfileSerializer(serializers.ModelSerializer):
             "acceptance_rate",
             "document_count",
             "required_document_count",
+            "bank_account_last4",
         )
 
     def get_acceptance_rate(self, obj) -> float:
@@ -122,6 +142,25 @@ class DriverProfileSerializer(serializers.ModelSerializer):
 
     def get_required_document_count(self, obj) -> int:
         return 3
+
+    def get_bank_account_last4(self, obj) -> str:
+        digits = "".join(ch for ch in obj.bank_account_number if ch.isdigit())
+        return digits[-4:] if digits else ""
+
+
+class PayoutAccountSerializer(serializers.Serializer):
+    holder_name = serializers.CharField(max_length=120)
+    account_number = serializers.CharField(max_length=24)
+    ifsc = serializers.RegexField(r"^[A-Z]{4}0[A-Z0-9]{6}$")
+
+    def validate_account_number(self, value: str) -> str:
+        digits = "".join(ch for ch in value if ch.isdigit())
+        if not 9 <= len(digits) <= 18:
+            raise serializers.ValidationError("Enter a valid account number")
+        return digits
+
+    def validate_ifsc(self, value: str) -> str:
+        return value.strip().upper()
 
 
 class KycDocumentSerializer(serializers.ModelSerializer):

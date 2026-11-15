@@ -1,3 +1,4 @@
+import 'json_value.dart';
 import 'route.dart';
 
 enum BookingType { ride, goods }
@@ -54,7 +55,7 @@ class DriverInfo {
         id: json['id'] as String,
         name: json['name'] as String? ?? '',
         phone: json['phone'] as String? ?? '',
-        ratingAvg: (json['rating_avg'] as num?)?.toDouble() ?? 0,
+        ratingAvg: jsonDouble(json['rating_avg']) ?? 0,
         photoUrl: json['photo_url'] as String?,
       );
 
@@ -282,7 +283,7 @@ class Booking {
       weightKg: (shipmentMap?['weight_kg'] as num?)?.toInt() ??
           (json['weight_kg'] as num?)?.toInt(),
       dimensionsCuft: (shipmentMap?['dimensions_cuft'] as num?)?.toDouble() ??
-          (json['dimensions_cuft'] as num?)?.toDouble(),
+          jsonDouble(json['dimensions_cuft']),
       needsLoadingHelp: (shipmentMap?['needs_loading_help'] as bool?) ??
           (json['needs_loading_help'] as bool?) ??
           false,

@@ -193,7 +193,7 @@ class _GoodsDetailsScreenState extends ConsumerState<GoodsDetailsScreen> {
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.circle, size: 10, color: ZColors.success),
+                      const Icon(Icons.circle, size: 10, color: ZColors.primary),
                       const SizedBox(width: ZSpacing.sm),
                       Expanded(
                         child: Text(
