@@ -35,6 +35,7 @@ from apps.bookings.services import (
 )
 from apps.catalog.models import ServiceCategory
 from apps.core.exceptions import ApiError
+from apps.core.uploads import validate_upload
 from rest_framework.permissions import IsAuthenticated
 
 from apps.core.permissions import IsDriver
@@ -141,11 +142,24 @@ class PartnerDocumentListCreateView(APIView):
                     code="validation_error",
                     status_code=400,
                 )
+        file = request.FILES.get("file")
+        if file is None:
+            raise ApiError(
+                "A document file is required",
+                code="validation_error",
+                status_code=400,
+            )
+        validate_upload(
+            file,
+            field="file",
+            max_mb=10,
+            allowed_prefixes=("image/", "application/pdf"),
+        )
         document, _ = KycDocument.objects.update_or_create(
             driver=driver,
             type=doc_type,
             defaults={
-                "file": request.FILES.get("file"),
+                "file": file,
                 "expires_at": expires_at,
                 "status": KycDocument.Status.PENDING,
             },
@@ -448,6 +462,7 @@ class PartnerPickupPodView(APIView):
             raise ApiError(
                 "A pickup photo is required", code="validation_error", status_code=400
             )
+        validate_upload(photo, field="photo", max_mb=10)
         shipment = booking.shipment
         shipment.pickup_pod = photo
         shipment.save(update_fields=["pickup_pod"])
@@ -483,10 +498,14 @@ class PartnerDeliveryPodView(APIView):
             )
         shipment.pod_receiver = receiver[:80]
         shipment.pod_signed_at = timezone.now()
-        if request.FILES.get("photo"):
-            shipment.delivery_pod = request.FILES["photo"]
-        if request.FILES.get("signature"):
-            shipment.delivery_signature = request.FILES["signature"]
+        photo = request.FILES.get("photo")
+        signature = request.FILES.get("signature")
+        validate_upload(photo, field="photo", max_mb=10)
+        validate_upload(signature, field="signature", max_mb=5)
+        if photo:
+            shipment.delivery_pod = photo
+        if signature:
+            shipment.delivery_signature = signature
         shipment.save()
         return Response({"recorded": True, "receiver": shipment.pod_receiver})
 

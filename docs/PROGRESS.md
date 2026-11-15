@@ -150,6 +150,12 @@ Legend: ⬜ not started · 🟨 in progress · ✅ done · ⛔ blocked
 - [x] Render blueprint rewritten: API (daphne, disk, pre-deploy migrations),
       Celery worker + beat, Postgres, Redis, routing/places envs
 - [x] Deploy runbook: `docs/DEPLOY_RENDER.md`
+- [x] Live backend verified on Render free tier: health, seeded logins,
+      Valhalla quote (255-pt route), dispatch → OTP → completion, commission
+- [x] Hardening: lifecycle notifications + WS pushes (with unread counts),
+      ops analytics series, stale-search safety net, KYC/POD upload
+      type/size validation, request IDs, seed passwords stable across
+      free-tier restarts; 72 tests green, OpenAPI 0 errors
 - [ ] Live clients (partner/customer), visual pass, signed APK/AAB
 
 ## Phase 5 — Admin Dashboard (Flutter Web) ⬜

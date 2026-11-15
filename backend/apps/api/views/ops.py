@@ -7,6 +7,7 @@ from __future__ import annotations
 from datetime import timedelta
 
 from django.db.models import Count, Q, Sum
+from django.db.models.functions import TruncDate
 from django.utils import timezone
 from rest_framework import serializers, status
 from rest_framework.response import Response
@@ -27,6 +28,7 @@ from apps.bookings.services import cancel_booking
 from apps.catalog.models import PromoCampaign
 from apps.core.audit import audit
 from apps.core.exceptions import ApiError
+from apps.core.notifications import notify_user
 from apps.core.permissions import IsStaffUser
 from apps.payments.models import CommissionEntry, Payout
 from apps.platform.models import AuditLog, Notification, SosAlert, SupportMessage, SupportTicket
@@ -285,8 +287,8 @@ class OpsDriverDecisionView(APIView):
         }
         if action == "approve":
             approve_driver(driver)
-            Notification.objects.create(
-                user=driver.user,
+            notify_user(
+                driver.user,
                 type="kyc",
                 title="You are approved",
                 body="Your KYC is verified. Go online to start receiving trips.",
@@ -305,8 +307,8 @@ class OpsDriverDecisionView(APIView):
             driver.reviewed_at = timezone.now()
             driver.online_state = DriverProfile.ONLINE_OFFLINE
             driver.save()
-            Notification.objects.create(
-                user=driver.user,
+            notify_user(
+                driver.user,
                 type="kyc",
                 title="KYC needs attention",
                 body=reason[:500],
@@ -448,8 +450,8 @@ class OpsPayoutMarkPaidView(APIView):
         payout.batch_ref = request.data.get("batch_ref") or payout.batch_ref
         payout.save(update_fields=["status", "paid_at", "batch_ref", "updated_at"])
         audit(actor=request.user, action="payout.paid", entity=payout)
-        Notification.objects.create(
-            user=payout.driver.user,
+        notify_user(
+            payout.driver.user,
             type="payout",
             title="Payout sent",
             body=f"₹{payout.amount_paise / 100:.2f} is on its way to your bank.",
@@ -609,8 +611,8 @@ class OpsTicketDetailView(APIView):
         if request.data.get("status") in dict(SupportTicket.Status.choices):
             ticket.status = request.data["status"]
             ticket.save(update_fields=["status", "updated_at"])
-        Notification.objects.create(
-            user=ticket.customer,
+        notify_user(
+            ticket.customer,
             type="support",
             title="Support replied",
             body=body[:120],
@@ -644,4 +646,76 @@ class OpsAuditListView(APIView):
                     for row in items
                 ],
             )
+        )
+
+
+class OpsAnalyticsView(APIView):
+    """Daily revenue/trip trend + category mix for the ops dashboard."""
+
+    permission_classes = [IsStaffUser]
+    serializer_class = BookingSerializer
+
+    def get(self, request):
+        range_key = request.query_params.get("range", "week")
+        start = _range_start(range_key)
+        days = 7 if range_key == "week" else (30 if range_key == "month" else 1)
+        entries = CommissionEntry.objects.filter(created_at__gte=start)
+        rows = (
+            entries.annotate(day=TruncDate("created_at"))
+            .values("day")
+            .annotate(
+                trips=Count("id"),
+                gross=Sum("booking__final_fare_paise"),
+                commission=Sum("platform_paise"),
+                net=Sum("driver_paise"),
+            )
+            .order_by("day")
+        )
+        by_day = {row["day"].isoformat(): row for row in rows}
+        series = []
+        for offset in range(days - 1, -1, -1):
+            day = (timezone.localdate() - timedelta(days=offset)).isoformat()
+            row = by_day.get(day)
+            series.append(
+                {
+                    "date": day,
+                    "trips": (row["trips"] if row else 0) or 0,
+                    "revenue_paise": (row["gross"] if row else 0) or 0,
+                    "commission_paise": (row["commission"] if row else 0) or 0,
+                    "driver_paise": (row["net"] if row else 0) or 0,
+                }
+            )
+        totals = entries.aggregate(
+            trips=Count("id"),
+            revenue=Sum("booking__final_fare_paise"),
+            commission=Sum("platform_paise"),
+            driver=Sum("driver_paise"),
+        )
+        top = (
+            entries.values("booking__service_category__name")
+            .annotate(
+                trips=Count("id"),
+                revenue=Sum("booking__final_fare_paise"),
+            )
+            .order_by("-revenue")[:5]
+        )
+        return Response(
+            {
+                "range": range_key,
+                "series": series,
+                "totals": {
+                    "trips": totals["trips"] or 0,
+                    "revenue_paise": totals["revenue"] or 0,
+                    "commission_paise": totals["commission"] or 0,
+                    "driver_paise": totals["driver"] or 0,
+                },
+                "top_categories": [
+                    {
+                        "name": row["booking__service_category__name"],
+                        "trips": row["trips"],
+                        "revenue_paise": row["revenue"] or 0,
+                    }
+                    for row in top
+                ],
+            }
         )

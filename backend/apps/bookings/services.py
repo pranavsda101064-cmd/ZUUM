@@ -10,6 +10,7 @@ from django.utils import timezone
 
 from apps.accounts.models import DriverProfile, Vehicle
 from apps.core.exceptions import ApiError, illegal_transition
+from apps.core.notifications import notify_user
 from apps.core.realtime import push_to_booking, push_to_driver
 from apps.payments.services import settle_commission
 
@@ -430,6 +431,16 @@ def accept_offer(*, driver: DriverProfile, offer: DispatchOffer) -> Booking:
             ),
         },
     )
+    notify_user(
+        booking.customer,
+        type="booking",
+        title="Captain on the way",
+        body=(
+            f"{driver.user.full_name} is heading to "
+            f"{booking.pickup_address}."
+        ),
+        data={"booking_id": str(booking.id), "status": booking.status},
+    )
     return booking
 
 
@@ -474,6 +485,13 @@ def arrive(*, driver: DriverProfile, booking: Booking) -> Booking:
     require_status(booking, Booking.Status.ASSIGNED, Booking.Status.DRIVER_ARRIVING)
     record_transition(booking, Booking.Status.ARRIVED, actor_type="driver", actor_id=driver.user_id)
     push_status(booking)
+    notify_user(
+        booking.customer,
+        type="booking",
+        title="Your captain has arrived",
+        body=f"Meet at {booking.pickup_address}.",
+        data={"booking_id": str(booking.id), "status": booking.status},
+    )
     return booking
 
 
@@ -497,6 +515,13 @@ def verify_start_otp(*, driver: DriverProfile, booking: Booking, otp: str) -> Bo
         booking.shipment.pickup_otp_verified_at = timezone.now()
         booking.shipment.save(update_fields=["pickup_otp_verified_at"])
     push_status(booking)
+    notify_user(
+        booking.customer,
+        type="booking",
+        title="Trip started",
+        body=f"On the way to {booking.drop_address}.",
+        data={"booking_id": str(booking.id), "status": booking.status},
+    )
     return booking
 
 
@@ -560,6 +585,20 @@ def complete_trip(*, driver: DriverProfile, booking: Booking) -> Booking:
             "payment_state": Booking.PaymentState.PAID,
         },
     )
+    notify_user(
+        booking.customer,
+        type="booking",
+        title="Trip completed",
+        body=f"Fare Rs {fare / 100:.2f}. Thanks for riding with Zuum.",
+        data={"booking_id": str(booking.id), "status": booking.status},
+    )
+    notify_user(
+        driver.user,
+        type="earnings",
+        title="Trip completed",
+        body=f"You earned Rs {booking.commission.driver_paise / 100:.2f} on this trip.",
+        data={"booking_id": str(booking.id), "status": booking.status},
+    )
     return booking
 
 
@@ -604,6 +643,26 @@ def cancel_booking(
             "reason": reason,
         },
     )
+    accepted = booking.offers.filter(status=DispatchOffer.Status.ACCEPTED).first()
+    if by == "customer" and accepted is not None:
+        notify_user(
+            accepted.driver.user,
+            type="booking",
+            title="Customer cancelled",
+            body=reason or "The customer cancelled this trip.",
+            data={"booking_id": str(booking.id), "status": booking.status},
+        )
+    elif by == "driver":
+        notify_user(
+            booking.customer,
+            type="booking",
+            title="Trip cancelled",
+            body=(
+                f"Your captain cancelled the trip"
+                + (f": {reason}" if reason else ".")
+            ),
+            data={"booking_id": str(booking.id), "status": booking.status},
+        )
     return booking
 
 
@@ -647,3 +706,29 @@ def project_onto_route(
             best_along = start + t * length
     remaining = max(0.0, total - best_along)
     return int(round(remaining)), int(round(total))
+
+
+def fail_stale_search(booking: Booking) -> bool:
+    """Free/paid safety net: no Celery beat required to avoid limbo bookings."""
+    from django.conf import settings
+
+    if booking.status != Booking.Status.SEARCHING:
+        return False
+    minutes = int(getattr(settings, "STALE_SEARCH_MINUTES", 5))
+    if booking.created_at > timezone.now() - timedelta(minutes=minutes):
+        return False
+    record_transition(
+        booking,
+        Booking.Status.FAILED,
+        actor_type="system",
+        reason="no_driver",
+    )
+    push_status(booking, {"reason": "no_driver"})
+    notify_user(
+        booking.customer,
+        type="booking",
+        title="No captain found",
+        body="We could not find a captain nearby. Please try again.",
+        data={"booking_id": str(booking.id), "status": booking.status},
+    )
+    return True

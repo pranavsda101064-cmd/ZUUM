@@ -796,6 +796,21 @@ paths:
               schema:
                 $ref: '#/components/schemas/Notification'
           description: ''
+  /api/v1/ops/analytics:
+    get:
+      operationId: ops_analytics_retrieve
+      description: Daily revenue/trip trend + category mix for the ops dashboard.
+      tags:
+      - ops
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+          description: ''
   /api/v1/ops/audit:
     get:
       operationId: ops_audit_retrieve

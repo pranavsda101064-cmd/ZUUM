@@ -19,7 +19,7 @@ from apps.catalog.models import ServiceCategory
 from apps.core.exceptions import ApiError
 from apps.core.permissions import IsFleetOwner
 from apps.payments.models import CommissionEntry
-from apps.platform.models import Notification
+from apps.core.notifications import notify_user
 
 
 def fleet_for(request) -> FleetPartner:
@@ -107,8 +107,8 @@ class FleetInviteView(APIView):
             **({"email": email} if email else {"phone": phone})
         ).first()
         if invited_user is not None:
-            Notification.objects.create(
-                user=invited_user,
+            notify_user(
+                invited_user,
                 type="fleet_invite",
                 title="Fleet invitation",
                 body=f"{fleet.name} invited you to drive with their fleet.",

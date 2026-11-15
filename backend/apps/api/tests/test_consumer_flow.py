@@ -1,5 +1,8 @@
 """Consumer journey: quote → book → dispatch → driver lifecycle → receipt."""
+from datetime import timedelta
+
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.utils import timezone
 from apps.api.tests.base import ZuumTestCase, make_user, make_partner
 
 
@@ -52,6 +55,10 @@ class ConsumerFlowTests(ZuumTestCase):
         accepted = self.accept_first_offer(self.partner)
         self.assertEqual(accepted["status"], "ASSIGNED")
 
+        notifications = self.customer.get("/api/v1/notifications?unread=true")
+        titles = [row["title"] for row in notifications.data["results"]]
+        self.assertIn("Captain on the way", titles)
+
         detail = self.customer.get(f"/api/v1/bookings/{booking['id']}")
         self.assertEqual(detail.data["status"], "ASSIGNED")
         self.assertIsNotNone(detail.data["driver"])
@@ -103,6 +110,11 @@ class ConsumerFlowTests(ZuumTestCase):
         detail = self.customer.get(f"/api/v1/bookings/{booking['id']}")
         self.assertEqual(detail.data["status"], "COMPLETED")
 
+        notifications = self.customer.get("/api/v1/notifications")
+        titles = [row["title"] for row in notifications.data["results"]]
+        self.assertIn("Trip completed", titles)
+        self.assertGreaterEqual(notifications.data["unread_count"], 1)
+
         receipt = self.customer.get(f"/api/v1/bookings/{booking['id']}/receipt")
         self.assertEqual(receipt.status_code, 200)
         self.assertEqual(receipt.data["fare"]["final_paise"], booking["fare"]["quoted_paise"])
@@ -132,6 +144,16 @@ class ConsumerFlowTests(ZuumTestCase):
         )
         self.assertEqual(again.status_code, 409)
         self.assertIn(again.data["code"], {"offer_taken", "offer_expired"})
+
+    def test_stale_search_fails_on_read(self):
+        booking = self.create_ride(self.customer)
+        from apps.bookings.models import Booking
+
+        Booking.objects.filter(pk=booking["id"]).update(
+            created_at=timezone.now() - timedelta(minutes=10)
+        )
+        detail = self.customer.get(f"/api/v1/bookings/{booking['id']}")
+        self.assertEqual(detail.data["status"], "FAILED")
 
     def test_cancel_booking(self):
         booking = self.create_ride(self.customer)

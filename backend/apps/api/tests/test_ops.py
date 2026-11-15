@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from django.core.cache import cache
+from django.utils import timezone
 from rest_framework.test import APITestCase
 
 from apps.accounts.models import DriverProfile, User
@@ -44,6 +45,46 @@ class OpsApiTests(APITestCase):
         response = other.get("/api/v1/ops/overview")
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.data["code"], "permission_denied")
+
+    def test_request_id_header(self):
+        response = self.client.get("/api/v1/health")
+        self.assertIn("X-Request-ID", response.headers)
+
+    def test_analytics_series(self):
+        from apps.bookings.models import Booking
+        from apps.catalog.models import ServiceCategory
+        from apps.payments.models import CommissionEntry
+
+        customer = make_user("analytics-customer@zuum.in")
+        booking = Booking.objects.create(
+            customer=customer,
+            type="ride",
+            service_category=ServiceCategory.objects.get(code="auto"),
+            status=Booking.Status.COMPLETED,
+            pickup_lat=12.93,
+            pickup_lng=77.62,
+            pickup_address="A",
+            drop_lat=12.97,
+            drop_lng=77.59,
+            drop_address="B",
+            distance_m=4800,
+            duration_s=900,
+            quoted_fare_paise=20000,
+            final_fare_paise=20000,
+            completed_at=timezone.now(),
+        )
+        driver = make_partner("analytics-driver@zuum.in", online=False)
+        CommissionEntry.objects.create(
+            booking=booking,
+            driver=driver,
+            platform_paise=4000,
+            driver_paise=16000,
+        )
+        response = self.client.get("/api/v1/ops/analytics?range=week")
+        self.assertEqual(response.status_code, 200, response.content)
+        self.assertEqual(len(response.data["series"]), 7)
+        self.assertEqual(response.data["totals"]["trips"], 1)
+        self.assertEqual(response.data["top_categories"][0]["name"], "Auto")
 
     def test_overview_shape(self):
         response = self.client.get("/api/v1/ops/overview")

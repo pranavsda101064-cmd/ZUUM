@@ -58,18 +58,22 @@ Maps/routing env: `ROUTING_PROVIDER=valhalla`, `ROUTING_BASE_URL`
   cancel), POD uploads, earnings/payouts/stats.
 - **Fleet** — overview, roster, invite, detach, fleet vehicles, assign,
   aggregate earnings.
-- **Platform** — support topics/tickets, SOS alerts, notifications
-  (list/read), reviews, audit log model, feature-flag settings.
+- **Platform** — support topics/tickets, SOS alerts, lifecycle notifications
+  (booking/KYC/payout/support) pushed over WS with unread counts, reviews,
+  audit log model, feature-flag settings.
 - **Routing** — Valhalla client (`/route`, `/matrix`, `/status`) behind a
   `RoutingService` with Redis caching, circuit breaker and haversine fallback;
   routed quotes/bookings, `GET /bookings/{id}/route`, ETA projection and
   turn-by-turn maneuvers.
 - **Places** — OSM Photon → Nominatim proxy with caching and Bengaluru bias.
-- **Ops/admin** — live overview, booking search + detail + cancel, driver
-  approve/reject/suspend, customers, finance summary, payouts mark-paid,
-  promo CRUD, feature settings, ticket replies, audit trail (staff JWT).
+- **Ops/admin** — live overview, daily analytics series, booking search +
+  detail + cancel, driver approve/reject/suspend, customers, finance summary,
+  payouts mark-paid, promo CRUD, feature settings, ticket replies, audit trail
+  (staff JWT).
 - **Jobs** — Celery beat: offer expiry sweep (15 s), stale-search failure, raw
   ping retention (72 h), weekly payout generation (idempotent per ISO week).
+- **Reliability** — request IDs, stale-search safety net on reads, KYC/POD
+  upload type/size validation, stable seed passwords across restarts.
 - **Location governance** — server-enforced cadence (5 s on trip / 15 s
   available / 60 s otherwise) with out-of-order drop on REST + WS uplinks.
 - **Realtime** — JWT websocket handshake, per-topic authorization

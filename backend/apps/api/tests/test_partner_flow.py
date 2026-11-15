@@ -36,6 +36,21 @@ class PartnerOnboardingTests(APITestCase):
         self.assertEqual(response.data["kyc_status"], "draft")
         self.assertTrue(DriverProfile.objects.filter(user=self.user).exists())
 
+    def test_document_type_is_validated(self):
+        self.client.get("/api/v1/partner/profile")
+        response = self.client.post(
+            "/api/v1/partner/documents",
+            {
+                "type": "licence",
+                "file": SimpleUploadedFile(
+                    "notes.txt", b"not-an-image", content_type="text/plain"
+                ),
+            },
+            format="multipart",
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.data["code"], "validation_error")
+
     def test_kyc_requires_all_documents_then_submits(self):
         self.client.get("/api/v1/partner/profile")
         missing = self.client.post("/api/v1/partner/kyc/submit")

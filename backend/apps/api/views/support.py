@@ -13,6 +13,7 @@ from apps.api.serializers import (
 )
 from apps.bookings.models import Booking, Review
 from apps.core.exceptions import ApiError
+from apps.core.notifications import notify_user
 from apps.platform.models import Notification, SosAlert, SupportMessage, SupportTicket
 
 SUPPORT_TOPICS = [
@@ -102,8 +103,8 @@ class SosView(APIView):
             lat=request.data.get("lat"),
             lng=request.data.get("lng"),
         )
-        Notification.objects.create(
-            user=request.user,
+        notify_user(
+            request.user,
             type="safety",
             title="SOS received",
             body="Our safety desk is calling you now. Stay on the line.",
@@ -129,10 +130,12 @@ class NotificationListView(APIView):
         page = max(1, int(request.query_params.get("page", 1) or 1))
         size = max(1, min(100, int(request.query_params.get("page_size", 20) or 20)))
         total = qs.count()
+        unread = qs.filter(read_at__isnull=True).count()
         items = qs[(page - 1) * size : page * size]
         return Response(
             {
                 "count": total,
+                "unread_count": unread,
                 "next": (
                     request.build_absolute_uri(f"?page={page + 1}")
                     if page * size < total

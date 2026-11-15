@@ -68,6 +68,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    "apps.core.middleware.RequestIDMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -225,6 +226,7 @@ ROUTING_USER_AGENT = os.getenv(
     "ROUTING_USER_AGENT", "Zuum/1.0 (dev demo; OpenStreetMap + Valhalla)"
 )
 DISPATCH_USE_MATRIX = os.getenv("DISPATCH_USE_MATRIX", "0") == "1"
+STALE_SEARCH_MINUTES = int(os.getenv("STALE_SEARCH_MINUTES", "5"))
 
 # --- Places (OSM geocoding: Photon primary, Nominatim fallback) -------------
 PLACES_PHOTON_URL = os.getenv("PLACES_PHOTON_URL", "https://photon.komoot.io")

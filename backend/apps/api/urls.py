@@ -86,6 +86,7 @@ urlpatterns = [
     path("ops/tickets", ops.OpsTicketListView.as_view()),
     path("ops/tickets/<uuid:ticket_id>", ops.OpsTicketDetailView.as_view()),
     path("ops/audit", ops.OpsAuditListView.as_view()),
+    path("ops/analytics", ops.OpsAnalyticsView.as_view()),
 
     # partner surface
     path("partner/profile", partner.PartnerProfileView.as_view()),

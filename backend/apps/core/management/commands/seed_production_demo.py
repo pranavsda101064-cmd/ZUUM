@@ -2,12 +2,16 @@
 
     SEED_PASSWORD='choose-a-strong-password' python manage.py seed_production_demo
 
-Prints the credentials once. Safe to re-run (updates the same accounts).
+- With SEED_PASSWORD: accounts are created/updated to that password (stable).
+- Without it: a random password is generated only for NEW accounts; existing
+  passwords are left untouched so free-tier restarts never rotate them.
+Safe to re-run.
 """
 from __future__ import annotations
 
 import os
 import secrets
+from datetime import timedelta
 from decimal import Decimal
 
 from django.core.management.base import BaseCommand
@@ -30,40 +34,37 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         categories = seed_catalog()
 
-        password = os.getenv("SEED_PASSWORD") or secrets.token_urlsafe(10)
+        password_env = os.getenv("SEED_PASSWORD")
+        password = password_env or secrets.token_urlsafe(10)
         ops_email = os.getenv("SEED_OPS_EMAIL", "ops@zuum.in")
         partner_email = os.getenv("SEED_PARTNER_EMAIL", "partner@zuum.in")
         customer_email = os.getenv("SEED_CUSTOMER_EMAIL", "customer@zuum.in")
 
-        ops = User.objects.filter(email=ops_email).first()
-        if ops is None:
-            ops = User.objects.create_user(
-                email=ops_email,
-                password=password,
-                first_name="Ops",
-                last_name="Desk",
-                role=User.Role.STAFF,
-            )
+        ops, ops_created = User.objects.get_or_create(
+            email=ops_email,
+            defaults={"first_name": "Ops", "last_name": "Desk", "role": User.Role.STAFF},
+        )
         ops.role = User.Role.STAFF
         ops.is_staff = True
         ops.is_superuser = True
         ops.is_active = True
-        ops.set_password(password)
+        if ops_created or password_env:
+            ops.set_password(password)
         ops.save()
 
-        partner_user = User.objects.filter(email=partner_email).first()
-        if partner_user is None:
-            partner_user = User.objects.create_user(
-                email=partner_email,
-                password=password,
-                first_name="Ravi",
-                last_name="Kumar",
-                phone="9845012345",
-                role=User.Role.DRIVER,
-            )
+        partner_user, partner_created = User.objects.get_or_create(
+            email=partner_email,
+            defaults={
+                "first_name": "Ravi",
+                "last_name": "Kumar",
+                "phone": "9845012345",
+                "role": User.Role.DRIVER,
+            },
+        )
         partner_user.role = User.Role.DRIVER
-        partner_user.set_password(password)
         partner_user.is_active = True
+        if partner_created or password_env:
+            partner_user.set_password(password)
         partner_user.save()
 
         partner, _ = DriverProfile.objects.get_or_create(
@@ -82,6 +83,7 @@ class Command(BaseCommand):
         partner.home_lng = partner.home_lng or 77.6245
         partner.languages = partner.languages or ["Kannada", "English"]
         partner.save()
+        expiry = (timezone.now() + timedelta(days=365)).date()
         for doc_type in (
             KycDocument.Type.LICENCE,
             KycDocument.Type.RC,
@@ -92,9 +94,7 @@ class Command(BaseCommand):
                 type=doc_type,
                 defaults={
                     "status": KycDocument.Status.VERIFIED,
-                    "expires_at": (timezone.now()).date().replace(
-                        year=timezone.now().year + 1
-                    ),
+                    "expires_at": expiry,
                 },
             )
         Vehicle.objects.update_or_create(
@@ -109,32 +109,38 @@ class Command(BaseCommand):
             },
         )
 
-        customer = User.objects.filter(email=customer_email).first()
-        if customer is None:
-            customer = User.objects.create_user(
-                email=customer_email,
-                password=password,
-                first_name="Aarav",
-                last_name="Menon",
-                phone="9845011111",
-                role=User.Role.CUSTOMER,
-            )
+        customer, customer_created = User.objects.get_or_create(
+            email=customer_email,
+            defaults={
+                "first_name": "Aarav",
+                "last_name": "Menon",
+                "phone": "9845011111",
+                "role": User.Role.CUSTOMER,
+            },
+        )
         customer.role = User.Role.CUSTOMER
-        customer.set_password(password)
         customer.is_active = True
+        if customer_created or password_env:
+            customer.set_password(password)
         customer.save()
         CustomerProfile.objects.get_or_create(user=customer)
         Wallet.objects.get_or_create(customer=customer)
 
         self.stdout.write(self.style.SUCCESS("Production demo data seeded."))
-        self.stdout.write("  Save these credentials now (shown once):")
-        self.stdout.write(f"    ops      {ops_email} / {password}")
-        self.stdout.write(f"    partner  {partner_email} / {password}")
-        self.stdout.write(f"    customer {customer_email} / {password}")
-        if not os.getenv("SEED_PASSWORD"):
+        if password_env or (ops_created and partner_created and customer_created):
+            self.stdout.write("  Save these credentials now (shown once):")
+            self.stdout.write(f"    ops      {ops_email} / {password}")
+            self.stdout.write(f"    partner  {partner_email} / {password}")
+            self.stdout.write(f"    customer {customer_email} / {password}")
+        else:
+            self.stdout.write(
+                "  Accounts already existed; passwords were NOT changed."
+            )
+            self.stdout.write(
+                f"  {ops_email} · {partner_email} · {customer_email}"
+            )
             self.stdout.write(
                 self.style.WARNING(
-                    "SEED_PASSWORD was not set; these passwords are generated. "
-                    "Re-running without SEED_PASSWORD rotates them."
+                    "  Set SEED_PASSWORD to rotate all three passwords on next boot."
                 )
             )

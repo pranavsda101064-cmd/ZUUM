@@ -20,12 +20,14 @@ from apps.bookings.models import Booking, FareQuote, LocationPing, Review
 from apps.bookings.services import (
     cancel_booking,
     create_booking,
+    fail_stale_search,
     haversine_m,
     project_onto_route,
 )
 from apps.routing.providers import bounding_box
 from apps.routing.service import RoutingService, profile_for_category
 from apps.core.exceptions import ApiError
+from apps.core.uploads import validate_upload
 
 
 def _booking_for(user, booking_id) -> Booking:
@@ -60,7 +62,9 @@ class BookingListCreateView(APIView):
         page_size = max(1, min(page_size, 100))
         total = qs.count()
         start = (page - 1) * page_size
-        items = qs[start : start + page_size]
+        items = list(qs[start : start + page_size])
+        for booking in items:
+            fail_stale_search(booking)
         next_url = (
             request.build_absolute_uri(f"?page={page + 1}&page_size={page_size}")
             if start + page_size < total
@@ -111,6 +115,7 @@ class BookingDetailView(APIView):
     serializer_class = BookingSerializer
     def get(self, request, booking_id):
         booking = _booking_for(request.user, booking_id)
+        fail_stale_search(booking)
         return Response(BookingSerializer(booking).data)
 
 
@@ -444,10 +449,14 @@ class BookingPodUploadView(APIView):
             )
         if receiver:
             shipment.pod_receiver = receiver[:80]
-        if request.FILES.get("photo"):
-            shipment.delivery_pod = request.FILES["photo"]
-        if request.FILES.get("signature"):
-            shipment.delivery_signature = request.FILES["signature"]
+        photo = request.FILES.get("photo")
+        signature = request.FILES.get("signature")
+        validate_upload(photo, field="photo", max_mb=10)
+        validate_upload(signature, field="signature", max_mb=5)
+        if photo:
+            shipment.delivery_pod = photo
+        if signature:
+            shipment.delivery_signature = signature
         shipment.pod_signed_at = timezone.now()
         shipment.save()
         return Response(
