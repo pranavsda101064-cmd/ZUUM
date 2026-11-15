@@ -49,6 +49,36 @@ commands manually.
    - `API_BASE_URL=https://<service>.onrender.com/api/v1`
    - `WS_BASE_URL=wss://<service>.onrender.com/ws`
 
+## Landing site
+
+The static marketing site lives in `landing/`. `render.production.yaml`
+includes a `zuum-web` static service for it. For the free demo, apply
+`landing/render.yaml` as a second Blueprint to publish the site separately
+at `https://zuum-web.onrender.com`.
+
+- Deploy the site alone: Render -> New -> Blueprint -> set the Blueprint
+  Path to `landing/render.yaml` -> Apply.
+
+- Pages: `index.html` (customer), `partner.html`, `privacy.html`,
+  `terms.html`, `credits.html`, and a branded `404.html`.
+- Clean URLs such as `/partner` and `/privacy` are rewrite routes in the
+  blueprint.
+- Local preview: `cd landing && python -m http.server 8080`.
+
+**Install buttons.** The Android buttons resolve
+`landing/downloads/zuum-customer.apk` and `landing/downloads/zuum-partner.apk`
+on click. Those files are not committed because `builds/` is gitignored. To
+turn the buttons into real downloads, copy the APKs into `landing/downloads/`
+before deploying:
+
+```powershell
+Copy-Item builds\zuum-customer-1.0.0.apk landing\downloads\zuum-customer.apk
+Copy-Item builds\zuum-partner-1.0.0.apk landing\downloads\zuum-partner.apk
+```
+
+If an APK is absent, the page keeps the install icon and shows a short
+"not public yet" message instead of sending people to a dead file.
+
 ## Notes
 
 - WebSockets and the media disk require the paid Starter plan (free instances sleep).

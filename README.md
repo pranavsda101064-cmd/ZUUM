@@ -90,6 +90,7 @@ WebSocket at `/ws/{topic}/{id}/?token=<access>`. See
 apps/       Flutter applications
 packages/   Shared Dart packages (core, design_system)
 backend/    Django backend (Phase 2)
+landing/    Customer + partner marketing site (static, Render)
 infra/      Render blueprint, env templates
 docs/       Architecture & contracts
 ```

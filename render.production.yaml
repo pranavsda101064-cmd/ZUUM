@@ -112,6 +112,44 @@ services:
           type: redis
           property: connectionString
 
+  - type: web
+    name: zuum-web
+    runtime: static
+    autoDeploy: true
+    staticPublishPath: ./landing
+    routes:
+      - type: rewrite
+        source: /partner
+        destination: /partner.html
+      - type: rewrite
+        source: /privacy
+        destination: /privacy.html
+      - type: rewrite
+        source: /terms
+        destination: /terms.html
+      - type: rewrite
+        source: /credits
+        destination: /credits.html
+      - type: rewrite
+        source: /*
+        destination: /404.html
+    headers:
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: Strict-Transport-Security
+        value: max-age=31536000; includeSubDomains
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+      - path: /assets/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+
 databases:
   - name: zuum-db
     plan: starter

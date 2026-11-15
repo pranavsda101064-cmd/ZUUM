@@ -1,0 +1,165 @@
+/* Zuum web tokens. Mirrors packages/design_system/lib/src/tokens. */
+
+@font-face {
+  font-family: "Inter";
+  src: url("../fonts/Inter-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Inter";
+  src: url("../fonts/Inter-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Inter";
+  src: url("../fonts/Inter-SemiBold.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Inter";
+  src: url("../fonts/Inter-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Noto Sans Kannada";
+  src: url("../fonts/NotoSansKannada-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Noto Sans Kannada";
+  src: url("../fonts/NotoSansKannada-SemiBold.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* Color */
+  --color-ink: #090d16;
+  --color-ink-raised: #111827;
+  --color-ink-soft: #1f2937;
+  --color-text: #090d16;
+  --color-text-secondary: #4b5563;
+  --color-text-tertiary: #6b7280;
+  --color-text-quiet: #9ca3af;
+  --color-on-dark: #ffffff;
+  --color-on-dark-secondary: #9ca3af;
+  --color-canvas: #f9fafb;
+  --color-canvas-deep: #f3f4f6;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f3f4f6;
+  --color-line: #e5e7eb;
+  --color-line-strong: #d1d5db;
+  --color-line-dark: #313131;
+  --color-disabled: #d1d5db;
+  --color-scrim: rgba(9, 13, 22, 0.62);
+  --color-scrim-strong: rgba(9, 13, 22, 0.88);
+  --color-glass: rgba(255, 255, 255, 0.82);
+  --color-glass-dark: rgba(9, 13, 22, 0.72);
+  --color-focus: #090d16;
+  --color-focus-dark: #ffffff;
+  --color-tagline-muted: rgba(9, 13, 22, 0.24);
+  --color-on-dark-body: rgba(255, 255, 255, 0.78);
+  --color-on-dark-wash: rgba(255, 255, 255, 0.1);
+  --color-on-dark-line: rgba(255, 255, 255, 0.16);
+  --color-hover-light: rgba(9, 13, 22, 0.06);
+  --color-hover-dark: rgba(255, 255, 255, 0.12);
+  --scrim-hero: linear-gradient(92deg, rgba(9, 13, 22, 0.94) 0%, rgba(9, 13, 22, 0.7) 52%, rgba(9, 13, 22, 0.34) 100%);
+  --scrim-photo: linear-gradient(180deg, rgba(9, 13, 22, 0.02) 40%, rgba(9, 13, 22, 0.78) 100%);
+  --scrim-band: linear-gradient(90deg, rgba(9, 13, 22, 0.94) 0%, rgba(9, 13, 22, 0.68) 58%, rgba(9, 13, 22, 0.42) 100%);
+  --scrim-panel: linear-gradient(90deg, rgba(9, 13, 22, 0.96) 0%, rgba(9, 13, 22, 0.82) 100%);
+
+  /* Heading gradients, text only */
+  --gradient-heading-dark: linear-gradient(92deg, #ffffff 8%, #9b9b9b 96%);
+  --gradient-heading-light: linear-gradient(92deg, #000000 8%, #666666 96%);
+
+  /* Elevation */
+  --shadow-sm: 0 1px 2px rgba(9, 13, 22, 0.06);
+  --shadow-card: 0 8px 24px rgba(9, 13, 22, 0.08);
+  --shadow-lift: 0 18px 48px rgba(9, 13, 22, 0.16);
+  --shadow-device: 0 32px 80px rgba(0, 0, 0, 0.45);
+
+  /* Type */
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-kannada: "Noto Sans Kannada", "Inter", sans-serif;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+  --text-5xl: 3rem;
+  --text-6xl: 3.75rem;
+  --text-7xl: 4.5rem;
+
+  --leading-xs: 1rem;
+  --leading-sm: 1.25rem;
+  --leading-base: 1.5rem;
+  --leading-lg: 1.75rem;
+  --leading-xl: 1.75rem;
+  --leading-2xl: 2rem;
+  --leading-3xl: 2.25rem;
+  --leading-4xl: 2.5rem;
+  --leading-5xl: 1;
+  --leading-6xl: 1;
+  --leading-7xl: 1;
+
+  /* Spacing */
+  --space-25: 2px;
+  --space-50: 4px;
+  --space-75: 8px;
+  --space-100: 12px;
+  --space-200: 16px;
+  --space-300: 24px;
+  --space-400: 32px;
+  --space-500: 40px;
+  --space-600: 48px;
+  --space-700: 64px;
+
+  /* Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-pill: 999px;
+
+  /* Motion */
+  --duration-fast: 150ms;
+  --duration-base: 250ms;
+  --duration-slow: 400ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
+
+  /* Layout */
+  --container-max: 1200px;
+  --container-gutter: 24px;
+  --nav-height: 64px;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --container-gutter: 32px;
+  }
+}

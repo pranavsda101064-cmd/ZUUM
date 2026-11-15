@@ -1,0 +1,625 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Zuum | Rides and goods across Bengaluru</title>
+  <meta name="description" content="Book a bike, auto, cab or goods vehicle in one app. Upfront fares, live tracking and one account for Bengaluru.">
+  <meta name="theme-color" content="#090d16">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Zuum">
+  <meta property="og:url" content="https://zuum-web.onrender.com/">
+  <meta property="og:title" content="Zuum | Rides and goods across Bengaluru">
+  <meta property="og:description" content="Book a bike, auto, cab or goods vehicle in one app. Upfront fares, live tracking and one account for Bengaluru.">
+  <meta property="og:image" content="https://zuum-web.onrender.com/assets/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Zuum | Rides and goods across Bengaluru">
+  <meta name="twitter:description" content="Book a bike, auto, cab or goods vehicle in one app. Upfront fares, live tracking and one account for Bengaluru.">
+  <meta name="twitter:image" content="https://zuum-web.onrender.com/assets/og.jpg">
+  <link rel="canonical" href="https://zuum-web.onrender.com/">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="preload" href="assets/fonts/Inter-Regular.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="preload" href="assets/fonts/Inter-SemiBold.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="preload" as="image" href="assets/photos/blr_street_autos.webp">
+  <link rel="stylesheet" href="assets/css/tokens.css">
+  <link rel="stylesheet" href="assets/css/site.css">
+  <script>document.documentElement.classList.add("js");</script>
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Zuum",
+      "description": "Rides and goods across Bengaluru in one app.",
+      "areaServed": "Bengaluru, India"
+    }
+  </script>
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Where does Zuum work?",
+          "acceptedAnswer": {"@type": "Answer", "text": "Zuum is built for Bengaluru. The app supports rides and goods across the city."}
+        },
+        {
+          "@type": "Question",
+          "name": "What can I book with Zuum?",
+          "acceptedAnswer": {"@type": "Answer", "text": "Bikes, autos, hatchbacks, sedans and SUVs for rides. For goods: 2W parcel, 3W cargo, Tata Ace, pickup, van and tempo."}
+        },
+        {
+          "@type": "Question",
+          "name": "Can I send a parcel without travelling?",
+          "acceptedAnswer": {"@type": "Answer", "text": "Yes. Add pickup and drop, receiver details and a goods vehicle. Delivery closes with a delivery OTP and photo proof."}
+        }
+      ]
+    }
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <div class="scroll-progress" aria-hidden="true"><span></span></div>
+  <header class="site-header">
+    <nav class="nav-shell" aria-label="Main">
+      <a class="brand" href="index.html">
+        <span class="brand__mark" aria-hidden="true">Z</span>
+        <span class="brand__word">Zuum<span class="brand__dot">.</span></span>
+      </a>
+      <div class="nav-links">
+        <a class="nav-link" href="#why" aria-current="location">Ride</a>
+        <a class="nav-link" href="#goods">Send goods</a>
+        <a class="nav-link" href="#fleet">Fleet</a>
+        <a class="nav-link" href="partner.html">For partners</a>
+        <a class="nav-link" href="#faq">Support</a>
+      </div>
+      <a class="nav-install" href="#install" data-download="downloads/zuum-customer.apk" data-install="customer" download>Install app</a>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-menu" aria-label="Open menu" data-menu-toggle>
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
+  </header>
+
+  <nav class="menu" id="site-menu" aria-label="Mobile">
+    <p class="menu__label">Menu</p>
+    <ul class="menu__links">
+      <li><a href="#why" style="--i:0">Ride</a></li>
+      <li><a href="#goods" style="--i:1">Send goods</a></li>
+      <li><a href="#fleet" style="--i:2">Fleet</a></li>
+      <li><a href="partner.html" style="--i:3">For partners</a></li>
+      <li><a href="#faq" style="--i:4">Support</a></li>
+    </ul>
+    <a class="btn btn--light btn--lg menu__install" href="#install" data-download="downloads/zuum-customer.apk" data-install="customer" download>
+      <svg class="icon" aria-hidden="true"><use href="assets/icons.svg#i-android-logo"></use></svg>
+      Install for Android
+    </a>
+    <p class="menu__foot">Bengaluru, move. Rides and goods in one app.</p>
+  </nav>
+
+  <main id="main">
+    <section class="hero" data-hero aria-labelledby="hero-title">
+      <div class="hero__media" data-parallax-anchor aria-hidden="true">
+        <img class="hero__photo" src="assets/photos/blr_street_autos.webp" alt="" width="1400" height="875" data-parallax="-0.38" fetchpriority="high">
+        <div class="hero__scrim"></div>
+      </div>
+
+      <div class="container hero__inner">
+        <div class="hero__copy">
+          <p class="hero__kicker reveal">Bengaluru, move</p>
+          <h1 id="hero-title" class="reveal" style="--reveal-delay:1">
+            <span class="hero__line">Move Bengaluru.</span>
+            <span class="hero__line">Skip the haggling.</span>
+          </h1>
+          <p class="hero__sub reveal" style="--reveal-delay:2">
+            Book a bike, auto, cab or goods vehicle in one app. Upfront fares,
+            live tracking and one account for the whole city.
+          </p>
+          <div class="hero__actions reveal" style="--reveal-delay:3">
+            <a class="btn btn--light btn--lg" href="#install" data-download="downloads/zuum-customer.apk" data-install="customer" download>
+              <svg class="icon icon--lg" aria-hidden="true"><use href="assets/icons.svg#i-android-logo"></use></svg>
+              Install Zuum for Android
+            </a>
+          </div>
+          <ul class="hero__proof reveal" style="--reveal-delay:4">
+            <li><svg class="icon icon--sm" aria-hidden="true"><use href="assets/icons.svg#i-check-circle"></use></svg>Upfront fares</li>
+            <li><svg class="icon icon--sm" aria-hidden="true"><use href="assets/icons.svg#i-check-circle"></use></svg>Rides and goods</li>
+            <li><svg class="icon icon--sm" aria-hidden="true"><use href="assets/icons.svg#i-check-circle"></use></svg>Built for Bengaluru</li>
+          </ul>
+        </div>
+
+        <div class="hero__visual reveal" style="--reveal-delay:2" aria-hidden="true">
+          <div class="device" data-parallax="-0.22">
+            <img src="assets/app/customer-home.webp" alt="" width="720" height="1527" fetchpriority="high">
+          </div>
+          <div class="float-card float-card--one" data-parallax="0.12">
+            <span class="float-card__icon">
+              <svg class="icon" aria-hidden="true"><use href="assets/icons.svg#i-currency-circle-dollar"></use></svg>
+            </span>
+            <span>
+              <span class="float-card__title">Fare locked</span>
+              <span class="float-card__meta">Before you book</span>
+            </span>
+          </div>
+          <div class="float-card float-card--two" data-parallax="-0.1">
+            <span class="float-card__icon">
+              <svg class="icon" aria-hidden="true"><use href="assets/icons.svg#i-package"></use></svg>
+            </span>
+            <span>
+              <span class="float-card__title">Goods, handled</span>
+              <span class="float-card__meta">2W to tempo</span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <a class="hero__cue" href="#tagline">Scroll</a>
+    </section>
+
+    <div class="ticker" aria-hidden="true">
+      <div class="ticker__track">
+        <div class="ticker__group">
+          <span>Bike</span><span>Auto</span><span>Cab</span><span>2W parcel</span><span>3W cargo</span><span>Ace</span><span>Pickup</span><span>Van</span><span>Tempo</span>
+        </div>
+        <div class="ticker__group">
+          <span>Bike</span><span>Auto</span><span>Cab</span><span>2W parcel</span><span>3W cargo</span><span>Ace</span><span>Pickup</span><span>Van</span><span>Tempo</span>
+        </div>
+      </div>
+    </div>
+
+    <section class="tagline" id="tagline" aria-labelledby="tagline-title">
+      <div class="container">
+        <p class="section-label reveal">The idea</p>
+        <h2 class="tagline__text" id="tagline-title" data-tagline>Rides for people. Cargo for work. Same honest fares.</h2>
+        <p class="tagline__support reveal">
+          One account, one map, and one place to see the fare before you commit.
+          No second app when the day needs a truck.
+        </p>
+      </div>
+    </section>
+
+    <section class="section fleet" id="fleet" data-carousel data-carousel-autoplay="6000" aria-labelledby="fleet-title">
+      <div class="container">
+        <div class="section-head">
+          <div class="section-head__copy reveal">
+            <p class="section-label">The fleet</p>
+            <h2 class="heading-2" id="fleet-title">One app. Every kind of move.</h2>
+            <p class="body-lg">
+              From a quick bike hop to a tempo for the shop, pick the vehicle
+              that fits the day. Fares stay on screen.
+            </p>
+          </div>
+        </div>
+
+        <div class="fleet__rail-wrap reveal">
+          <div class="fleet__rail" data-carousel-track tabindex="0" role="region" aria-roledescription="carousel" aria-label="Vehicle types">
+            <article class="fleet-card" data-title="Bike" role="group" aria-roledescription="slide" aria-label="1 of 7: Bike">
+              <div class="fleet-card__media">
+                <img src="assets/photos/blr_street_autos.webp" alt="A street scene in Bengaluru with two wheelers" width="1400" height="875" loading="lazy" data-parallax="0.08">
+                <span class="fleet-card__tag">Quick hop</span>
+                <span class="fleet-card__icon"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#i-bicycle"></use></svg></span>
+              </div>
+              <div class="fleet-card__body">
+                <div class="fleet-card__top"><h3>Bike</h3><span class="fleet-card__index">01</span></div>
+                <p>Two wheels through the traffic. Fare locked before you book.</p>
+              </div>
+            </article>
+
+            <article class="fleet-card" data-title="Auto" role="group" aria-roledescription="slide" aria-label="2 of 7: Auto">
+              <div class="fleet-card__media">
+                <img src="assets/photos/blr_auto_lane.webp" alt="Autos and traffic on a tree lined Bengaluru road" width="1400" height="875" loading="lazy" data-parallax="0.08">
+                <span class="fleet-card__tag">Everyday</span>
+                <span class="fleet-card__icon"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#i-steering-wheel"></use></svg></span>
+              </div>
+              <div class="fleet-card__body">
+                <div class="fleet-card__top"><h3>Auto</h3><span class="fleet-card__index">02</span></div>
+                <p>The classic Bengaluru commute, with the fare on screen.</p>
+              </div>
+            </article>
+
+            <article class="fleet-card" data-title="Cab" role="group" aria-roledescription="slide" aria-label="3 of 7: Cab">
+              <div class="fleet-card__media">
+                <img src="assets/photos/blr_aerial_dusk.webp" alt="South Bengaluru skyline at dusk" width="1400" height="875" loading="lazy" data-parallax="0.08">
+                <span class="fleet-card__tag">Comfort</span>
+                <span class="fleet-card__icon"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#i-car-profile"></use></svg></span>
+              </div>
+              <div class="fleet-card__body">
+                <div class="fleet-card__top"><h3>Cab</h3><span class="fleet-card__index">03</span></div>
+                <p>Hatchback, sedan or SUV for the longer run across town.</p>
+              </div>
+            </article>
+
+            <article class="fleet-card" data-title="2W parcel" role="group" aria-roledescription="slide" aria-label="4 of 7: 2W parcel">
+              <div class="fleet-card__media">
+                <img src="assets/photos/blr_goods_truck.webp" alt="A goods truck parked on a Bengaluru street" width="1400" height="875" loading="lazy" data-parallax="0.08">
+                <span class="fleet-card__tag">Small parcel</span>
+                <span class="fleet-card__icon"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#i-package"></use></svg></span>
+              </div>
+              <div class="fleet-card__body">
+                <div class="fleet-card__top"><h3>2W parcel</h3><span class="fleet-card__index">04</span></div>
+                <p>Documents, tiffin boxes and small loads that need to move now.</p>
+              </div>
+            </article>
+
+            <article class="fleet-card" data-title="3W cargo" role="group" aria-roledescription="slide" aria-label="5 of 7: 3W cargo">
+              <div class="fleet-card__media">
+                <img src="assets/photos/blr_goods_van.webp" alt="A small goods van on a Bengaluru street" width="1400" height="875" loading="lazy" data-parallax="0.08">
+                <span class="fleet-card__tag">More room</span>
+                <span class="fleet-card__icon"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#i-truck"></use></svg></span>
+              </div>
+              <div class="fleet-card__body">
+                <div class="fleet-card__top"><h3>3W cargo</h3><span class="fleet-card__index">05</span></div>
+                <p>A little more space for shop stock and bulkier parcels.</p>
+              </div>
+            </article>
+
+            <article class="fleet-card" data-title="Ace and pickup" role="group" aria-roledescription="slide" aria-label="6 of 7: Ace and pickup">
+              <div class="fleet-card__media">
+                <img src="assets/photos/blr_goods_truck.webp" alt="A Tata Ace goods truck on a Bengaluru street" width="1400" height="875" loading="lazy" data-parallax="0.08">
+                <span class="fleet-card__tag">Big load</span>
+                <span class="fleet-card__icon"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#i-truck"></use></svg></span>
+              </div>
+              <div class="fleet-card__body">
+                <div class="fleet-card__top"><h3>Ace and pickup</h3><span class="fleet-card__index">06</span></div>
+                <p>Ace, pickup, van or tempo when the day needs a real truck.</p>
+              </div>
+            </article>
+
+            <article class="fleet-card" data-title="Night rides" role="group" aria-roledescription="slide" aria-label="7 of 7: Night rides">
+              <div class="fleet-card__media">
+                <img src="assets/photos/blr_night_traffic.webp" alt="Night traffic on Brigade Road in Bengaluru" width="1400" height="875" loading="lazy" data-parallax="0.08">
+                <span class="fleet-card__tag">After dark</span>
+                <span class="fleet-card__icon"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#i-shield-check"></use></svg></span>
+              </div>
+              <div class="fleet-card__body">
+                <div class="fleet-card__top"><h3>Night rides</h3><span class="fleet-card__index">07</span></div>
+                <p>Live tracking, trip sharing and SOS on the late ride home.</p>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <div class="fleet__controls reveal">
+          <div class="fleet__buttons">
+            <button class="rail-btn" type="button" data-carousel-prev aria-label="Previous vehicles">
+              <svg class="icon icon--flip" aria-hidden="true"><use href="assets/icons.svg#i-arrow-right"></use></svg>
+            </button>
+            <button class="rail-btn" type="button" data-carousel-next aria-label="Next vehicles">
+              <svg class="icon" aria-hidden="true"><use href="assets/icons.svg#i-arrow-right"></use></svg>
+            </button>
+          </div>
+          <div class="fleet__dots" role="group" aria-label="Choose a vehicle slide" data-carousel-dots></div>
+          <p class="sr-only" aria-live="polite" data-carousel-status></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--surface" id="why" aria-labelledby="why-title">
+      <div class="container">
+        <div class="section-head">
+          <div class="section-head__copy reveal">
+            <p class="section-label">Why Zuum</p>
+            <h2 class="heading-2" id="why-title">The city, without the usual friction.</h2>
+            <p class="body-lg">
+              A ride home, a parcel across town, a truck for the shop. Zuum keeps
+              the fare, the driver and the route in plain sight.
+            </p>
+          </div>
+          <a class="link-arrow reveal" href="#goods">
+            See the goods side
+            <svg class="icon icon--sm" aria-hidden="true"><use href="assets/icons.svg#i-arrow-right"></use></svg>
+          </a>
+        </div>
+
+        <div class="feature-grid">
+          <article class="feature-card feature-card--dark reveal" data-tilt>
+            <span class="feature-card__icon">
+              <svg class="icon icon--lg" aria-hidden="true"><use href="assets/icons.svg#i-currency-circle-dollar"></use></svg>
+            </span>
+            <span class="feature-card__index">01</span>
+            <h3>Upfront, honest fares</h3>
+            <p>The fare is on screen before you book. No meter surprises, no haggling at the signal.</p>
+          </article>
+
+          <article class="feature-card reveal" data-tilt style="--reveal-delay:1">
+            <span class="feature-card__icon">
+              <svg class="icon icon--lg" aria-hidden="true"><use href="assets/icons.svg#i-package"></use></svg>
+            </span>
+            <span class="feature-card__index">02</span>
+            <h3>One app for people and parcels</h3>
+            <p>Bike, auto, hatchback, sedan or SUV. Then a 2W parcel, 3W cargo, Ace, pickup, van or tempo.</p>
+          </article>
+
+          <article class="feature-card reveal" data-tilt>
+            <span class="feature-card__icon">
+              <svg class="icon icon--lg" aria-hidden="true"><use href="assets/icons.svg#i-map-pin-line"></use></svg>
+            </span>
+            <span class="feature-card__index">03</span>
+            <h3>A route you can follow</h3>
+            <p>Driver details, live route and an ETA that updates as the trip moves. Start with an OTP, not a guess.</p>
+          </article>
+
+          <article class="feature-card reveal" data-tilt style="--reveal-delay:1">
+            <span class="feature-card__icon">
+              <svg class="icon icon--lg" aria-hidden="true"><use href="assets/icons.svg#i-shield-check"></use></svg>
+            </span>
+            <span class="feature-card__index">04</span>
+            <h3>Safety within reach</h3>
+            <p>Share your trip, keep SOS one tap away, and reach support from the same screen.</p>
+          </article>
+        </div>
+
+        <div class="photo-band" id="goods">
+          <figure class="photo-tile reveal reveal--scale">
+            <img class="photo-tile__img" src="assets/photos/blr_goods_truck.webp" alt="A goods truck parked on a Bengaluru street" width="1400" height="875" loading="lazy" data-parallax="0.12">
+            <figcaption class="photo-tile__caption">
+              <strong>Cargo, handled</strong>
+              <span>2W parcels to Ace, pickup, van and tempo.</span>
+            </figcaption>
+          </figure>
+          <figure class="photo-tile reveal reveal--scale" style="--reveal-delay:1">
+            <img class="photo-tile__img" src="assets/photos/blr_auto_lane.webp" alt="Autos and traffic on a tree lined Bengaluru road" width="1400" height="875" loading="lazy" data-parallax="-0.1">
+            <figcaption class="photo-tile__caption">
+              <strong>The everyday commute</strong>
+              <span>Bike, auto and cab, with the fare shown up front.</span>
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="section how" id="how" aria-labelledby="how-title">
+      <div class="how__bg" data-parallax-anchor aria-hidden="true">
+        <img src="assets/photos/blr_night_traffic.webp" alt="" width="1400" height="875" loading="lazy" data-parallax="0.1">
+      </div>
+      <div class="container">
+        <div class="section-head">
+          <div class="section-head__copy reveal">
+            <p class="section-label">How it works</p>
+            <h2 class="heading-2" id="how-title">Three steps. Then the city is yours.</h2>
+          </div>
+        </div>
+
+        <div class="how__grid">
+          <div class="steps">
+            <article class="step is-active reveal" data-step data-label="Search">
+              <span class="step__index">01</span>
+              <h3>Tell us where.</h3>
+              <p>Search a drop or use your current location. Saved places keep the daily run quick.</p>
+            </article>
+            <article class="step reveal" data-step data-label="Choose">
+              <span class="step__index">02</span>
+              <h3>Pick your ride or your truck.</h3>
+              <p>Bike, auto, cab or the right goods vehicle. The fare and ETA are on screen before you confirm.</p>
+            </article>
+            <article class="step reveal" data-step data-label="Track">
+              <span class="step__index">03</span>
+              <h3>Follow it to the door.</h3>
+              <p>Driver details, live route, OTP start and a receipt when it ends. Share the trip or reach support in one tap.</p>
+            </article>
+          </div>
+
+          <div class="how__phone reveal" data-step-phone data-active-step="Search">
+            <div class="device" data-parallax="-0.16" aria-hidden="true">
+              <img src="assets/app/customer-home.webp" alt="" width="720" height="1527" loading="lazy">
+            </div>
+            <span class="step-chip" aria-hidden="true"><span data-step-label>Search</span></span>
+            <div class="step-overlay" aria-hidden="true">
+              <div class="step-overlay__card" data-overlay="Search">
+                <span class="step-overlay__icon"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#i-map-pin-line"></use></svg></span>
+                <span><strong>Where to?</strong><small>Search a drop</small></span>
+              </div>
+              <div class="step-overlay__card" data-overlay="Choose">
+                <span class="step-overlay__icon"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#i-currency-circle-dollar"></use></svg></span>
+                <span><strong>Fare locked</strong><small>Before you book</small></span>
+              </div>
+              <div class="step-overlay__card" data-overlay="Track">
+                <span class="step-overlay__icon"><svg class="icon" aria-hidden="true"><use href="assets/icons.svg#i-navigation-arrow"></use></svg></span>
+                <span><strong>Trip live</strong><small>Driver on the way</small></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section partner-teaser" id="partners" aria-labelledby="partners-title">
+      <div class="partner-teaser__media" data-parallax-anchor aria-hidden="true">
+        <img src="assets/photos/blr_heritage_night.webp" alt="" width="1400" height="875" loading="lazy" data-parallax="0.12">
+      </div>
+      <div class="container">
+        <div class="partner-teaser__grid">
+          <div class="partner-teaser__copy reveal">
+            <p class="section-label">For partners</p>
+            <h2 id="partners-title">Explore the partner side.</h2>
+            <p class="partner-teaser__sub">
+              Drive or deliver on your own schedule. Zuum Partner puts rides and
+              goods requests in one place, with the payout visible before you accept.
+            </p>
+            <ul class="perk-list">
+              <li class="perk">
+                <svg class="icon" aria-hidden="true"><use href="assets/icons.svg#i-check-circle"></use></svg>
+                See the payout before you accept.
+              </li>
+              <li class="perk">
+                <svg class="icon" aria-hidden="true"><use href="assets/icons.svg#i-check-circle"></use></svg>
+                Rides and goods in one queue.
+              </li>
+              <li class="perk">
+                <svg class="icon" aria-hidden="true"><use href="assets/icons.svg#i-check-circle"></use></svg>
+                KYC, vehicles, earnings and support in the app.
+              </li>
+            </ul>
+            <div class="partner-teaser__actions">
+              <a class="btn btn--light" href="partner.html">
+                Explore Zuum Partner
+                <svg class="icon" aria-hidden="true"><use href="assets/icons.svg#i-arrow-up-right"></use></svg>
+              </a>
+            </div>
+          </div>
+
+          <div class="offer-card reveal" style="--reveal-delay:1" aria-hidden="true">
+            <div class="offer-card__head">
+              <span class="offer-card__label">New request</span>
+              <span class="live-pill">Live</span>
+            </div>
+            <div class="offer-route">
+              <div class="offer-stop">
+                <span>Pickup</span>
+                <strong>Koramangala 5th Block</strong>
+              </div>
+              <div class="offer-stop offer-stop--drop">
+                <span>Drop</span>
+                <strong>Indiranagar 100 Feet Road</strong>
+              </div>
+            </div>
+            <div class="offer-lines">
+              <div class="offer-line"><span>Fare</span><strong>Shown up front</strong></div>
+              <div class="offer-line"><span>Platform fee</span><strong>Visible</strong></div>
+              <div class="offer-line"><span>Your payout</span><strong>Before you accept</strong></div>
+            </div>
+            <div class="offer-card__actions">
+              <span class="offer-btn offer-btn--primary">Accept</span>
+              <span class="offer-btn offer-btn--ghost">Pass</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--surface" id="faq" aria-labelledby="faq-title">
+      <div class="container faq__grid">
+        <div class="faq__intro reveal">
+          <p class="section-label">Questions</p>
+          <h2 class="heading-2" id="faq-title">Before you install.</h2>
+          <p class="body-lg">The short answers about your first ride or parcel.</p>
+          <p class="caption" style="margin-top:var(--space-300)">
+            Still stuck? <a class="link-arrow" href="https://github.com/pranavsda101064-cmd/ZUUM/issues" target="_blank" rel="noreferrer">Reach the team</a>
+          </p>
+        </div>
+
+        <div class="faq-list reveal">
+          <details class="faq-item">
+            <summary>Where does Zuum work?<span class="faq-plus" aria-hidden="true"></span></summary>
+            <p>Zuum is built for Bengaluru. The app supports rides and goods across the city, with more cities planned.</p>
+          </details>
+          <details class="faq-item">
+            <summary>What can I book?<span class="faq-plus" aria-hidden="true"></span></summary>
+            <p>Bikes, autos, hatchbacks, sedans and SUVs for rides. For goods: 2W parcel, 3W cargo, Tata Ace, pickup, van and tempo.</p>
+          </details>
+          <details class="faq-item">
+            <summary>How is my fare decided?<span class="faq-plus" aria-hidden="true"></span></summary>
+            <p>Zuum shows an upfront fare based on distance, time and demand before you book. The breakdown stays visible on the receipt.</p>
+          </details>
+          <details class="faq-item">
+            <summary>Can I send a parcel without travelling?<span class="faq-plus" aria-hidden="true"></span></summary>
+            <p>Yes. Add pickup and drop, receiver details and a goods vehicle. Delivery closes with a delivery OTP and photo proof.</p>
+          </details>
+          <details class="faq-item">
+            <summary>What payment methods work?<span class="faq-plus" aria-hidden="true"></span></summary>
+            <p>Cash, UPI and the Zuum wallet are part of the app. Wallet top ups and trip payments stay in your account history.</p>
+          </details>
+          <details class="faq-item">
+            <summary>Is there safety support?<span class="faq-plus" aria-hidden="true"></span></summary>
+            <p>Share your live trip, keep SOS one tap away, and reach support from the trip screen.</p>
+          </details>
+          <details class="faq-item">
+            <summary>What about iOS?<span class="faq-plus" aria-hidden="true"></span></summary>
+            <p>Zuum is Android first. The iOS build is not available yet.</p>
+          </details>
+          <details class="faq-item">
+            <summary>How do I install the app?<span class="faq-plus" aria-hidden="true"></span></summary>
+            <p>Tap Install for Android. If the public build has not landed yet, the button tells you instead of sending you to a dead file.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <section class="install" id="install" aria-labelledby="install-title">
+      <div class="container">
+        <div class="install__panel reveal reveal--scale">
+          <div class="install__media" data-parallax-anchor aria-hidden="true">
+            <img src="assets/photos/blr_sky_sunset.webp" alt="" width="1400" height="875" loading="lazy" data-parallax="0.1">
+          </div>
+          <div class="install__copy">
+            <p class="section-label">Get the app</p>
+            <h2 id="install-title">Take Zuum with you.</h2>
+            <p>
+              One install for the morning commute, the shop run and the late
+              night ride home. The Android build is available now.
+            </p>
+            <div class="install__actions">
+              <a class="btn btn--light btn--lg" href="#install" data-download="downloads/zuum-customer.apk" data-install="customer" download>
+                <svg class="icon icon--lg" aria-hidden="true"><use href="assets/icons.svg#i-android-logo"></use></svg>
+                Install Zuum for Android
+              </a>
+              <a class="btn btn--ghost-dark" href="partner.html">Partner with Zuum</a>
+            </div>
+            <p class="install__meta">Android 7.0 and up. Your install icon stays ready if the build is not public yet.</p>
+          </div>
+          <div class="install__art" aria-hidden="true">
+            <div class="device">
+              <img src="assets/app/customer-welcome.webp" alt="" width="720" height="1527" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a class="brand" href="index.html">
+            <span class="brand__mark" aria-hidden="true">Z</span>
+            <span class="brand__word">Zuum<span class="brand__dot">.</span></span>
+          </a>
+          <p>Rides and goods across Bengaluru. One app, upfront fares, no haggling.</p>
+          <p class="footer-kannada" lang="kn">????? ????????</p>
+        </div>
+        <div class="footer-col">
+          <h3>Product</h3>
+          <ul>
+            <li><a href="#why">Ride</a></li>
+            <li><a href="#goods">Send goods</a></li>
+            <li><a href="#fleet">Fleet</a></li>
+            <li><a href="partner.html">For partners</a></li>
+            <li><a href="#faq">Support</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3>Company</h3>
+          <ul>
+            <li><a href="privacy.html">Privacy</a></li>
+            <li><a href="terms.html">Terms</a></li>
+            <li><a href="credits.html">Photo credits</a></li>
+            <li><a href="https://github.com/pranavsda101064-cmd/ZUUM/issues" target="_blank" rel="noreferrer">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3>Get the app</h3>
+          <ul>
+            <li><a href="#install" data-download="downloads/zuum-customer.apk" data-install="customer" download>Install for Android</a></li>
+            <li><a href="partner.html#install">Zuum Partner</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© <span data-year>2026</span> Zuum. Built in Bengaluru.</p>
+        <ul>
+          <li><a href="privacy.html">Privacy</a></li>
+          <li><a href="terms.html">Terms</a></li>
+          <li><a href="credits.html">Photo credits</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+  <div class="toast" role="status" aria-live="polite" data-toast></div>
+  <script src="assets/js/site.js" defer></script>
+</body>
+</html>
