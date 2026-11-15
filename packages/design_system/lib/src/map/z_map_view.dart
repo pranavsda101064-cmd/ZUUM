@@ -30,6 +30,7 @@ class ZMapView extends StatefulWidget {
     this.bearing = 0,
     this.showControls = false,
     this.styleUrl,
+    this.recenterSignal = 0,
   });
 
   final ZMapCenter center;
@@ -54,6 +55,9 @@ class ZMapView extends StatefulWidget {
 
   final bool showControls;
   final String? styleUrl;
+
+  /// Increment to re-centre the native camera on [follow] or [center].
+  final int recenterSignal;
 
   static const defaultStyleUrl = String.fromEnvironment(
     'MAP_STYLE_URL',
@@ -269,6 +273,10 @@ class _ZMapViewState extends State<ZMapView> {
     if (widget.styleUrl != oldWidget.styleUrl) {
       _style = null;
       _resolveStyle();
+    }
+
+    if (widget.recenterSignal != oldWidget.recenterSignal) {
+      _recenter();
     }
 
     final follow = widget.follow;

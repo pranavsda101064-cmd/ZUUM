@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:zuum_core/core.dart';
 import 'package:zuum_design_system/design_system.dart';
 
+import '../../shared/current_place.dart';
 import '../booking/booking_controller.dart';
 
 /// Home — Gemini spec §2d: full-bleed map, floating top bar (profile +
@@ -33,6 +36,38 @@ class _HomeTabState extends ConsumerState<HomeTab> {
     ('Tempo', 'veh_tempo', '10m'),
   ];
 
+  PlaceSuggestion? _currentPlace;
+  StreamSubscription<PlaceSuggestion>? _locationSub;
+  bool _pickupSeeded = false;
+  int _recenterSignal = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _watchLocation();
+  }
+
+  @override
+  void dispose() {
+    _locationSub?.cancel();
+    super.dispose();
+  }
+
+  void _watchLocation() {
+    _locationSub?.cancel();
+    _locationSub = currentPlaceStream().listen((place) {
+      if (!mounted) return;
+      setState(() => _currentPlace = place);
+      if (!_pickupSeeded) {
+        _pickupSeeded = true;
+        final draft = ref.read(bookingControllerProvider);
+        if (draft.pickup == null && draft.drop == null) {
+          ref.read(bookingControllerProvider.notifier).setPickup(place);
+        }
+      }
+    });
+  }
+
   void _openSearch() => context.push('/search');
 
   void _quickSelect(String code) {
@@ -45,11 +80,24 @@ class _HomeTabState extends ConsumerState<HomeTab> {
     final draft = ref.watch(bookingControllerProvider);
     final goodsMode = draft.mode == BookingMode.goods;
     final pickupLabel = draft.pickup?.name ?? 'Current location';
+    final place = _currentPlace;
+    final center = place == null
+        ? const ZMapCenter(12.9716, 77.5946)
+        : ZMapCenter(place.lat, place.lng);
 
     return Scaffold(
       body: Stack(
         children: [
-          const Positioned.fill(child: ZMapView()),
+          Positioned.fill(
+            child: ZMapView(
+              center: center,
+              follow: place == null ? null : center,
+              markers: place == null
+                  ? const []
+                  : [ZMapMarker(place.lat, place.lng)],
+              recenterSignal: _recenterSignal,
+            ),
+          ),
 
           // Layer 2 — top floating bar.
           SafeArea(
@@ -313,7 +361,7 @@ class _HomeTabState extends ConsumerState<HomeTab> {
               icon: Icons.my_location_rounded,
               filled: true,
               foreground: ZColors.primary,
-              onPressed: () {}, // camera recenter hooks up with live GPS
+              onPressed: () => setState(() => _recenterSignal++),
               tooltip: 'Recenter map',
             ),
           ),

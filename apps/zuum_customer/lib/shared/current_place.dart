@@ -41,3 +41,57 @@ Future<PlaceSuggestion?> currentPlace({String label = 'Current location'}) async
     return null;
   }
 }
+
+/// Continuous foreground location for the live home map.
+Stream<PlaceSuggestion> currentPlaceStream({
+  String label = 'Current location',
+}) async* {
+  if (Platform.environment.containsKey('FLUTTER_TEST')) return;
+  if (AppEnv.isMock) {
+    yield PlaceSuggestion(
+      name: label,
+      address: 'Koramangala, Bengaluru',
+      lat: 12.9352,
+      lng: 77.6245,
+    );
+    return;
+  }
+  try {
+    if (!await Geolocator.isLocationServiceEnabled()) return;
+    var permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+    }
+    if (permission == LocationPermission.denied ||
+        permission == LocationPermission.deniedForever) {
+      return;
+    }
+    final initial = await Geolocator.getCurrentPosition(
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.high,
+        timeLimit: Duration(seconds: 8),
+      ),
+    );
+    yield PlaceSuggestion(
+      name: label,
+      address: 'Pinned on the map',
+      lat: initial.latitude,
+      lng: initial.longitude,
+    );
+    yield* Geolocator.getPositionStream(
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.high,
+        distanceFilter: 10,
+      ),
+    ).map(
+      (position) => PlaceSuggestion(
+        name: label,
+        address: 'Pinned on the map',
+        lat: position.latitude,
+        lng: position.longitude,
+      ),
+    );
+  } catch (_) {
+    // Keep the last known location; permission may be denied.
+  }
+}
