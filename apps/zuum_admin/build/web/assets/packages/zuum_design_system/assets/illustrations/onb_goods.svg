@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="140" viewBox="0 0 200 140" fill="none">
+  <!-- cargo box -->
+  <rect x="34" y="46" width="84" height="48" rx="8" fill="#FFFFFF" stroke="#090D16" stroke-width="2.5"/>
+  <!-- cabin -->
+  <path d="M118 60h26l18 20v14h-44z" fill="#FFFFFF" stroke="#090D16" stroke-width="2.5" stroke-linejoin="round"/>
+  <!-- windshield -->
+  <path d="M126 66h14l10 12h-24z" fill="#F3F4F6" stroke="#090D16" stroke-width="2" stroke-linejoin="round"/>
+  <!-- box seam + package accent -->
+  <path d="M76 46v48" stroke="#090D16" stroke-width="2"/>
+  <rect x="46" y="58" width="22" height="24" rx="3" fill="#F3F4F6" stroke="#090D16" stroke-width="2"/>
+  <path d="M57 58v24M46 68h22" stroke="#090D16" stroke-width="1.75"/>
+  <!-- wheels -->
+  <circle cx="64" cy="100" r="13" fill="#FFFFFF" stroke="#090D16" stroke-width="2.5"/>
+  <circle cx="64" cy="100" r="4" fill="#090D16"/>
+  <circle cx="140" cy="100" r="13" fill="#FFFFFF" stroke="#090D16" stroke-width="2.5"/>
+  <circle cx="140" cy="100" r="4" fill="#090D16"/>
+  <!-- ground -->
+  <path d="M22 116h156" stroke="#090D16" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- roof accent -->
+  <path d="M44 46h64" stroke="#111827" stroke-width="3" stroke-linecap="round"/>
+  <!-- speed lines -->
+  <path d="M16 62h12M12 76h14" stroke="#111827" stroke-width="2.5" stroke-linecap="round"/>
+</svg>
