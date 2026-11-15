@@ -156,7 +156,12 @@ Legend: ⬜ not started · 🟨 in progress · ✅ done · ⛔ blocked
       ops analytics series, stale-search safety net, KYC/POD upload
       type/size validation, request IDs, seed passwords stable across
       free-tier restarts; 72 tests green, OpenAPI 0 errors
-- [ ] Live clients (partner/customer), visual pass, signed APK/AAB
+- [x] Live client layer: partner `ApiPartnerClient` (JWT/multipart/offers/
+      trips/POD/location/earnings/fleet), polling offer feed, GPS uplink,
+      prod UI gates; customer polling realtime, backend places, POD upload,
+      cold-start retry + "waking server" messaging
+- [x] Partner goods POD capture (receiver, photo, optional signature)
+- [ ] Visual pass, signed APK/AAB, live device E2E
 
 ## Phase 5 — Admin Dashboard (Flutter Web) ⬜
 - [ ] Live ops map, bookings, drivers, customers, finance, analytics, config, audit

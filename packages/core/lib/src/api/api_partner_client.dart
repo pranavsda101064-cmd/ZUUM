@@ -23,7 +23,7 @@ class ApiPartnerClient implements PartnerApiContract {
           BaseOptions(
             baseUrl: baseUrl,
             connectTimeout: const Duration(seconds: 20),
-            receiveTimeout: const Duration(seconds: 30),
+            receiveTimeout: const Duration(seconds: 45),
           ),
         );
     _dio.interceptors.add(
@@ -38,6 +38,23 @@ class ApiPartnerClient implements PartnerApiContract {
         onError: (error, handler) async {
           final status = error.response?.statusCode;
           final retried = error.requestOptions.extra['retried'] == true;
+          final wakeRetried =
+              error.requestOptions.extra['wake_retried'] == true;
+          final waking = status == 502 ||
+              status == 503 ||
+              error.type == DioExceptionType.connectionTimeout ||
+              error.type == DioExceptionType.sendTimeout ||
+              error.type == DioExceptionType.receiveTimeout;
+          if (waking && !wakeRetried) {
+            await Future<void>.delayed(const Duration(seconds: 2));
+            final opts = error.requestOptions..extra['wake_retried'] = true;
+            try {
+              final response = await _dio.fetch<dynamic>(opts);
+              return handler.resolve(response);
+            } on DioException catch (e) {
+              return handler.next(e);
+            }
+          }
           if (status == 401 && !retried) {
             final refreshed = await _tryRefresh();
             if (refreshed) {
@@ -81,6 +98,18 @@ class ApiPartnerClient implements PartnerApiContract {
   Never _fail(DioException error) {
     final responseData = error.response?.data;
     final map = responseData is Map<String, dynamic> ? responseData : null;
+    final status = error.response?.statusCode;
+    if (status == 502 ||
+        status == 503 ||
+        error.type == DioExceptionType.connectionTimeout ||
+        error.type == DioExceptionType.sendTimeout ||
+        error.type == DioExceptionType.receiveTimeout) {
+      throw ApiException(
+        message: 'Server is waking up. Tap retry in a moment.',
+        statusCode: status,
+        code: 'server_waking',
+      );
+    }
     if (error.response == null) {
       throw const ApiException(
         message: 'No internet connection. Check your network.',

@@ -54,6 +54,16 @@ Both ship branded launcher icons + native splash screens, shared page
 transitions, skeleton loading, animated counters, vector maps with routed
 geometry and (partner) turn-by-turn navigation.
 
+## Live builds (Render API)
+
+```bash
+flutter build apk --release   --dart-define=ENV=prod   --dart-define=API_BASE_URL=https://zuum-api.onrender.com/api/v1   --dart-define=WS_BASE_URL=wss://zuum-api.onrender.com/ws
+```
+
+Offline/demo builds still use `--dart-define=ENV=mock` (no backend needed).
+The free Render instance may sleep; clients retry once and show a
+"server is waking up" message.
+
 ## Quick start (backend)
 
 ```bash

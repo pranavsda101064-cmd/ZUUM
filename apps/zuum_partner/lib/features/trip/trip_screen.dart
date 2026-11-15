@@ -1,6 +1,11 @@
+import 'dart:io' as io;
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:zuum_core/core.dart';
 import 'package:zuum_design_system/design_system.dart';
 
@@ -18,6 +23,10 @@ class TripScreen extends ConsumerStatefulWidget {
 
 class _TripScreenState extends ConsumerState<TripScreen> {
   final _otp = TextEditingController();
+  final _receiver = TextEditingController();
+  final _signatureKey = GlobalKey();
+  final _signature = ValueNotifier<List<Offset>>([]);
+  String? _podPhoto;
   bool _busy = false;
   bool _deliveryVerified = false;
   String? _error;
@@ -25,6 +34,8 @@ class _TripScreenState extends ConsumerState<TripScreen> {
   @override
   void dispose() {
     _otp.dispose();
+    _receiver.dispose();
+    _signature.dispose();
     super.dispose();
   }
 
@@ -76,10 +87,80 @@ class _TripScreenState extends ConsumerState<TripScreen> {
     }, action: 'Delivery verification');
   }
 
-  void _complete() => _run(
-        () => ref.read(tripControllerProvider.notifier).complete(),
-        action: 'Completion',
+  Future<void> _pickPodPhoto() async {
+    final choice = await showModalBottomSheet<String>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheet) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_camera_outlined),
+              title: const Text('Take delivery photo'),
+              onTap: () => Navigator.of(sheet).pop('camera'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library_outlined),
+              title: const Text('Choose from gallery'),
+              onTap: () => Navigator.of(sheet).pop('gallery'),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (choice == null || !mounted) return;
+    try {
+      final picked = await ImagePicker().pickImage(
+        source:
+            choice == 'camera' ? ImageSource.camera : ImageSource.gallery,
+        maxWidth: 1600,
+        imageQuality: 80,
       );
+      if (picked != null) setState(() => _podPhoto = picked.path);
+    } catch (_) {
+      setState(() => _error = 'Could not open the camera/gallery.');
+    }
+  }
+
+  Future<String?> _signatureFile() async {
+    if (_signature.value.isEmpty) return null;
+    try {
+      final boundary = _signatureKey.currentContext?.findRenderObject()
+          as RenderRepaintBoundary?;
+      if (boundary == null) return null;
+      final image = await boundary.toImage(pixelRatio: 3);
+      final data = await image.toByteData(format: ui.ImageByteFormat.png);
+      if (data == null) return null;
+      final dir = await io.Directory.systemTemp.createTemp('zuum_partner_pod');
+      final file = io.File('${dir.path}/signature.png');
+      await file.writeAsBytes(data.buffer.asUint8List(), flush: true);
+      return file.path;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  void _complete(PartnerTrip trip) {
+    if (trip.kind == OfferKind.goods) {
+      if (_receiver.text.trim().isEmpty) {
+        setState(() => _error = 'Enter the receiver name');
+        return;
+      }
+    }
+    _run(() async {
+      if (trip.kind == OfferKind.goods) {
+        final signaturePath = await _signatureFile();
+        await ref.read(partnerApiProvider).uploadDeliveryPod(
+              bookingId: trip.bookingId,
+              receiverName: _receiver.text.trim(),
+              photoPath: _podPhoto,
+              signaturePath: signaturePath,
+            );
+      }
+      await ref.read(tripControllerProvider.notifier).complete();
+    }, action: 'Completion');
+  }
 
   Future<void> _cancel() async {
     final reason = await showDialog<String>(
@@ -267,7 +348,7 @@ class _TripScreenState extends ConsumerState<TripScreen> {
             keyboardType: TextInputType.number,
             prefixIcon: Icons.lock_outline_rounded,
           ),
-          if (AppEnv.isMock && trip.devOtpHint != null) _devOtpHint(trip),
+          if (trip.devOtpHint != null) _devOtpHint(trip),
           const SizedBox(height: ZSpacing.md),
           ZButton(
             label: 'Start trip',
@@ -310,7 +391,7 @@ class _TripScreenState extends ConsumerState<TripScreen> {
               keyboardType: TextInputType.number,
               prefixIcon: Icons.verified_outlined,
             ),
-            if (AppEnv.isMock && trip.devOtpHint != null) _devOtpHint(trip),
+            if (trip.devOtpHint != null) _devOtpHint(trip),
             const SizedBox(height: ZSpacing.md),
             ZButton(
               label: 'Verify delivery OTP',
@@ -323,6 +404,7 @@ class _TripScreenState extends ConsumerState<TripScreen> {
           ];
         }
         return [
+          if (goods) ..._goodProofSection(),
           ZCommissionBreakdown(
             farePaise: trip.farePaise,
             commissionPaise: trip.commissionPaise,
@@ -334,7 +416,7 @@ class _TripScreenState extends ConsumerState<TripScreen> {
             icon: Icons.check_rounded,
             expand: true,
             loading: _busy,
-            onPressed: _complete,
+            onPressed: () => _complete(trip),
           ),
           const SizedBox(height: ZSpacing.sm),
           ZButton(
@@ -351,6 +433,62 @@ class _TripScreenState extends ConsumerState<TripScreen> {
       case PartnerTripStatus.cancelled:
         return const [];
     }
+  }
+
+  List<Widget> _goodProofSection() {
+    return [
+      Text('Delivery proof', style: ZTypography.bodyStrong),
+      const SizedBox(height: ZSpacing.sm),
+      ZTextField(
+        controller: _receiver,
+        label: 'Receiver name',
+        hint: 'Who accepted the goods?',
+        prefixIcon: Icons.person_outline_rounded,
+      ),
+      const SizedBox(height: ZSpacing.sm),
+      Row(
+        children: [
+          Expanded(
+            child: ZButton(
+              label: _podPhoto == null ? 'Add delivery photo' : 'Photo attached',
+              icon: _podPhoto == null
+                  ? Icons.add_a_photo_outlined
+                  : Icons.check_circle_outline_rounded,
+              variant: ZButtonVariant.secondary,
+              size: ZButtonSize.sm,
+              onPressed: _pickPodPhoto,
+            ),
+          ),
+        ],
+      ),
+      const SizedBox(height: ZSpacing.sm),
+      Row(
+        children: [
+          Text(
+            'Signature (optional)',
+            style: ZTypography.caption.copyWith(color: ZColors.textSecondary),
+          ),
+          const Spacer(),
+          TextButton(
+            onPressed: () => _signature.value = [],
+            child: const Text('Clear'),
+          ),
+        ],
+      ),
+      RepaintBoundary(
+        key: _signatureKey,
+        child: Container(
+          height: 110,
+          decoration: BoxDecoration(
+            color: ZColors.surface,
+            borderRadius: BorderRadius.circular(ZRadii.md),
+            border: Border.all(color: ZColors.divider),
+          ),
+          child: _SignaturePad(notifier: _signature),
+        ),
+      ),
+      const SizedBox(height: ZSpacing.md),
+    ];
   }
 
   Widget _devOtpHint(PartnerTrip trip) {
@@ -693,4 +831,65 @@ class _RoutePreview extends StatelessWidget {
       ),
     );
   }
+}
+
+
+class _SignaturePad extends StatelessWidget {
+  const _SignaturePad({required this.notifier});
+
+  final ValueNotifier<List<Offset>> notifier;
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder<List<Offset>>(
+      valueListenable: notifier,
+      builder: (context, points, _) {
+        return GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onPanStart: (details) {
+            notifier.value = [...points, details.localPosition];
+          },
+          onPanUpdate: (details) {
+            notifier.value = [...notifier.value, details.localPosition];
+          },
+          child: CustomPaint(
+            painter: _SignaturePainter(points),
+            child: points.isEmpty
+                ? const Center(
+                    child: Text(
+                      'Sign here',
+                      style: TextStyle(color: ZColors.textTertiary, fontSize: 12),
+                    ),
+                  )
+                : const SizedBox.expand(),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _SignaturePainter extends CustomPainter {
+  _SignaturePainter(this.points);
+
+  final List<Offset> points;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (points.length < 2) return;
+    final paint = Paint()
+      ..color = ZColors.dark
+      ..strokeWidth = 2.4
+      ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.stroke;
+    final path = Path()..moveTo(points.first.dx, points.first.dy);
+    for (final point in points.skip(1)) {
+      path.lineTo(point.dx, point.dy);
+    }
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _SignaturePainter oldDelegate) =>
+      oldDelegate.points != points;
 }

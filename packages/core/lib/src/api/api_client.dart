@@ -17,8 +17,8 @@ class ApiClient implements ApiContract {
     _dio = Dio(
       BaseOptions(
         baseUrl: baseUrl,
-        connectTimeout: const Duration(seconds: 15),
-        receiveTimeout: const Duration(seconds: 20),
+        connectTimeout: const Duration(seconds: 20),
+        receiveTimeout: const Duration(seconds: 45),
         headers: {'Content-Type': 'application/json'},
       ),
     )..interceptors.add(
@@ -33,6 +33,24 @@ class ApiClient implements ApiContract {
           onError: (error, handler) async {
             final status = error.response?.statusCode;
             final retried = error.requestOptions.extra['retried'] == true;
+            final wakeRetried =
+                error.requestOptions.extra['wake_retried'] == true;
+            final waking = status == 502 ||
+                status == 503 ||
+                error.type == DioExceptionType.connectionTimeout ||
+                error.type == DioExceptionType.sendTimeout ||
+                error.type == DioExceptionType.receiveTimeout;
+            if (waking && !wakeRetried) {
+              // Render free tier sleeps; give a cold start one retry.
+              await Future<void>.delayed(const Duration(seconds: 2));
+              final opts = error.requestOptions..extra['wake_retried'] = true;
+              try {
+                final response = await _dio.fetch<dynamic>(opts);
+                return handler.resolve(response);
+              } on DioException catch (e) {
+                return handler.next(e);
+              }
+            }
             if (status == 401 && !retried) {
               final refreshed = await _tryRefresh();
               if (refreshed) {

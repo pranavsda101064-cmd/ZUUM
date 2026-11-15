@@ -2515,8 +2515,20 @@ components:
           format: date-time
           readOnly: true
           nullable: true
+        acceptance_rate:
+          type: number
+          format: double
+          readOnly: true
+        document_count:
+          type: integer
+          readOnly: true
+        required_document_count:
+          type: integer
+          readOnly: true
       required:
+      - acceptance_rate
       - approval_status
+      - document_count
       - full_name
       - id
       - kyc_status
@@ -2524,6 +2536,7 @@ components:
       - rating_avg
       - rating_count
       - rejection_reason
+      - required_document_count
       - reviewed_at
       - submitted_at
       - user

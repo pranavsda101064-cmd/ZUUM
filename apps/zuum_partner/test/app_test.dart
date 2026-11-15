@@ -474,6 +474,10 @@ void main() {
     await settleAction(tester);
     expect(find.text('Complete delivery'), findsOneWidget);
 
+    await tester.enterText(
+      find.widgetWithText(ZTextField, 'Receiver name'),
+      'Meera',
+    );
     await tester.tap(find.text('Complete delivery'));
     await settleAction(tester);
     expect(find.text('Trip completed'), findsOneWidget);
