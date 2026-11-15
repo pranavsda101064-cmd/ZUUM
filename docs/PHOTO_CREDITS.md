@@ -1,0 +1,19 @@
+# Photo credits
+
+Bundled photography is sourced from Wikimedia Commons, cropped and duotone-graded for the Zuum design system. Keep this file when redistributing the apps.
+
+- **blr_street_autos** — [File:The Streets of Bangalore.jpg](https://commons.wikimedia.org/wiki/File:The_Streets_of_Bangalore.jpg) · Eirik Refsdal from Trondheim, NORWAY · CC BY 2.0 · https://creativecommons.org/licenses/by/2.0
+- **blr_aerial_dusk** — [File:South Bengaluru Skyline as seen from ISKCON, Banashankari.jpg](https://commons.wikimedia.org/wiki/File:South_Bengaluru_Skyline_as_seen_from_ISKCON,_Banashankari.jpg) · Raghavan2010 · CC BY-SA 4.0 · https://creativecommons.org/licenses/by-sa/4.0
+- **blr_heritage_night** — [File:Vidhana Soudha LE.jpg](https://commons.wikimedia.org/wiki/File:Vidhana_Soudha_LE.jpg) · DeepanjanGhosh · CC BY-SA 4.0 · https://creativecommons.org/licenses/by-sa/4.0
+- **blr_night_traffic** — [File:Brigade Road Bangalore.jpg](https://commons.wikimedia.org/wiki/File:Brigade_Road_Bangalore.jpg) · Amit · CC BY-SA 2.0 · https://creativecommons.org/licenses/by-sa/2.0
+- **blr_rain_road** — [File:Bangalore traffic during long weekends.jpg](https://commons.wikimedia.org/wiki/File:Bangalore_traffic_during_long_weekends.jpg) · ManasaRao · CC BY-SA 4.0 · https://creativecommons.org/licenses/by-sa/4.0
+- **blr_auto_lane** — [File:Bangalore street trees and traffic 4.jpg](https://commons.wikimedia.org/wiki/File:Bangalore_street_trees_and_traffic_4.jpg) · T. R. Shankar Raman · CC BY-SA 4.0 · https://creativecommons.org/licenses/by-sa/4.0
+- **blr_goods_truck** — [File:Tata Ace EX2 (21729583101).jpg](https://commons.wikimedia.org/wiki/File:Tata_Ace_EX2_(21729583101).jpg) · Everyone Sinks Starco · CC BY-SA 2.0 · https://creativecommons.org/licenses/by-sa/2.0
+- **blr_metro** — [File:Krishna Rajendra Market metro station, Bangalore (2024) 07.jpg](https://commons.wikimedia.org/wiki/File:Krishna_Rajendra_Market_metro_station,_Bangalore_(2024)_07.jpg) · Gpkp · CC BY-SA 4.0 · https://creativecommons.org/licenses/by-sa/4.0
+- **blr_metro_interior** — [File:Krishna Rajendra Market metro station, Bangalore (2024) 11.jpg](https://commons.wikimedia.org/wiki/File:Krishna_Rajendra_Market_metro_station,_Bangalore_(2024)_11.jpg) · Gpkp · CC BY-SA 4.0 · https://creativecommons.org/licenses/by-sa/4.0
+- **blr_sky_sunset** — [File:Krishna Rajendra Market metro station, Bangalore (2024) 12.jpg](https://commons.wikimedia.org/wiki/File:Krishna_Rajendra_Market_metro_station,_Bangalore_(2024)_12.jpg) · Gpkp · CC BY-SA 4.0 · https://creativecommons.org/licenses/by-sa/4.0
+- **blr_monsoon** — [File:Clouds before rain in Dwarakanagar, Channasandra, RR Nagar, Bangalore (2024) 01.jpg](https://commons.wikimedia.org/wiki/File:Clouds_before_rain_in_Dwarakanagar,_Channasandra,_RR_Nagar,_Bangalore_(2024)_01.jpg) · Gpkp · CC BY-SA 4.0 · https://creativecommons.org/licenses/by-sa/4.0
+- **blr_expressway_night** — [File:Rain over Bangalore City railway station JEG2356.JPG](https://commons.wikimedia.org/wiki/File:Rain_over_Bangalore_City_railway_station_JEG2356.JPG) · P Jeganathan · CC BY-SA 4.0 · https://creativecommons.org/licenses/by-sa/4.0
+- **blr_skyline_night** — [File:Bangalore city at night 01.jpg](https://commons.wikimedia.org/wiki/File:Bangalore_city_at_night_01.jpg) · Pinakpani · CC BY-SA 4.0 · https://creativecommons.org/licenses/by-sa/4.0
+- **blr_goods_van** — [File:2017 Mahindra Jeeto mini truck - 02.jpg](https://commons.wikimedia.org/wiki/File:2017_Mahindra_Jeeto_mini_truck_-_02.jpg) · Oleg Yunakov · CC BY-SA 4.0 · https://creativecommons.org/licenses/by-sa/4.0
+- **blr_goods_auto** — [File:Three-Wheeler-Mumbai-Maharashtra-India.jpg](https://commons.wikimedia.org/wiki/File:Three-Wheeler-Mumbai-Maharashtra-India.jpg) · N. Vivekananthamoorthy · CC BY 4.0 · https://creativecommons.org/licenses/by/4.0

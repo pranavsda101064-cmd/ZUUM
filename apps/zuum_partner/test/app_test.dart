@@ -110,6 +110,7 @@ Future<void> settleAction(WidgetTester tester) async {
 }
 
 Future<void> registerViaUi(WidgetTester tester) async {
+  await tester.ensureVisible(find.text('Create account'));
   await tester.tap(find.text('Create account'));
   await tester.pumpAndSettle();
   await tester.enterText(
@@ -605,6 +606,7 @@ void main() {
     );
     await pumpThroughSplash(tester, api);
 
+    await tester.ensureVisible(find.text('Demo partner (dev)'));
     await tester.tap(find.text('Demo partner (dev)'));
     await settleAction(tester);
     await settleAction(tester);

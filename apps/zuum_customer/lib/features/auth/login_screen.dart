@@ -51,6 +51,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    const ZPhotoHero(
+                      photo: 'blr_aerial_dusk',
+                      height: 160,
+                      caption: 'BENGALURU · NAMMA CITY',
+                    ),
+                    const SizedBox(height: ZSpacing.lg),
                     const ZBrandMark(),
                     const SizedBox(height: ZSpacing.md),
                     Text(

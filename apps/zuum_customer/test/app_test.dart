@@ -147,6 +147,7 @@ void main() {
   testWidgets('register flow creates account and reaches home', (tester) async {
     await pumpToLogin(tester, api: MockApiAdapter(latency: Duration.zero));
 
+    await tester.ensureVisible(find.text('Create account'));
     await tester.tap(find.text('Create account'));
     await tester.pumpAndSettle();
     expect(find.text('Create your account'), findsOneWidget);

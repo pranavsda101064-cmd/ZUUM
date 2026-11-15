@@ -20,7 +20,7 @@ class _PartnerWelcomeScreenState extends ConsumerState<PartnerWelcomeScreen> {
 
   static const _slides = [
     _Slide(
-      illustration: 'onb_partner_dispatch',
+      photo: 'blr_street_autos',
       kannada: 'ನಿಮ್ಮ ದಿನ, ನಿಮ್ಮ ಆದಾಯ.',
       title: 'Your day, your earnings.',
       body:
@@ -29,7 +29,7 @@ class _PartnerWelcomeScreenState extends ConsumerState<PartnerWelcomeScreen> {
       tint: ZColors.highlightTint,
     ),
     _Slide(
-      illustration: 'onb_partner_earn',
+      photo: 'blr_goods_truck',
       kannada: 'ಪ್ರತಿ ಟ್ರಿಪ್ಗೂ ಸ್ಪಷ್ಟ ಆದಾಯ.',
       title: 'Know your money first.',
       body:
@@ -38,7 +38,7 @@ class _PartnerWelcomeScreenState extends ConsumerState<PartnerWelcomeScreen> {
       tint: ZColors.primaryTint,
     ),
     _Slide(
-      illustration: 'onb_partner_fleet',
+      photo: 'blr_goods_auto',
       kannada: 'ಒಂದೇ ಕಾನ್ಸೋಲ್‌ನಿಂದ ಫ್ಲೀಟ್ ನಿರ್ವಹಣೆ.',
       title: 'Lead a fleet, not just trips.',
       body:
@@ -196,14 +196,11 @@ class _SlideView extends StatelessWidget {
             scale: active ? 1 : 0.94,
             duration: ZMotion.slow,
             curve: ZMotion.standard,
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: ZSpacing.xxl),
-              decoration: BoxDecoration(
-                color: slide.tint,
-                borderRadius: BorderRadius.circular(ZRadii.xl),
-              ),
-              child: ZIllustration(slide.illustration, height: 200),
+            child: ZPhotoHero(
+              photo: slide.photo,
+              height: 220,
+              borderRadius: BorderRadius.circular(ZRadii.xl),
+              caption: 'BENGALURU · LIVE',
             ),
           ),
           const SizedBox(height: ZSpacing.xl),
@@ -229,14 +226,14 @@ class _SlideView extends StatelessWidget {
 
 class _Slide {
   const _Slide({
-    required this.illustration,
+    required this.photo,
     required this.kannada,
     required this.title,
     required this.body,
     required this.tint,
   });
 
-  final String illustration;
+  final String photo;
   final String kannada;
   final String title;
   final String body;

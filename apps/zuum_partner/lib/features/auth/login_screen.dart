@@ -52,6 +52,12 @@ class _PartnerLoginScreenState extends ConsumerState<PartnerLoginScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    const ZPhotoHero(
+                      photo: 'blr_street_autos',
+                      height: 150,
+                      caption: 'PARTNER · BENGALURU',
+                    ),
+                    const SizedBox(height: ZSpacing.lg),
                     const ZBrandMark(),
                     const SizedBox(height: 6),
                     Align(

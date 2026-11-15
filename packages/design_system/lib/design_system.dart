@@ -41,6 +41,7 @@ export 'src/components/z_stepper.dart';
 export 'src/components/z_text_field.dart';
 export 'src/components/z_ticket_card.dart';
 export 'src/components/z_toggle.dart';
+export 'src/components/z_visuals.dart';
 export 'src/format/z_format.dart';
 export 'src/map/z_map_view.dart';
 export 'src/motion/z_motion.dart';

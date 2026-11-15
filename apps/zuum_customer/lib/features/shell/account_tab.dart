@@ -52,6 +52,19 @@ class AccountTab extends ConsumerWidget {
         padding: const EdgeInsets.only(bottom: ZSpacing.z48),
         child: Column(
           children: [
+            const Padding(
+              padding: EdgeInsets.fromLTRB(
+                ZSpacing.lg,
+                ZSpacing.lg,
+                ZSpacing.lg,
+                0,
+              ),
+              child: ZPhotoHero(
+                photo: 'blr_heritage_night',
+                height: 140,
+                caption: 'ZUUM · BENGALURU',
+              ),
+            ),
             // Profile identity card.
             Padding(
               padding: const EdgeInsets.all(ZSpacing.lg),

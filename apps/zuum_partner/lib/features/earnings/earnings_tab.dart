@@ -38,6 +38,12 @@ class EarningsTab extends ConsumerWidget {
         child: ListView(
           padding: const EdgeInsets.all(ZSpacing.lg),
           children: [
+            const ZPhotoHero(
+              photo: 'blr_skyline_night',
+              height: 110,
+              caption: 'EARNINGS · BENGALURU',
+            ),
+            const SizedBox(height: ZSpacing.lg),
             ZSegmentedSwitch(
               segments: const [
                 ZSegment(label: 'Today'),

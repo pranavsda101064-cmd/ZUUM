@@ -198,6 +198,12 @@ class _HomeTabState extends ConsumerState<HomeTab> {
         child: ListView(
           padding: const EdgeInsets.all(ZSpacing.lg),
           children: [
+            const ZPhotoHero(
+              photo: 'blr_expressway_night',
+              height: 120,
+              caption: 'LIVE · BENGALURU',
+            ),
+            const SizedBox(height: ZSpacing.lg),
             ZEntrance(
               index: 0,
               child: ZOnlineHero(
