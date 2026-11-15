@@ -7,7 +7,13 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.utils import timezone
 from rest_framework.test import APITestCase
 
-from apps.accounts.models import DriverProfile, FleetPartner, User, Vehicle
+from apps.accounts.models import (
+    DriverProfile,
+    FleetPartner,
+    KycDocument,
+    User,
+    Vehicle,
+)
 from apps.accounts.services import approve_driver
 from apps.bookings.models import DispatchOffer
 from apps.api.tests.base import PASSWORD, ZuumTestCase, make_partner, make_user, seed_catalog
@@ -77,8 +83,9 @@ class PartnerOnboardingTests(APITestCase):
         self.assertEqual(submitted.status_code, 200, submitted.content)
         self.assertEqual(submitted.data["status"], "submitted")
 
-        # Approval is an ops action.
+        # Approval is an ops action, after manual document verification.
         driver = DriverProfile.objects.get(user=self.user)
+        driver.documents.update(status=KycDocument.Status.VERIFIED)
         approve_driver(driver)
         detail = self.client.get("/api/v1/partner/kyc")
         self.assertEqual(detail.data["status"], "approved")

@@ -33,8 +33,19 @@ class ZVehicleIcon extends StatelessWidget {
     'tempo': 'veh_tempo',
   };
 
-  static String assetFor(String categoryCode) =>
-      _assets[categoryCode.toLowerCase()] ?? 'veh_sedan';
+  static const _aliases = <String, String>{
+    'tata ace': 'ace',
+    '3w cargo': 'goods_3w',
+    '2w parcel': 'goods_2w',
+    'mini': 'hatchback',
+    'premium': 'sedan',
+  };
+
+  static String assetFor(String categoryCode) {
+    final key = categoryCode.toLowerCase().trim();
+    final code = _aliases[key] ?? key;
+    return _assets[code] ?? 'veh_sedan';
+  }
 
   @override
   Widget build(BuildContext context) {

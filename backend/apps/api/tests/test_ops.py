@@ -1,11 +1,15 @@
 """Ops/admin surface used by the Flutter Web dashboard."""
 from __future__ import annotations
 
+import tempfile
+
 from django.core.cache import cache
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.test import override_settings
 from django.utils import timezone
 from rest_framework.test import APITestCase
 
-from apps.accounts.models import DriverProfile, User
+from apps.accounts.models import DriverProfile, KycDocument, User
 from apps.api.tests.base import PASSWORD, make_partner, make_user, seed_catalog
 from apps.payments.models import Payout
 from apps.platform.models import AuditLog, Notification, SupportMessage, SupportTicket
@@ -104,6 +108,16 @@ class OpsApiTests(APITestCase):
 
     def test_driver_approval_workflow(self):
         driver = make_partner("pending@zuum.in", approved=False, online=False)
+        for doc_type in (
+            KycDocument.Type.LICENCE,
+            KycDocument.Type.RC,
+            KycDocument.Type.INSURANCE,
+        ):
+            KycDocument.objects.create(
+                driver=driver,
+                type=doc_type,
+                status=KycDocument.Status.VERIFIED,
+            )
         listing = self.client.get("/api/v1/ops/drivers?kyc=submitted")
         self.assertEqual(listing.status_code, 200)
         self.assertEqual(listing.data["count"], 1)
@@ -139,6 +153,85 @@ class OpsApiTests(APITestCase):
         driver = make_partner("rej@zuum.in", approved=False, online=False)
         response = self.client.post(f"/api/v1/ops/drivers/{driver.id}/reject")
         self.assertEqual(response.status_code, 400)
+
+    def test_manual_document_review_and_file_preview(self):
+        with tempfile.TemporaryDirectory() as media_root:
+            with self.settings(MEDIA_ROOT=media_root):
+                driver = make_partner(
+                    "docs@zuum.in", approved=False, online=False
+                )
+                documents = {}
+                for doc_type in (
+                    KycDocument.Type.LICENCE,
+                    KycDocument.Type.RC,
+                    KycDocument.Type.INSURANCE,
+                ):
+                    documents[doc_type] = KycDocument.objects.create(
+                        driver=driver,
+                        type=doc_type,
+                        file=SimpleUploadedFile(
+                            f"{doc_type}.jpg",
+                            b"fake-image-bytes",
+                            content_type="image/jpeg",
+                        ),
+                    )
+
+                detail = self.client.get(f"/api/v1/ops/drivers/{driver.id}")
+                self.assertEqual(detail.status_code, 200, detail.content)
+                self.assertEqual(len(detail.data["documents"]), 3)
+                licence = next(
+                    doc
+                    for doc in detail.data["documents"]
+                    if doc["type"] == "licence"
+                )
+                self.assertTrue(licence["file_available"])
+
+                preview = self.client.get(
+                    f"/api/v1/ops/documents/{documents[KycDocument.Type.LICENCE].id}/file"
+                )
+                self.assertEqual(preview.status_code, 200)
+                self.assertEqual(preview["Content-Type"], "image/jpeg")
+                b"".join(preview.streaming_content)
+                preview.close()
+
+                no_note = self.client.post(
+                    f"/api/v1/ops/documents/{documents[KycDocument.Type.RC].id}/review",
+                    {"status": "rejected"},
+                    format="json",
+                )
+                self.assertEqual(no_note.status_code, 400)
+
+                approved = self.client.post(
+                    f"/api/v1/ops/documents/{documents[KycDocument.Type.LICENCE].id}/review",
+                    {"status": "verified", "note": "Clear photo"},
+                    format="json",
+                )
+                self.assertEqual(approved.status_code, 200, approved.content)
+                self.assertEqual(approved.data["status"], "verified")
+
+                blocked = self.client.post(
+                    f"/api/v1/ops/drivers/{driver.id}/approve"
+                )
+                self.assertEqual(blocked.status_code, 409)
+                self.assertEqual(blocked.data["code"], "documents_unverified")
+
+                for doc_type in (
+                    KycDocument.Type.RC,
+                    KycDocument.Type.INSURANCE,
+                ):
+                    verified = self.client.post(
+                        f"/api/v1/ops/documents/{documents[doc_type].id}/review",
+                        {"status": "verified"},
+                        format="json",
+                    )
+                    self.assertEqual(verified.status_code, 200)
+
+                final = self.client.post(f"/api/v1/ops/drivers/{driver.id}/approve")
+                self.assertEqual(final.status_code, 200, final.content)
+                driver.refresh_from_db()
+                self.assertEqual(
+                    driver.approval_status, DriverProfile.APPROVAL_ACTIVE
+                )
 
     def test_payouts_marking_paid_notifies(self):
         driver = make_partner("pay@zuum.in", online=False)

@@ -213,6 +213,15 @@ class KycDocument(TimeStampedModel):
     status = models.CharField(
         max_length=20, choices=Status.choices, default=Status.PENDING
     )
+    reviewed_at = models.DateTimeField(null=True, blank=True)
+    review_note = models.CharField(max_length=240, blank=True)
+    reviewed_by = models.ForeignKey(
+        "accounts.User",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="+",
+    )
 
     class Meta:
         unique_together = ("driver", "type")

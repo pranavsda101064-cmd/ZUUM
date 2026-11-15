@@ -68,6 +68,20 @@ def set_availability(
 
 
 def approve_driver(driver: DriverProfile) -> DriverProfile:
+    required = set(REQUIRED_DOCS)
+    verified = set(
+        driver.documents.filter(status=KycDocument.Status.VERIFIED).values_list(
+            "type", flat=True
+        )
+    )
+    missing = sorted(required - verified)
+    if missing:
+        raise ApiError(
+            "Verify every required KYC document before approving this captain",
+            code="documents_unverified",
+            status_code=409,
+            details={"missing": missing},
+        )
     driver.kyc_status = DriverProfile.KYC_APPROVED
     driver.approval_status = DriverProfile.APPROVAL_ACTIVE
     driver.reviewed_at = timezone.now()

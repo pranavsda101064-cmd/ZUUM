@@ -170,6 +170,31 @@ class KycDocumentSerializer(serializers.ModelSerializer):
         read_only_fields = ("id", "status", "created_at")
 
 
+class OpsKycDocumentSerializer(serializers.ModelSerializer):
+    file_available = serializers.SerializerMethodField()
+    file_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = KycDocument
+        fields = (
+            "id",
+            "type",
+            "status",
+            "expires_at",
+            "created_at",
+            "reviewed_at",
+            "review_note",
+            "file_available",
+            "file_name",
+        )
+
+    def get_file_available(self, obj) -> bool:
+        return bool(obj.file)
+
+    def get_file_name(self, obj) -> str:
+        return obj.file.name.rsplit("/", 1)[-1] if obj.file else ""
+
+
 class VehicleSerializer(serializers.ModelSerializer):
     category_name = serializers.CharField(source="category.name", read_only=True)
     category_code = serializers.CharField(source="category.code", read_only=True)

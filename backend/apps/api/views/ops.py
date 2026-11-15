@@ -4,20 +4,23 @@ Every endpoint requires `role=staff` (or superuser). Write actions are audited.
 """
 from __future__ import annotations
 
+import mimetypes
 from datetime import timedelta
 
 from django.db.models import Count, Q, Sum
 from django.db.models.functions import TruncDate
+from django.http import FileResponse
 from django.utils import timezone
 from rest_framework import serializers, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.accounts.models import DriverProfile, User, Vehicle
+from apps.accounts.models import DriverProfile, KycDocument, User, Vehicle
 from apps.accounts.services import approve_driver
 from apps.api.serializers import (
     BookingSerializer,
     DriverProfileSerializer,
+    OpsKycDocumentSerializer,
     PayoutSerializer,
     PromoSerializer,
     UserSerializer,
@@ -254,6 +257,7 @@ class OpsDriverListView(APIView):
                         "online_state": d.online_state,
                         "rating_avg": float(d.rating_avg),
                         "rating_count": d.rating_count,
+                        "document_count": d.documents.count(),
                         "vehicles": [
                             VehicleSerializer(v).data for v in d.vehicles.all()
                         ],
@@ -271,6 +275,128 @@ class OpsDriverListView(APIView):
                 ],
             )
         )
+
+
+class OpsDriverDetailView(APIView):
+    permission_classes = [IsStaffUser]
+    serializer_class = DriverProfileSerializer
+
+    def get(self, request, driver_id):
+        driver = (
+            DriverProfile.objects.filter(pk=driver_id)
+            .select_related("user", "fleet")
+            .prefetch_related("vehicles__category", "documents")
+            .first()
+        )
+        if driver is None:
+            raise ApiError("Driver not found", code="not_found", status_code=404)
+        driver_payload = DriverProfileSerializer(driver).data
+        driver_payload["vehicles"] = [
+            VehicleSerializer(v).data for v in driver.vehicles.all()
+        ]
+        return Response(
+            {
+                "driver": driver_payload,
+                "documents": OpsKycDocumentSerializer(
+                    driver.documents.order_by("created_at"), many=True
+                ).data,
+            }
+        )
+
+
+class OpsDocumentFileView(APIView):
+    permission_classes = [IsStaffUser]
+    serializer_class = OpsKycDocumentSerializer
+
+    def get(self, request, document_id):
+        document = KycDocument.objects.filter(pk=document_id).first()
+        if document is None or not document.file:
+            raise ApiError("Document file not found", code="not_found", status_code=404)
+        content_type, _ = mimetypes.guess_type(document.file.name)
+        return FileResponse(
+            document.file.open("rb"),
+            content_type=content_type or "application/octet-stream",
+            as_attachment=False,
+            filename=document.file.name.rsplit("/", 1)[-1],
+        )
+
+
+class OpsDocumentReviewView(APIView):
+    permission_classes = [IsStaffUser]
+    serializer_class = OpsKycDocumentSerializer
+
+    def post(self, request, document_id):
+        document = (
+            KycDocument.objects.filter(pk=document_id)
+            .select_related("driver__user")
+            .first()
+        )
+        if document is None:
+            raise ApiError("Document not found", code="not_found", status_code=404)
+        review = (request.data.get("status") or "").strip().lower()
+        note = (request.data.get("note") or "").strip()
+        if review not in (KycDocument.Status.VERIFIED, KycDocument.Status.REJECTED):
+            raise ApiError(
+                "Status must be verified or rejected",
+                code="validation_error",
+                status_code=400,
+            )
+        if review == KycDocument.Status.REJECTED and not note:
+            raise ApiError(
+                "A rejection note is required",
+                code="validation_error",
+                status_code=400,
+            )
+        before = {"status": document.status, "review_note": document.review_note}
+        document.status = review
+        document.review_note = note[:240]
+        document.reviewed_at = timezone.now()
+        document.reviewed_by = request.user
+        document.save(
+            update_fields=[
+                "status",
+                "review_note",
+                "reviewed_at",
+                "reviewed_by",
+                "updated_at",
+            ]
+        )
+        driver = document.driver
+        if review == KycDocument.Status.REJECTED:
+            driver.kyc_status = DriverProfile.KYC_REJECTED
+            driver.approval_status = DriverProfile.APPROVAL_PENDING
+            driver.rejection_reason = f"{document.type}: {note}"[:240]
+            driver.online_state = DriverProfile.ONLINE_OFFLINE
+            driver.save(
+                update_fields=[
+                    "kyc_status",
+                    "approval_status",
+                    "rejection_reason",
+                    "online_state",
+                    "updated_at",
+                ]
+            )
+            notify_user(
+                driver.user,
+                type="kyc",
+                title="Document needs attention",
+                body=f"{document.type.replace('_', ' ').title()}: {note}"[:500],
+            )
+        else:
+            notify_user(
+                driver.user,
+                type="kyc",
+                title="Document verified",
+                body=f"{document.type.replace('_', ' ').title()} was verified by Zuum ops.",
+            )
+        audit(
+            actor=request.user,
+            action=f"document.{review}",
+            entity=document,
+            before=before,
+            after={"status": document.status, "review_note": document.review_note},
+        )
+        return Response(OpsKycDocumentSerializer(document).data)
 
 
 class OpsDriverDecisionView(APIView):
