@@ -268,6 +268,34 @@ class _HomeTabState extends ConsumerState<HomeTab> {
                   ),
                   const SizedBox(height: ZSpacing.lg),
 
+                  ZImageCard(
+                    photo:
+                        goodsMode ? 'blr_goods_van' : 'blr_street_autos',
+                    imageHeight: 110,
+                    tag: goodsMode ? 'GOODS' : 'RIDE',
+                    onTap: _openSearch,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          goodsMode
+                              ? 'Move a tiffin box or a 1BHK.'
+                              : 'The city, on your terms.',
+                          style: ZTypography.titleMd,
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          goodsMode
+                              ? '2W parcels, 3W cargo, Ace and Tempo with upfront fares.'
+                              : 'Bikes, autos and cabs with honest, upfront fares.',
+                          style: ZTypography.caption
+                              .copyWith(color: ZColors.textSecondary),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: ZSpacing.lg),
+
                   // Recent / saved places (or first-time banner).
                   Text('Saved places', style: ZTypography.overline),
                   const SizedBox(height: ZSpacing.xs),

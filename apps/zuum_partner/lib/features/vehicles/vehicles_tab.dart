@@ -43,6 +43,12 @@ class VehiclesTab extends ConsumerWidget {
         child: ListView(
           padding: const EdgeInsets.all(ZSpacing.lg),
           children: [
+            const ZPhotoHero(
+              photo: 'blr_goods_auto',
+              height: 110,
+              caption: 'YOUR FLEET · BENGALURU',
+            ),
+            const SizedBox(height: ZSpacing.lg),
             Row(
               children: [
                 Text(

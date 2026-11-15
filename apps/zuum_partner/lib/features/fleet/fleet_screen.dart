@@ -42,6 +42,12 @@ class FleetScreen extends ConsumerWidget {
         child: ListView(
           padding: const EdgeInsets.all(ZSpacing.lg),
           children: [
+            const ZPhotoHero(
+              photo: 'blr_goods_truck',
+              height: 110,
+              caption: 'FLEET CONSOLE · BENGALURU',
+            ),
+            const SizedBox(height: ZSpacing.lg),
             overview.when(
               loading: () => const _FleetStatsSkeleton(),
               error: (error, _) => ZEmptyState(
@@ -100,11 +106,10 @@ class FleetScreen extends ConsumerWidget {
               orElse: () => const SizedBox.shrink(),
             ),
             const SizedBox(height: ZSpacing.lg),
-            Text(
-              'Drivers',
-              style: ZTypography.titleMd.copyWith(color: ZColors.textPrimary),
+            const ZSectionHeader(
+              title: 'Drivers',
+              caption: 'Live roster · tap to assign a vehicle',
             ),
-            const SizedBox(height: ZSpacing.sm),
             ...drivers.when(
               loading: () => const [
                 _DriverSkeleton(),
