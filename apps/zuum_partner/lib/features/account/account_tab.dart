@@ -232,10 +232,12 @@ class AccountTab extends ConsumerWidget {
               children: [
                 ZListTile(
                   title: 'Environment',
-                  subtitle: 'Offers simulator active',
+                  subtitle: AppEnv.isMock
+                      ? 'Offers simulator active'
+                      : 'Live backend · ${AppEnv.apiBaseUrl}',
                   leading: const Icon(Icons.science_outlined, size: 20),
                   showChevron: false,
-                  trailing: const ZBadge(label: 'MOCK'),
+                  trailing: ZBadge(label: AppEnv.isMock ? 'MOCK' : 'LIVE'),
                 ),
                 const ZDivider(),
                 const ZListTile(

@@ -10,7 +10,7 @@ import 'package:zuum_design_system/design_system.dart';
 ///   flutter drive --driver=test_driver/integration_test.dart \
 ///     --target=integration_test/device_smoke_test.dart -d <device-id>
 void main() {
-  final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   // Screen markers let the host capture real device screenshots (screencap),
   // because Flutter's takeScreenshot cannot include native map surfaces.

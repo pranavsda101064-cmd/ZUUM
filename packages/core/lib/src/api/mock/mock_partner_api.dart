@@ -529,6 +529,52 @@ class MockPartnerApi implements PartnerApiContract {
   }
 
   @override
+  Future<void> updateLocation({
+    required double lat,
+    required double lng,
+    double? heading,
+    double? speedMps,
+    DateTime? recordedAt,
+  }) async {
+    await _wait();
+    _requireUser();
+  }
+
+  @override
+  Future<void> uploadPickupPod({
+    required String bookingId,
+    required String filePath,
+  }) async {
+    await _wait();
+    final trip = _requireTrip(bookingId);
+    if (trip.kind != OfferKind.goods) {
+      throw const ApiException(
+        message: 'Pickup POD applies to goods trips only',
+        statusCode: 409,
+        code: 'illegal_transition',
+      );
+    }
+  }
+
+  @override
+  Future<void> uploadDeliveryPod({
+    required String bookingId,
+    required String receiverName,
+    String? photoPath,
+    String? signaturePath,
+  }) async {
+    await _wait();
+    final trip = _requireTrip(bookingId);
+    if (trip.kind != OfferKind.goods) {
+      throw const ApiException(
+        message: 'Delivery POD applies to goods trips only',
+        statusCode: 409,
+        code: 'illegal_transition',
+      );
+    }
+  }
+
+  @override
   Future<bool> isOnline() async {
     await _wait();
     return _online[_requireUser().id] ?? false;

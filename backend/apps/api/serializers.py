@@ -1,6 +1,8 @@
 """DRF serializers matching the frozen consumer + partner contracts."""
 from __future__ import annotations
 
+from datetime import timedelta
+
 from django.utils import timezone
 from rest_framework import serializers
 
@@ -65,6 +67,9 @@ class SavedAddressSerializer(serializers.ModelSerializer):
 class DriverProfileSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     full_name = serializers.CharField(source="user.full_name", read_only=True)
+    acceptance_rate = serializers.SerializerMethodField()
+    document_count = serializers.SerializerMethodField()
+    required_document_count = serializers.SerializerMethodField()
 
     class Meta:
         model = DriverProfile
@@ -84,6 +89,9 @@ class DriverProfileSerializer(serializers.ModelSerializer):
             "rejection_reason",
             "submitted_at",
             "reviewed_at",
+            "acceptance_rate",
+            "document_count",
+            "required_document_count",
         )
         read_only_fields = (
             "id",
@@ -95,7 +103,25 @@ class DriverProfileSerializer(serializers.ModelSerializer):
             "rejection_reason",
             "submitted_at",
             "reviewed_at",
+            "acceptance_rate",
+            "document_count",
+            "required_document_count",
         )
+
+    def get_acceptance_rate(self, obj) -> float:
+        from apps.bookings.models import DispatchOffer
+
+        since = timezone.now() - timedelta(days=30)
+        offers = DispatchOffer.objects.filter(driver=obj, offered_at__gte=since)
+        responded = offers.exclude(status=DispatchOffer.Status.OFFERED).count()
+        accepted = offers.filter(status=DispatchOffer.Status.ACCEPTED).count()
+        return round(accepted / responded * 100, 1) if responded else 0.0
+
+    def get_document_count(self, obj) -> int:
+        return obj.documents.count()
+
+    def get_required_document_count(self, obj) -> int:
+        return 3
 
 
 class KycDocumentSerializer(serializers.ModelSerializer):
@@ -561,7 +587,7 @@ class PartnerTripSerializer(serializers.ModelSerializer):
     def get_dev_otp_hint(self, obj) -> str | None:
         from django.conf import settings
 
-        if not settings.DEBUG:
+        if not getattr(settings, "EXPOSE_DEV_OTP", settings.DEBUG):
             return None
         if obj.type == Booking.Type.GOODS and hasattr(obj, "shipment"):
             return obj.shipment.delivery_otp or obj.shipment.pickup_otp
@@ -668,7 +694,7 @@ class DispatchOfferSerializer(serializers.ModelSerializer):
     def get_dev_otp_hint(self, obj) -> str | None:
         from django.conf import settings
 
-        if not settings.DEBUG:
+        if not getattr(settings, "EXPOSE_DEV_OTP", settings.DEBUG):
             return None
         b = obj.booking
         if b.type == Booking.Type.GOODS and hasattr(b, "shipment"):

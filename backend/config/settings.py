@@ -227,6 +227,7 @@ ROUTING_USER_AGENT = os.getenv(
 )
 DISPATCH_USE_MATRIX = os.getenv("DISPATCH_USE_MATRIX", "0") == "1"
 STALE_SEARCH_MINUTES = int(os.getenv("STALE_SEARCH_MINUTES", "5"))
+EXPOSE_DEV_OTP = os.getenv("EXPOSE_DEV_OTP", "1" if DEBUG else "0") == "1"
 
 # --- Places (OSM geocoding: Photon primary, Nominatim fallback) -------------
 PLACES_PHOTON_URL = os.getenv("PLACES_PHOTON_URL", "https://photon.komoot.io")

@@ -57,6 +57,27 @@ abstract interface class PartnerApiContract {
   Future<bool> setOnline({required bool online});
   Future<bool> isOnline();
 
+  /// REST location fallback (WS preferred when available).
+  Future<void> updateLocation({
+    required double lat,
+    required double lng,
+    double? heading,
+    double? speedMps,
+    DateTime? recordedAt,
+  });
+
+  /// Goods POD evidence uploads.
+  Future<void> uploadPickupPod({
+    required String bookingId,
+    required String filePath,
+  });
+  Future<void> uploadDeliveryPod({
+    required String bookingId,
+    required String receiverName,
+    String? photoPath,
+    String? signaturePath,
+  });
+
   // --- offers ---
   Future<List<DriverOffer>> pendingOffers();
   Future<PartnerTrip> acceptOffer(String offerId);

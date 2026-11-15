@@ -57,26 +57,42 @@ class DriverOffer {
     return s < 0 ? 0 : s;
   }
 
-  factory DriverOffer.fromJson(Map<String, dynamic> json) => DriverOffer(
-        id: json['id'] as String,
-        bookingId: json['booking_id'] as String,
-        expiresAt: DateTime.parse(json['expires_at'] as String),
-        pickup: LocationPoint.fromJson(json['pickup'] as Map<String, dynamic>),
-        drop: LocationPoint.fromJson(json['drop'] as Map<String, dynamic>),
-        distanceM: (json['distance_m'] as num?)?.toInt() ?? 0,
-        pickupEtaS: (json['pickup_eta_s'] as num?)?.toInt() ?? 0,
-        farePaise: (json['fare_paise'] as num?)?.toInt() ?? 0,
-        surgeMultiplier: (json['surge_multiplier'] as num?)?.toDouble() ?? 1,
-        serviceCategoryCode: json['service_category_code'] as String? ?? '',
-        serviceCategoryName: json['service_category_name'] as String? ?? '',
-        kind: (json['kind'] as String?) == 'goods'
-            ? OfferKind.goods
-            : OfferKind.ride,
-        goodsType: json['goods_type'] as String?,
-        weightKg: (json['weight_kg'] as num?)?.toInt(),
-        needsLoadingHelp: json['needs_loading_help'] as bool? ?? false,
-        customerFirstName: json['customer_first_name'] as String?,
-      );
+  factory DriverOffer.fromJson(Map<String, dynamic> json) {
+    final category = json['service_category'];
+    final categoryMap = category is Map<String, dynamic> ? category : null;
+    final goods = json['goods'];
+    final goodsMap = goods is Map<String, dynamic> ? goods : null;
+    return DriverOffer(
+      id: json['id'] as String,
+      bookingId: json['booking_id'] as String,
+      expiresAt: DateTime.parse(json['expires_at'] as String),
+      pickup: LocationPoint.fromJson(json['pickup'] as Map<String, dynamic>),
+      drop: LocationPoint.fromJson(json['drop'] as Map<String, dynamic>),
+      distanceM: (json['distance_m'] as num?)?.toInt() ?? 0,
+      pickupEtaS: (json['pickup_eta_s'] as num?)?.toInt() ?? 0,
+      farePaise: (json['fare_paise'] as num?)?.toInt() ?? 0,
+      surgeMultiplier: (json['surge_multiplier'] as num?)?.toDouble() ?? 1,
+      serviceCategoryCode: (categoryMap?['code'] as String?) ??
+          json['service_category_code'] as String? ??
+          '',
+      serviceCategoryName: (categoryMap?['name'] as String?) ??
+          json['service_category_name'] as String? ??
+          '',
+      kind: (json['kind'] as String? ?? json['booking_type'] as String?) ==
+              'goods'
+          ? OfferKind.goods
+          : OfferKind.ride,
+      goodsType: (goodsMap?['goods_type'] as String?) ??
+          json['goods_type'] as String?,
+      weightKg: (goodsMap?['weight_kg'] as num?)?.toInt() ??
+          (json['weight_kg'] as num?)?.toInt(),
+      needsLoadingHelp: (goodsMap?['needs_loading_help'] as bool?) ??
+          (json['needs_loading_help'] as bool?) ??
+          false,
+      customerFirstName: json['customer_first_name'] as String?,
+      devOtpHint: json['dev_otp_hint'] as String?,
+    );
+  }
 
   Map<String, dynamic> toJson() => {
         'id': id,
@@ -95,6 +111,7 @@ class DriverOffer {
         'weight_kg': weightKg,
         'needs_loading_help': needsLoadingHelp,
         'customer_first_name': customerFirstName,
+        'dev_otp_hint': devOtpHint,
       };
 }
 
@@ -191,6 +208,7 @@ class PartnerTrip {
         completedAt: json['completed_at'] == null
             ? null
             : DateTime.tryParse(json['completed_at'] as String),
+        devOtpHint: json['dev_otp_hint'] as String?,
         route: json['route'] is Map<String, dynamic>
             ? RouteInfo.fromJson(json['route'] as Map<String, dynamic>)
             : null,

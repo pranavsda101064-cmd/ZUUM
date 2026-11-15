@@ -3,11 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../api/api_client.dart';
 import '../api/api_contract.dart';
 import '../api/mock/mock_api_adapter.dart';
+import '../api/api_partner_client.dart';
 import '../api/mock/mock_partner_api.dart';
 import '../api/partner_api_contract.dart';
 import '../payments/payment_gateway.dart';
 import '../places/place_search.dart';
 import '../realtime/driver_realtime_service.dart';
+import '../realtime/polling_driver_realtime_service.dart';
 import '../realtime/realtime_service.dart';
 import '../storage/prefs_store.dart';
 import '../storage/token_storage.dart';
@@ -75,9 +77,9 @@ final paymentGatewayProvider = Provider<PaymentGateway>((ref) {
 /// `MockPartnerApi` is DEV-ONLY and reachable only when `ENV=mock`.
 final partnerApiProvider = Provider<PartnerApiContract>((ref) {
   if (AppEnv.isMock) return MockPartnerApi();
-  throw UnsupportedError(
-    'Live partner API client ships with the Phase 2 Django backend '
-    '(docs/06_partner_api.md).',
+  return ApiPartnerClient(
+    baseUrl: AppEnv.apiBaseUrl,
+    tokenStorage: ref.watch(tokenStorageProvider),
   );
 });
 
@@ -89,5 +91,7 @@ final driverRealtimeProvider = Provider<DriverRealtimeService>((ref) {
     ref.onDispose(service.dispose);
     return service;
   }
-  return NoopDriverRealtimeService();
+  final service = PollingDriverRealtimeService(api: api);
+  ref.onDispose(service.dispose);
+  return service;
 });

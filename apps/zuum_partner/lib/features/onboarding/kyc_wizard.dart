@@ -519,7 +519,7 @@ class _KycWizardState extends ConsumerState<KycWizard> {
           onTap: () => _pickDocument(KycDocType.insurance),
         ),
         const SizedBox(height: ZSpacing.lg),
-        const ZBadge(label: 'Mock build: files stay on this device'),
+        ZBadge(label: AppEnv.isMock ? 'Mock build: files stay on this device' : 'Uploaded securely to Zuum'),
       ],
     );
   }
@@ -593,12 +593,13 @@ class _KycWizardState extends ConsumerState<KycWizard> {
               title: const Text('Choose from gallery'),
               onTap: () => Navigator.of(sheetContext).pop('gallery'),
             ),
-            ListTile(
-              leading: const Icon(Icons.science_outlined),
-              title: const Text('Use demo document (dev)'),
-              subtitle: const Text('Adds a placeholder file for mock builds'),
-              onTap: () => Navigator.of(sheetContext).pop('demo'),
-            ),
+            if (AppEnv.isMock)
+              ListTile(
+                leading: const Icon(Icons.science_outlined),
+                title: const Text('Use demo document (dev)'),
+                subtitle: const Text('Adds a placeholder file for mock builds'),
+                onTap: () => Navigator.of(sheetContext).pop('demo'),
+              ),
           ],
         ),
       ),
@@ -622,8 +623,12 @@ class _KycWizardState extends ConsumerState<KycWizard> {
       if (path == null) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Camera/gallery unavailable — use the demo document.'),
+          SnackBar(
+            content: Text(
+              AppEnv.isMock
+                  ? 'Camera/gallery unavailable — use the demo document.'
+                  : 'Camera/gallery unavailable. Check permissions and try again.',
+            ),
           ),
         );
         return;

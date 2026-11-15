@@ -33,8 +33,13 @@ class KycDocumentInfo {
             ? null
             : DateTime.tryParse(json['expires_at'] as String),
         filePath: json['file_path'] as String?,
-        status: KycStatus.values.asNameMap()[json['status'] as String?] ??
-            KycStatus.submitted,
+        status: switch (json['status'] as String?) {
+          'pending' => KycStatus.submitted,
+          'verified' => KycStatus.approved,
+          'rejected' => KycStatus.rejected,
+          _ => KycStatus.values.asNameMap()[json['status'] as String?] ??
+              KycStatus.submitted,
+        },
       );
 
   Map<String, dynamic> toJson() => {
@@ -62,6 +67,7 @@ class PartnerProfile {
     this.rejectionReason,
     this.documentCount = 0,
     this.requiredDocumentCount = 3,
+    this.onlineState = 'offline',
   });
 
   final String id;
@@ -79,18 +85,34 @@ class PartnerProfile {
   final int documentCount;
   final int requiredDocumentCount;
 
+  /// Backend availability: `offline | available | busy`.
+  final String onlineState;
+
   String get fullName => '$firstName $lastName'.trim();
   String get initials => '${firstName.isNotEmpty ? firstName[0] : ''}'
       '${lastName.isNotEmpty ? lastName[0] : ''}'.toUpperCase();
 
   bool get isApproved => approvalStatus == ApprovalStatus.active;
 
-  factory PartnerProfile.fromJson(Map<String, dynamic> json) => PartnerProfile(
+  factory PartnerProfile.fromJson(Map<String, dynamic> json) {
+    final user = json['user'];
+    final userMap = user is Map<String, dynamic> ? user : null;
+    final documents = json['documents'];
+    final documentCount = (json['document_count'] as num?)?.toInt() ??
+        (documents is List ? documents.length : null) ??
+        0;
+    return PartnerProfile(
         id: json['id'] as String,
-        firstName: json['first_name'] as String? ?? '',
-        lastName: json['last_name'] as String? ?? '',
-        email: json['email'] as String? ?? '',
-        phone: json['phone'] as String?,
+        firstName: (userMap?['first_name'] as String?) ??
+            json['first_name'] as String? ??
+            '',
+        lastName: (userMap?['last_name'] as String?) ??
+            json['last_name'] as String? ??
+            '',
+        email: (userMap?['email'] as String?) ??
+            json['email'] as String? ??
+            '',
+        phone: (userMap?['phone'] as String?) ?? json['phone'] as String?,
         kycStatus: KycStatus.values.asNameMap()[json['kyc_status'] as String?] ??
             KycStatus.draft,
         approvalStatus: ApprovalStatus.values
@@ -104,10 +126,12 @@ class PartnerProfile {
                 .toList() ??
             const ['Kannada', 'English'],
         rejectionReason: json['rejection_reason'] as String?,
-        documentCount: (json['document_count'] as num?)?.toInt() ?? 0,
+        documentCount: documentCount,
         requiredDocumentCount:
             (json['required_document_count'] as num?)?.toInt() ?? 3,
+        onlineState: json['online_state'] as String? ?? 'offline',
       );
+  }
 
   Map<String, dynamic> toJson() => {
         'id': id,

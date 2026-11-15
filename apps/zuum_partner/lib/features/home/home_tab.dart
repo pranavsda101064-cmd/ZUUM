@@ -36,6 +36,7 @@ class _HomeTabState extends ConsumerState<HomeTab> {
   Timer? _presenceTimer;
   var _tick = 0;
   bool _gpsLive = false;
+  DateTime? _lastLocationSent;
   LocationPoint _position = _base;
 
   @override
@@ -69,6 +70,7 @@ class _HomeTabState extends ConsumerState<HomeTab> {
         _position = fix;
         _gpsLive = true;
       });
+      _pushLocation(fix);
     }
     _gpsSub ??= gps.stream().listen(
       (fix) {
@@ -77,9 +79,26 @@ class _HomeTabState extends ConsumerState<HomeTab> {
           _position = fix;
           _gpsLive = true;
         });
+        _pushLocation(fix);
       },
       onError: (_) {},
     );
+  }
+
+  void _pushLocation(LocationPoint fix) {
+    final now = DateTime.now();
+    final last = _lastLocationSent;
+    if (last != null && now.difference(last).inSeconds < 15) return;
+    if (!ref.read(onlineStatusProvider)) return;
+    _lastLocationSent = now;
+    ref
+        .read(partnerApiProvider)
+        .updateLocation(
+          lat: fix.lat,
+          lng: fix.lng,
+          recordedAt: now.toUtc(),
+        )
+        .catchError((_) {});
   }
 
   @override

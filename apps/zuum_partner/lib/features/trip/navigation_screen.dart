@@ -33,6 +33,7 @@ class _PartnerNavigationScreenState
   StreamSubscription<LocationPoint>? _gpsSub;
   double _simProgress = 0;
   DateTime _lastReroute = DateTime.fromMillisecondsSinceEpoch(0);
+  DateTime? _lastLocationSent;
   bool _arrived = false;
 
   bool get _isPickupLeg =>
@@ -108,9 +109,25 @@ class _PartnerNavigationScreenState
           _position = fix;
           _gpsLive = true;
         });
+        _pushLocation(fix);
       },
       onError: (_) {},
     );
+  }
+
+  void _pushLocation(LocationPoint fix) {
+    final now = DateTime.now();
+    final last = _lastLocationSent;
+    if (last != null && now.difference(last).inSeconds < 10) return;
+    _lastLocationSent = now;
+    ref
+        .read(partnerApiProvider)
+        .updateLocation(
+          lat: fix.lat,
+          lng: fix.lng,
+          recordedAt: now.toUtc(),
+        )
+        .catchError((_) {});
   }
 
   /// Demo movement when GPS is unavailable so the screen is still testable.
