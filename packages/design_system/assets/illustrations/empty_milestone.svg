@@ -11,6 +11,6 @@
     <path d="M34 20c2 6 0 10-4 12M50 18c4 4 4 10 0 14" stroke="#F3F4F6"/>
     <!-- Ground -->
     <path d="M30 104h100" />
-    <circle cx="112" cy="34" r="6" fill="#84CC16" stroke="none"/>
+    <circle cx="112" cy="34" r="6" fill="#111827" stroke="none"/>
   </g>
 </svg>

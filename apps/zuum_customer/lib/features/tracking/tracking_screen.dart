@@ -268,7 +268,7 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen> {
                   ZMapMarker(
                     trip.location!.lat,
                     trip.location!.lng,
-                    color: ZColors.highlight,
+                    color: ZColors.success,
                   ),
               ],
               follow: trip.location == null

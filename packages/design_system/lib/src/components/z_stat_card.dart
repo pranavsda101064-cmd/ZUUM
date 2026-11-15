@@ -36,10 +36,10 @@ class ZStatCard extends StatelessWidget {
     final content = Container(
       padding: const EdgeInsets.all(ZSpacing.lg),
       decoration: BoxDecoration(
-        color: accent ? ZColors.highlightTint : ZColors.surface,
+        color: accent ? ZColors.primaryTint : ZColors.surface,
         borderRadius: BorderRadius.circular(ZRadii.md),
         border: Border.all(
-          color: accent ? ZColors.highlight : ZColors.divider,
+          color: accent ? ZColors.primary : ZColors.divider,
         ),
       ),
       child: Column(

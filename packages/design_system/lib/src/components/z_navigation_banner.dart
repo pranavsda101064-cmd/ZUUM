@@ -102,7 +102,7 @@ class ZNavigationBanner extends StatelessWidget {
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color: ZColors.highlight,
+              color: ZColors.onDark,
               borderRadius: BorderRadius.circular(ZRadii.md),
             ),
             child: Icon(
@@ -142,7 +142,7 @@ class ZNavigationBanner extends StatelessWidget {
           Text(
             distanceLabel,
             style: ZTypography.numericLg.copyWith(
-              color: ZColors.highlight,
+              color: ZColors.onDark,
               fontSize: 18,
             ),
           ),
@@ -177,10 +177,10 @@ class ZMapStatusChip extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
-          color: degraded ? ZColors.errorTint : ZColors.highlightTint,
+          color: degraded ? ZColors.errorTint : ZColors.accent,
           borderRadius: BorderRadius.circular(999),
           border: Border.all(
-            color: degraded ? ZColors.error.withValues(alpha: 0.3) : ZColors.highlight,
+            color: degraded ? ZColors.error.withValues(alpha: 0.3) : ZColors.divider,
           ),
         ),
         child: Row(

@@ -80,7 +80,7 @@ class _WalletTabState extends ConsumerState<WalletTab> {
                           width: 8,
                           height: 8,
                           decoration: const BoxDecoration(
-                            color: ZColors.highlight,
+                            color: ZColors.success,
                             shape: BoxShape.circle,
                           ),
                         ),
@@ -326,7 +326,7 @@ class _TxTile extends StatelessWidget {
     };
     final isCashback = tx.note.toLowerCase().contains('cashback');
     final iconBg = isCashback
-        ? ZColors.highlightTint
+        ? ZColors.successTint
         : isCredit
             ? ZColors.successTint
             : ZColors.background;

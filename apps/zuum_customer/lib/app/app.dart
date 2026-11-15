@@ -63,7 +63,7 @@ class _MockTag extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: const BoxDecoration(
-        color: ZColors.highlight,
+        color: ZColors.primary,
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(6),
           bottomLeft: Radius.circular(6),
@@ -72,7 +72,7 @@ class _MockTag extends StatelessWidget {
       child: Text(
         'ENV: MOCK',
         style: ZTypography.overline.copyWith(
-          color: ZColors.dark,
+          color: ZColors.onPrimary,
           fontSize: 9,
           letterSpacing: 0.5,
         ),

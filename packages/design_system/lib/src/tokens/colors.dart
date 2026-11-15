@@ -13,13 +13,12 @@ abstract final class ZColors {
   static const dark = Color(0xFF090D16); // Carbon Ink
   static const accent = Color(0xFFF3F4F6); // Light Neutral (selected tint)
   static const background = Color(0xFFF9FAFB); // Off-White canvas
-  static const highlight = Color(0xFF84CC16); // Volt Lime
   static const surface = Color(0xFFFFFFFF);
 
   // semantic
   static const error = Color(0xFFB91C1C);
-  static const success = Color(0xFF15803D);
-  static const warning = highlight;
+  static const success = Color(0xFF0E8345);
+  static const warning = Color(0xFFB45309);
 
   // text
   static const textPrimary = dark;
@@ -36,7 +35,6 @@ abstract final class ZColors {
 
   // derived tints
   static const primaryTint = Color(0xFFF3F4F6);
-  static const highlightTint = Color(0xFFF3FBE4);
   static const errorTint = Color(0xFFFEE9E7);
   static const successTint = Color(0xFFE8F5EC);
 

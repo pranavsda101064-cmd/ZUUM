@@ -107,7 +107,7 @@ class _OfferSheetState extends ConsumerState<OfferSheet> {
           children: [
             Row(
               children: [
-                const ZLiveDot(color: ZColors.highlight),
+                const ZLiveDot(color: ZColors.success),
                 const SizedBox(width: ZSpacing.sm),
                 Text(
                   'NEW TRIP REQUEST',

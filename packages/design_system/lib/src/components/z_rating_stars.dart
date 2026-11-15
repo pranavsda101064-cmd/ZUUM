@@ -33,7 +33,7 @@ class ZRatingStars extends StatelessWidget {
                     ? Icons.star_rounded
                     : Icons.star_outline_rounded,
                 size: size,
-                color: ZColors.highlight,
+                color: ZColors.primary,
               ),
             ),
           ),

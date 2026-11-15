@@ -177,7 +177,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                       'ನಮ್ಮ ಬೆಂಗಳೂರು, ನಮ್ಮ ಪಯಣ',
                       style: ZTypography.kannada(
                         fontSize: 13,
-                        color: ZColors.highlight,
+                        color: ZColors.accent,
                       ),
                     ),
                     const SizedBox(height: ZSpacing.lg),
@@ -189,7 +189,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                         child: LinearProgressIndicator(
                           minHeight: 2,
                           backgroundColor: ZColors.textSecondary,
-                          color: ZColors.highlight,
+                          color: ZColors.accent,
                           value: _logo.value,
                         ),
                       ),
@@ -258,7 +258,7 @@ class _LogoPainter extends CustomPainter {
 
     // Marigold motion dot (pops with easeOutBack).
     if (dotScale > 0) {
-      final dot = Paint()..color = ZColors.highlight;
+      final dot = Paint()..color = ZColors.onDark;
       final center = Offset(size.width * 0.78, size.height * 0.78);
       canvas.drawCircle(center, 9 * dotScale, dot);
     }

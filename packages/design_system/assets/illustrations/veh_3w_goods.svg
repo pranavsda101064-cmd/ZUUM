@@ -7,6 +7,6 @@
     <circle cx="16" cy="37" r="5" fill="#FFFFFF"/>
     <circle cx="46" cy="37" r="5" fill="#FFFFFF"/>
     <path d="M6 34h5M51 34h5" />
-    <path d="M10 14v-4h10" stroke="#84CC16" stroke-width="3"/>
+    <path d="M10 14v-4h10" stroke="#111827" stroke-width="3"/>
   </g>
 </svg>

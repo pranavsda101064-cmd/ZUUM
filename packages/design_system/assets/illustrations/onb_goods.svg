@@ -17,7 +17,7 @@
   <!-- ground -->
   <path d="M22 116h156" stroke="#090D16" stroke-width="2.5" stroke-linecap="round"/>
   <!-- roof accent -->
-  <path d="M44 46h64" stroke="#84CC16" stroke-width="3" stroke-linecap="round"/>
+  <path d="M44 46h64" stroke="#111827" stroke-width="3" stroke-linecap="round"/>
   <!-- speed lines -->
   <path d="M16 62h12M12 76h14" stroke="#111827" stroke-width="2.5" stroke-linecap="round"/>
 </svg>

@@ -114,7 +114,7 @@ class _ZBrandSplashState extends State<ZBrandSplash>
                                   vertical: 4,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: ZColors.highlight,
+                                  color: ZColors.onDark,
                                   borderRadius: BorderRadius.circular(999),
                                 ),
                                 child: Text(
@@ -212,8 +212,8 @@ class _GlowPainter extends CustomPainter {
     final glow = Paint()
       ..shader = RadialGradient(
         colors: [
-          ZColors.highlight.withValues(alpha: 0.16),
-          ZColors.highlight.withValues(alpha: 0.0),
+          ZColors.onDark.withValues(alpha: 0.10),
+          ZColors.onDark.withValues(alpha: 0.0),
         ],
       ).createShader(
         Rect.fromCircle(center: center, radius: size.shortestSide * 0.55),
@@ -285,11 +285,11 @@ class _HairlineLoaderState extends State<_HairlineLoader>
                   width: 42,
                   height: 2,
                   decoration: BoxDecoration(
-                    color: ZColors.highlight,
+                    color: ZColors.onDark,
                     borderRadius: BorderRadius.circular(2),
                     boxShadow: [
                       BoxShadow(
-                        color: ZColors.highlight.withValues(alpha: 0.6),
+                        color: ZColors.onDark.withValues(alpha: 0.5),
                         blurRadius: 8,
                       ),
                     ],

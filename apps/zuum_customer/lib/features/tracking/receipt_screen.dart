@@ -188,7 +188,7 @@ class _ReceiptScreenState extends ConsumerState<ReceiptScreen> {
                                     color: booking.paymentState ==
                                             PaymentState.paid
                                         ? ZColors.successTint
-                                        : ZColors.highlightTint,
+                                        : ZColors.accent,
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: Text(

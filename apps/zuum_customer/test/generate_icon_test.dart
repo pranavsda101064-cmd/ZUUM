@@ -52,7 +52,7 @@ void main() {
     );
 
     // The motion spark — marigold dot with a dark ring.
-    canvas.drawCircle(const Offset(700, 760), 70, Paint()..color = ZColors.highlight);
+    canvas.drawCircle(const Offset(700, 760), 70, Paint()..color = ZColors.primary);
     canvas.drawCircle(
       const Offset(700, 760),
       84,

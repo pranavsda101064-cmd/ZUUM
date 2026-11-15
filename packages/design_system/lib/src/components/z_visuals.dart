@@ -128,7 +128,7 @@ class ZPhotoHero extends StatelessWidget {
                       Text(
                         caption!,
                         style: ZTypography.overline.copyWith(
-                          color: ZColors.highlight,
+                          color: ZColors.onDark,
                           letterSpacing: 0.8,
                         ),
                       ),

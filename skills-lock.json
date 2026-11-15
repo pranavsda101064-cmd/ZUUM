@@ -1,0 +1,53 @@
+{
+  "version": 2,
+  "skills": {
+    "flutter-accessibility": {
+      "source": "musabekisakov-imj/flutter-design-engineer",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-accessibility/SKILL.md",
+      "computedHash": "cd66cd6d2395445d647d90f44971dd04feace49732ef79ab2331b2402b641234"
+    },
+    "flutter-audit": {
+      "source": "musabekisakov-imj/flutter-design-engineer",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-audit/SKILL.md",
+      "computedHash": "28635d252efc495183276ce73652a838b4a97d50daa9c19b8fe73b0bc285dd81"
+    },
+    "flutter-design": {
+      "source": "musabekisakov-imj/flutter-design-engineer",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-design/SKILL.md",
+      "computedHash": "f89c291ea53ba9bf621e8283dff9c32edf02a85f2f3941f013c39ba5d479fdbb"
+    },
+    "flutter-design-system": {
+      "source": "musabekisakov-imj/flutter-design-engineer",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-design-system/SKILL.md",
+      "computedHash": "2d100b7f66cd4e762cc531c186bfb1f5853705bf0e0f4db42a0481c4b42936b8"
+    },
+    "flutter-implementation": {
+      "source": "musabekisakov-imj/flutter-design-engineer",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-implementation/SKILL.md",
+      "computedHash": "88af9f58100fd83fbab88937629f0e6618f54576ce07d8017946c770c4391f8a"
+    },
+    "flutter-motion": {
+      "source": "musabekisakov-imj/flutter-design-engineer",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-motion/SKILL.md",
+      "computedHash": "0d365aec7de31f30da6704f288871a7b7ed1fc7047d141c64fc171903a61538c"
+    },
+    "flutter-responsive-layout": {
+      "source": "thienqo/flutter-skills",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-responsive-layout/SKILL.md",
+      "computedHash": "c4c24fff0d340bced1cc8e2450b1b516b551bdf029693d2c472196d60e03e12f"
+    },
+    "flutter-visual-qa": {
+      "source": "musabekisakov-imj/flutter-design-engineer",
+      "sourceType": "github",
+      "skillPath": "skills/flutter-visual-qa/SKILL.md",
+      "computedHash": "65d29f6f416f1e5483491f038270eac613e6b2682fd97e1d0d35e99d9c5df04e"
+    }
+  }
+}

@@ -377,7 +377,7 @@ class _TipChip extends StatelessWidget {
             margin: const EdgeInsets.only(bottom: 4),
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             decoration: BoxDecoration(
-              color: ZColors.highlight,
+              color: ZColors.success,
               borderRadius: BorderRadius.circular(999),
             ),
             child: Text(

@@ -119,7 +119,7 @@ class VehiclesTab extends ConsumerWidget {
                       Text(
                         'FLEET CONSOLE',
                         style: ZTypography.overline.copyWith(
-                          color: ZColors.highlight,
+                          color: ZColors.accent,
                           letterSpacing: 1.0,
                         ),
                       ),
@@ -229,7 +229,7 @@ class _VehicleCardState extends ConsumerState<_VehicleCard> {
               Switch(
                 value: vehicle.isActive,
                 onChanged: _busy ? null : _toggle,
-                activeTrackColor: ZColors.highlight,
+                activeTrackColor: ZColors.primary,
                 inactiveTrackColor: ZColors.accent,
               ),
             ],

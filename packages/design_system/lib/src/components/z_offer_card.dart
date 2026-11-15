@@ -53,7 +53,7 @@ class ZOfferCard extends StatelessWidget {
         ? ZColors.error
         : secondsLeft <= 5
             ? ZColors.error
-            : ZColors.highlight;
+            : ZColors.primary;
     final progress =
         totalSeconds <= 0 ? 0.0 : (secondsLeft / totalSeconds).clamp(0.0, 1.0);
 

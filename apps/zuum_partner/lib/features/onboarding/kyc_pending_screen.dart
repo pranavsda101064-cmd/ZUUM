@@ -72,7 +72,7 @@ class _KycPendingScreenState extends ConsumerState<KycPendingScreen> {
                   width: 44,
                   height: 44,
                   decoration: const BoxDecoration(
-                    color: ZColors.highlight,
+                    color: ZColors.accent,
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(Icons.hourglass_top_rounded,
@@ -96,7 +96,7 @@ class _KycPendingScreenState extends ConsumerState<KycPendingScreen> {
                   'ಪರಿಶೀಲನೆ ನಡೆಯುತ್ತಿದೆ',
                   style: ZTypography.kannada(
                     fontSize: 13,
-                    color: ZColors.highlight,
+                    color: ZColors.accent,
                   ),
                 ),
                 const SizedBox(height: ZSpacing.sm),

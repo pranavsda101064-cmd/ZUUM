@@ -403,7 +403,7 @@ class _ControlButton extends StatelessWidget {
             child: Icon(
               icon,
               size: 19,
-              color: accent ? ZColors.highlight : ZColors.primary,
+              color: ZColors.primary,
             ),
           ),
         ),

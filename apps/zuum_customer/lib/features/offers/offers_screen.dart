@@ -98,7 +98,7 @@ class OffersScreen extends ConsumerWidget {
                           width: 44,
                           height: 44,
                           decoration: const BoxDecoration(
-                            color: ZColors.highlightTint,
+                            color: ZColors.accent,
                             shape: BoxShape.circle,
                           ),
                           child: const Icon(Icons.local_offer_outlined,

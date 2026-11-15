@@ -17,7 +17,7 @@ class ZBadge extends StatelessWidget {
     final (background, foreground) = switch (tone) {
       ZBadgeTone.neutral => (ZColors.accent, ZColors.primary),
       ZBadgeTone.primary => (ZColors.primary, ZColors.onPrimary),
-      ZBadgeTone.highlight => (ZColors.highlightTint, ZColors.dark),
+      ZBadgeTone.highlight => (ZColors.accent, ZColors.primary),
       ZBadgeTone.error => (ZColors.errorTint, ZColors.error),
       ZBadgeTone.success => (ZColors.successTint, ZColors.success),
     };

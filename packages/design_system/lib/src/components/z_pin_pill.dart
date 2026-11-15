@@ -16,7 +16,7 @@ class ZPinPill extends StatelessWidget {
       height: 28,
       padding: const EdgeInsets.symmetric(horizontal: 10),
       decoration: BoxDecoration(
-        color: ZColors.highlight,
+        color: ZColors.primary,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Center(

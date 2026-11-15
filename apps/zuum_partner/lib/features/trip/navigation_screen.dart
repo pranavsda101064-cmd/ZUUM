@@ -289,13 +289,13 @@ class _PartnerNavigationScreenState
               showControls: true,
               route: ZMapRoute(
                 [for (final point in route.geometry) ZMapCenter(point.lat, point.lng)],
-                color: ZColors.highlight,
+                color: ZColors.onDark,
               ),
               markers: [
                 ZMapMarker(
                   position.lat,
                   position.lng,
-                  color: ZColors.highlight,
+                  color: ZColors.onDark,
                   kind: ZMapMarkerKind.driver,
                 ),
                 ZMapMarker(
@@ -309,7 +309,7 @@ class _PartnerNavigationScreenState
           else
             Center(
               child: _loading
-                  ? const CircularProgressIndicator(color: ZColors.highlight)
+                  ? const CircularProgressIndicator(color: ZColors.onDark)
                   : ZEmptyState(
                       illustration: 'empty_generic',
                       title: _error ?? 'Navigation unavailable',
@@ -345,7 +345,7 @@ class _PartnerNavigationScreenState
                           _gpsLive ? 'GPS live' : 'Demo location',
                           style: ZTypography.overline.copyWith(
                             color: _gpsLive
-                                ? ZColors.highlight
+                                ? ZColors.success
                                 : ZColors.onDarkSecondary,
                             letterSpacing: 0.3,
                           ),
@@ -368,7 +368,7 @@ class _PartnerNavigationScreenState
                           ? 'ARRIVED'
                           : '${(progress.ratio * (route?.durationS ?? 0) / 60).round()} min',
                       style: ZTypography.overline.copyWith(
-                        color: ZColors.highlight,
+                        color: ZColors.onDark,
                         letterSpacing: 0.4,
                       ),
                     ),

@@ -40,12 +40,12 @@ class ZOnlineHero extends StatelessWidget {
         children: [
           Row(
             children: [
-              ZLiveDot(color: online ? ZColors.highlight : ZColors.textTertiary),
+              ZLiveDot(color: online ? ZColors.success : ZColors.textTertiary),
               const SizedBox(width: ZSpacing.sm),
               Text(
                 online ? 'ONLINE' : 'OFFLINE',
                 style: ZTypography.overline.copyWith(
-                  color: online ? ZColors.highlight : ZColors.onDarkSecondary,
+                  color: online ? ZColors.onDark : ZColors.onDarkSecondary,
                   letterSpacing: 1.0,
                 ),
               ),
@@ -77,9 +77,9 @@ class ZOnlineHero extends StatelessWidget {
               Switch(
                 value: online,
                 onChanged: busy ? null : onChanged,
-                activeTrackColor: ZColors.highlight,
+                activeTrackColor: ZColors.success,
                 inactiveTrackColor: ZColors.darkRaised,
-                activeThumbColor: ZColors.dark,
+                activeThumbColor: ZColors.onPrimary,
                 inactiveThumbColor: ZColors.onDarkSecondary,
               ),
             ],

@@ -352,7 +352,7 @@ class _MapCard extends StatelessWidget {
                 ZMapMarker(
                   position.lat,
                   position.lng,
-                  color: online ? ZColors.highlight : ZColors.textTertiary,
+                  color: online ? ZColors.success : ZColors.textTertiary,
                 ),
               ],
             ),
@@ -399,7 +399,7 @@ class _ActiveTripCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              const ZLiveDot(color: ZColors.highlight),
+              const ZLiveDot(color: ZColors.success),
               const SizedBox(width: ZSpacing.sm),
               Text(
                 'ACTIVE TRIP · ${trip.serviceCategoryName.toUpperCase()}',

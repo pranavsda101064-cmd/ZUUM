@@ -98,13 +98,13 @@ class AccountTab extends ConsumerWidget {
                               vertical: 2,
                             ),
                             decoration: BoxDecoration(
-                              color: ZColors.highlight,
+                              color: ZColors.primary,
                               borderRadius: BorderRadius.circular(999),
                             ),
                             child: Text(
                               '★ 4.92 Rider',
                               style: ZTypography.overline.copyWith(
-                                color: ZColors.dark,
+                                color: ZColors.onPrimary,
                                 letterSpacing: 0.2,
                                 fontFeatures: const [
                                   FontFeature.tabularFigures(),

@@ -46,8 +46,8 @@ class ZBrandMark extends StatelessWidget {
           margin: EdgeInsets.only(left: 3 * scale, bottom: 8 * scale),
           width: 6 * scale,
           height: 6 * scale,
-          decoration: const BoxDecoration(
-            color: ZColors.highlight,
+          decoration: BoxDecoration(
+            color: onDark ? ZColors.accent : ZColors.primary,
             shape: BoxShape.circle,
           ),
         ),

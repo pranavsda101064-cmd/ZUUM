@@ -497,7 +497,7 @@ class _TripScreenState extends ConsumerState<TripScreen> {
       child: Container(
         padding: const EdgeInsets.all(ZSpacing.sm),
         decoration: const BoxDecoration(
-          color: ZColors.highlightTint,
+          color: ZColors.accent,
           borderRadius: BorderRadius.all(Radius.circular(ZRadii.sm)),
         ),
         child: Text(
@@ -585,13 +585,13 @@ class _StatusHeader extends StatelessWidget {
               ZLiveDot(
                 color: trip.status == PartnerTripStatus.completed
                     ? ZColors.success
-                    : ZColors.highlight,
+                    : ZColors.accent,
               ),
               const SizedBox(width: ZSpacing.sm),
               Text(
                 _stageBadge(trip),
                 style: ZTypography.overline.copyWith(
-                  color: ZColors.highlight,
+                  color: ZColors.accent,
                   letterSpacing: 1.0,
                 ),
               ),
@@ -708,7 +708,7 @@ class _GoodsCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(ZSpacing.md),
       decoration: BoxDecoration(
-        color: ZColors.highlightTint,
+        color: ZColors.accent,
         borderRadius: BorderRadius.circular(ZRadii.lg),
       ),
       child: Row(
@@ -816,7 +816,7 @@ class _RoutePreview extends StatelessWidget {
           showAttribution: false,
           route: ZMapRoute(
             [for (final point in route.geometry) ZMapCenter(point.lat, point.lng)],
-            color: ZColors.highlight,
+            color: ZColors.primary,
           ),
           markers: [
             ZMapMarker(trip.pickup.lat, trip.pickup.lng, kind: ZMapMarkerKind.pickup),

@@ -123,7 +123,7 @@ class _NavItem extends StatelessWidget {
                 width: 4,
                 height: 4,
                 decoration: const BoxDecoration(
-                  color: ZColors.highlight,
+                  color: ZColors.primary,
                   shape: BoxShape.circle,
                 ),
               ),

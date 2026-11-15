@@ -68,13 +68,13 @@ class _PartnerLoginScreenState extends ConsumerState<PartnerLoginScreen> {
                           vertical: 3,
                         ),
                         decoration: BoxDecoration(
-                          color: ZColors.highlight,
+                          color: ZColors.primary,
                           borderRadius: BorderRadius.circular(999),
                         ),
                         child: Text(
                           'PARTNER',
                           style: ZTypography.overline.copyWith(
-                            color: ZColors.dark,
+                            color: ZColors.onPrimary,
                             letterSpacing: 1.4,
                           ),
                         ),

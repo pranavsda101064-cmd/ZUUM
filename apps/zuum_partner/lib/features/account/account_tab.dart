@@ -189,7 +189,7 @@ class AccountTab extends ConsumerWidget {
                     onChanged: (value) => ref
                         .read(notificationsEnabledProvider.notifier)
                         .toggle(value),
-                    activeTrackColor: ZColors.highlight,
+                    activeTrackColor: ZColors.primary,
                     inactiveTrackColor: ZColors.accent,
                   ),
                 ),

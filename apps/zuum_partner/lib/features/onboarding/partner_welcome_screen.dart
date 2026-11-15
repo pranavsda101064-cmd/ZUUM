@@ -26,7 +26,6 @@ class _PartnerWelcomeScreenState extends ConsumerState<PartnerWelcomeScreen> {
       body:
           'Go online and receive ride and goods requests across Bengaluru. '
           'Every request shows your payout before you accept.',
-      tint: ZColors.highlightTint,
     ),
     _Slide(
       photo: 'blr_goods_truck',
@@ -35,7 +34,6 @@ class _PartnerWelcomeScreenState extends ConsumerState<PartnerWelcomeScreen> {
       body:
           'A flat 20% commission, a live trip ledger, and weekly bank payouts. '
           'No surprises at settlement.',
-      tint: ZColors.primaryTint,
     ),
     _Slide(
       photo: 'blr_goods_auto',
@@ -44,7 +42,6 @@ class _PartnerWelcomeScreenState extends ConsumerState<PartnerWelcomeScreen> {
       body:
           'Add vehicles, assign drivers, and track utilisation plus fleet '
           'earnings from one console.',
-      tint: ZColors.highlightTint,
     ),
   ];
 
@@ -89,13 +86,13 @@ class _PartnerWelcomeScreenState extends ConsumerState<PartnerWelcomeScreen> {
                       vertical: 3,
                     ),
                     decoration: BoxDecoration(
-                      color: ZColors.highlight,
+                      color: ZColors.primary,
                       borderRadius: BorderRadius.circular(999),
                     ),
                     child: Text(
                       'PARTNER',
                       style: ZTypography.overline.copyWith(
-                        color: ZColors.dark,
+                        color: ZColors.onPrimary,
                         letterSpacing: 1.2,
                       ),
                     ),
@@ -230,12 +227,10 @@ class _Slide {
     required this.kannada,
     required this.title,
     required this.body,
-    required this.tint,
   });
 
   final String photo;
   final String kannada;
   final String title;
   final String body;
-  final Color tint;
 }

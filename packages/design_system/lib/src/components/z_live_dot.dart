@@ -6,7 +6,7 @@ import '../tokens/motion.dart';
 /// Pulsing dot used for live/online states (lime when live). Animates
 /// indefinitely by design — tests should `pump(duration)`, not settle.
 class ZLiveDot extends StatefulWidget {
-  const ZLiveDot({super.key, this.color = ZColors.highlight, this.size = 8});
+  const ZLiveDot({super.key, this.color = ZColors.success, this.size = 8});
 
   final Color color;
   final double size;
