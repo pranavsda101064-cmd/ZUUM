@@ -145,6 +145,7 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 STATIC_ROOT = Path(os.getenv("STATIC_ROOT", BASE_DIR / "staticfiles"))
+OPS_CONSOLE_DIR = Path(os.getenv("OPS_CONSOLE_DIR", BASE_DIR / "ops_console"))
 DATA_DIR = Path(os.getenv("DATA_DIR", BASE_DIR))
 MEDIA_URL = "/media/"
 MEDIA_ROOT = Path(os.getenv("MEDIA_ROOT", DATA_DIR / "media"))

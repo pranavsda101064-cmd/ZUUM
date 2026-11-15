@@ -20,12 +20,13 @@ Debug backend runs with `DEBUG=1`, which allows all CORS origins.
 ## Build / preview
 
 ```bash
-flutter build web
+flutter build web --release --base-href /ops-console/
 python -m http.server 8080 --directory build/web
 ```
 
-Release builds default to `https://zuum-api.onrender.com/api/v1`. The Render
-blueprint allows `localhost:8080` / `127.0.0.1:8080`; add your hosted dashboard
-origin to `CORS_ALLOWED_ORIGINS` before deploying it elsewhere.
+Release builds default to `https://zuum-api.onrender.com/api/v1`. Production
+serves the built dashboard from the API service at
+`https://zuum-api.onrender.com/ops-console/` (assets live in
+`backend/ops_console/`). Rebuild and copy `build/web` there after UI changes.
 
 Staff accounts only. Every write action calls the audited ops API.
