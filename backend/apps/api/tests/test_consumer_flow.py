@@ -110,6 +110,14 @@ class ConsumerFlowTests(ZuumTestCase):
         detail = self.customer.get(f"/api/v1/bookings/{booking['id']}")
         self.assertEqual(detail.data["status"], "COMPLETED")
 
+        paid = self.customer.post(
+            f"/api/v1/bookings/{booking['id']}/pay",
+            {"payment_method": "cash"},
+            format="json",
+        )
+        self.assertEqual(paid.status_code, 200, paid.content)
+        self.assertEqual(paid.data["payment_state"], "paid")
+
         notifications = self.customer.get("/api/v1/notifications")
         titles = [row["title"] for row in notifications.data["results"]]
         self.assertIn("Trip completed", titles)

@@ -46,6 +46,7 @@ urlpatterns = [
     path("bookings/<uuid:booking_id>", bookings.BookingDetailView.as_view()),
     path("bookings/<uuid:booking_id>/cancel", bookings.BookingCancelView.as_view()),
     path("bookings/<uuid:booking_id>/rate", bookings.BookingRateView.as_view()),
+    path("bookings/<uuid:booking_id>/pay", bookings.BookingPayView.as_view()),
     path("bookings/<uuid:booking_id>/receipt", bookings.BookingReceiptView.as_view()),
     path("bookings/<uuid:booking_id>/location", bookings.BookingLocationView.as_view()),
     path("bookings/<uuid:booking_id>/eta", bookings.BookingEtaView.as_view()),

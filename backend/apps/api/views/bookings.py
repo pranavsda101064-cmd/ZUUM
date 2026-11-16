@@ -28,6 +28,12 @@ from apps.routing.providers import bounding_box
 from apps.routing.service import RoutingService, profile_for_category
 from apps.core.exceptions import ApiError
 from apps.core.uploads import validate_upload
+from apps.payments.models import Payment, WalletTransaction
+from apps.payments.services import (
+    apply_wallet_txn,
+    ensure_wallet,
+    mark_payment_paid,
+)
 
 
 def _booking_for(user, booking_id) -> Booking:
@@ -178,6 +184,56 @@ class BookingRateView(APIView):
             ReviewSerializer(review).data,
             status=status.HTTP_201_CREATED if created else status.HTTP_200_OK,
         )
+
+
+class BookingPayView(APIView):
+    serializer_class = BookingSerializer
+
+    def post(self, request, booking_id):
+        booking = _booking_for(request.user, booking_id)
+        if booking.status != Booking.Status.COMPLETED:
+            raise ApiError(
+                "Only completed trips can be paid",
+                code="illegal_transition",
+                status_code=409,
+            )
+        if booking.payment_state == Booking.PaymentState.PAID:
+            return Response(BookingSerializer(booking).data)
+        method = (
+            request.data.get("payment_method") or booking.payment_method
+        )
+        if method not in dict(Booking.PaymentMethod.choices):
+            raise ApiError(
+                "Unknown payment method", code="validation_error", status_code=400
+            )
+        tip = max(0, int(request.data.get("tip_paise") or 0))
+        amount = (booking.final_fare_paise or booking.quoted_fare_paise) + tip
+        if method == Booking.PaymentMethod.WALLET:
+            wallet = ensure_wallet(request.user)
+            apply_wallet_txn(
+                wallet=wallet,
+                kind=WalletTransaction.Kind.DEBIT,
+                amount_paise=amount,
+                reference=f"booking:{booking.id}",
+                note="Trip payment",
+            )
+        payment = Payment.objects.create(
+            booking=booking,
+            method=method,
+            amount_paise=amount,
+            gateway_order_id=f"settle_{booking.id.hex[:12]}",
+            gateway_payment_id=f"pay_{booking.id.hex[:12]}",
+        )
+        mark_payment_paid(payment)
+        if tip and hasattr(booking, "commission"):
+            entry = booking.commission
+            entry.tips_paise = tip
+            entry.driver_paise += tip
+            entry.save(update_fields=["tips_paise", "driver_paise", "updated_at"])
+        booking.payment_method = method
+        booking.save(update_fields=["payment_method", "updated_at"])
+        booking.refresh_from_db()
+        return Response(BookingSerializer(booking).data)
 
 
 class BookingReceiptView(APIView):
