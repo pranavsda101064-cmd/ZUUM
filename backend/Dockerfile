@@ -18,7 +18,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY backend/ .
 # Compile static assets with production settings (whitenoise).
-RUN DEBUG=0 python manage.py collectstatic --noinput || true
+RUN SECRET_KEY=build-only ALLOWED_HOSTS=localhost DEBUG=0 \
+    python manage.py collectstatic --noinput
 RUN chmod +x /app/start.sh
 
 EXPOSE 8000

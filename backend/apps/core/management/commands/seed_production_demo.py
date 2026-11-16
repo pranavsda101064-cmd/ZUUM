@@ -298,6 +298,7 @@ class Command(BaseCommand):
             )
 
     def handle(self, *args, **options):
+        self.stdout.write("Seeding production demo accounts and data…")
         categories = seed_catalog()
 
         password_env = os.getenv("SEED_PASSWORD")
