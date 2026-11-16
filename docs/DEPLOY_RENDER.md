@@ -54,7 +54,7 @@ commands manually.
 The static marketing site lives in `landing/`. `render.production.yaml`
 includes a `zuum-web` static service for it. For the free demo, apply
 `landing/render.yaml` as a second Blueprint to publish the site separately
-at `https://zuum-web.onrender.com`.
+at `https://zuum-9apo.onrender.com`.
 
 - Deploy the site alone: Render -> New -> Blueprint -> set the Blueprint
   Path to `landing/render.yaml` -> Apply.

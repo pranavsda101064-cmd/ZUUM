@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://zuum-web.onrender.com/sitemap.xml
+Sitemap: https://zuum-9apo.onrender.com/sitemap.xml
