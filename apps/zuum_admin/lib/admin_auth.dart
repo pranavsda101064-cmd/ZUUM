@@ -8,7 +8,10 @@ import 'admin_api.dart';
 enum AdminAuthStatus { booting, signedOut, signedIn }
 
 class AdminAuth extends ChangeNotifier {
-  AdminAuth({AdminApi? api}) : api = api ?? AdminApi();
+  AdminAuth({AdminApi? api}) : api = api ?? AdminApi() {
+    this.api.onTokens = _persistTokens;
+    this.api.onExpired = _expire;
+  }
 
   final AdminApi api;
 
@@ -24,13 +27,14 @@ class AdminAuth extends ChangeNotifier {
   Future<void> restore() async {
     final prefs = await SharedPreferences.getInstance();
     final access = prefs.getString(_kAccess);
+    final refresh = prefs.getString(_kRefresh);
     final rawUser = prefs.getString(_kUser);
     if (access == null || access.isEmpty || rawUser == null) {
       status = AdminAuthStatus.signedOut;
       notifyListeners();
       return;
     }
-    api.setToken(access);
+    api.setSession(access: access, refresh: refresh);
     try {
       final me = await api.me();
       if (me.role != 'staff') {
@@ -48,6 +52,22 @@ class AdminAuth extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> _persistTokens(String access, String refresh) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_kAccess, access);
+    await prefs.setString(_kRefresh, refresh);
+  }
+
+  Future<void> _expire() async {
+    final prefs = await SharedPreferences.getInstance();
+    await _clear(prefs);
+    api.setSession();
+    user = null;
+    status = AdminAuthStatus.signedOut;
+    error = 'Your session expired. Sign in again.';
+    notifyListeners();
+  }
+
   Future<bool> login(String email, String password) async {
     busy = true;
     error = null;
@@ -60,7 +80,7 @@ class AdminAuth extends ChangeNotifier {
         notifyListeners();
         return false;
       }
-      api.setToken(session.access);
+      api.setSession(access: session.access, refresh: session.refresh);
       user = session.user;
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(_kAccess, session.access);
@@ -84,9 +104,10 @@ class AdminAuth extends ChangeNotifier {
   }
 
   Future<void> logout() async {
+    await api.logout();
     final prefs = await SharedPreferences.getInstance();
     await _clear(prefs);
-    api.setToken(null);
+    api.setSession();
     user = null;
     status = AdminAuthStatus.signedOut;
     error = null;

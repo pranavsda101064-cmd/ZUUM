@@ -192,16 +192,6 @@ class _TripScreenState extends ConsumerState<TripScreen> {
     if (mounted) context.go('/home');
   }
 
-  void _call() {
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        const SnackBar(
-          content: Text('Calls are connected through Zuum.'),
-        ),
-      );
-  }
-
   @override
   Widget build(BuildContext context) {
     final tripAsync = ref.watch(tripControllerProvider);
@@ -283,7 +273,7 @@ class _TripScreenState extends ConsumerState<TripScreen> {
             _RoutePreview(trip: trip),
           ],
           const SizedBox(height: ZSpacing.md),
-          _CustomerRow(trip: trip, onCall: _call),
+                _CustomerRow(trip: trip),
           const SizedBox(height: ZSpacing.md),
           _RouteCard(trip: trip),
           if (trip.kind == OfferKind.goods && trip.goodsType != null) ...[
@@ -597,10 +587,9 @@ class _StatusHeader extends StatelessWidget {
 }
 
 class _CustomerRow extends StatelessWidget {
-  const _CustomerRow({required this.trip, required this.onCall});
+  const _CustomerRow({required this.trip});
 
   final PartnerTrip trip;
-  final VoidCallback onCall;
 
   @override
   Widget build(BuildContext context) {
@@ -638,12 +627,6 @@ class _CustomerRow extends StatelessWidget {
             ),
           ),
           ZBadge(label: trip.paymentMethod.name.toUpperCase()),
-          const SizedBox(width: ZSpacing.xs),
-          ZIconButton(
-            icon: Icons.call_outlined,
-            tooltip: 'Call customer',
-            onPressed: onCall,
-          ),
         ],
       ),
     );

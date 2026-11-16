@@ -694,10 +694,10 @@ void main() {
     await tester.tap(find.text('Add address'));
     await tester.pumpAndSettle();
     await tester.enterText(find.widgetWithText(ZTextField, 'Name (e.g. Home)'), 'Home');
-    await tester.enterText(find.widgetWithText(ZTextField, 'Full address'), '42, 7th Cross, Jayanagar');
+    await tester.enterText(find.widgetWithText(ZTextField, 'Full address'), 'Jayanagar');
     await tester.tap(find.text('Save address'));
     await tester.pumpAndSettle();
-    expect(find.text('42, 7th Cross, Jayanagar'), findsWidgets); // seeded + new
+    expect(find.text('4th Block, Jayanagar, Bengaluru'), findsWidgets);
   });
 
   testWidgets('GST and trusted contacts persist through the API',

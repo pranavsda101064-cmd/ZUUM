@@ -6,6 +6,8 @@ Schema: `/api/v1/schema/` + Swagger UI at `/api/v1/docs/`.
 """
 from pathlib import Path
 
+import mimetypes
+
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
@@ -30,7 +32,37 @@ def ops_console(request, path=""):
         target = root / "index.html"
     if not target.exists():
         raise Http404
-    return FileResponse(target.open("rb"))
+    content_type, _ = mimetypes.guess_type(target.name)
+    content_type = {
+        ".ttf": "font/ttf",
+        ".otf": "font/otf",
+        ".wasm": "application/wasm",
+        ".js": "text/javascript",
+        ".json": "application/json",
+        ".webp": "image/webp",
+        ".svg": "image/svg+xml",
+    }.get(target.suffix, content_type)
+    response = FileResponse(
+        target.open("rb"),
+        content_type=content_type or "application/octet-stream",
+    )
+    response["X-Content-Type-Options"] = "nosniff"
+    response["X-Frame-Options"] = "DENY"
+    response["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response["Permissions-Policy"] = "geolocation=(), camera=(), microphone=()"
+    response["Content-Security-Policy"] = (
+        "default-src 'self'; "
+        "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.gstatic.com; "
+        "style-src 'self' 'unsafe-inline'; "
+        "img-src 'self' data: blob:; "
+        "font-src 'self' data: blob: https://fonts.gstatic.com; "
+        "connect-src 'self' https://www.gstatic.com https://fonts.gstatic.com https://zuum-api.onrender.com wss://zuum-api.onrender.com; "
+        "worker-src 'self' blob:; "
+        "object-src 'none'; frame-ancestors 'none'; base-uri 'self'"
+    )
+    if target.name == "index.html":
+        response["Cache-Control"] = "no-store"
+    return response
 
 
 urlpatterns = [

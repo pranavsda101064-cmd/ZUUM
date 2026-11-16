@@ -11,18 +11,20 @@ import urllib.parse
 from datetime import timedelta
 from pathlib import Path
 
+from django.core.exceptions import ImproperlyConfigured
 from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
 
-SECRET_KEY = (
-    os.getenv("SECRET_KEY")
-    or os.getenv("DJANGO_SECRET_KEY")
-    or "dev-insecure-zuum-secret-change-me"
-)
 DEBUG = os.getenv("DEBUG", "1") == "1"
+_secret_key = os.getenv("SECRET_KEY") or os.getenv("DJANGO_SECRET_KEY")
+if not DEBUG and not _secret_key:
+    raise ImproperlyConfigured("SECRET_KEY must be set when DEBUG=0")
+SECRET_KEY = _secret_key or "dev-insecure-zuum-secret-change-me"
 ALLOWED_HOSTS = [h.strip() for h in os.getenv("ALLOWED_HOSTS", "*").split(",") if h.strip()]
+if not DEBUG and "*" in ALLOWED_HOSTS:
+    raise ImproperlyConfigured("ALLOWED_HOSTS must be explicit when DEBUG=0")
 
 CSRF_TRUSTED_ORIGINS = [
     o.strip() for o in os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",") if o.strip()
@@ -38,7 +40,9 @@ SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = "DENY"
-SECURE_HSTS_SECONDS = int(os.getenv("SECURE_HSTS_SECONDS", "0"))
+SECURE_HSTS_SECONDS = int(
+    os.getenv("SECURE_HSTS_SECONDS", "0" if DEBUG else "31536000")
+)
 
 INSTALLED_APPS = [
     "django.contrib.admin",

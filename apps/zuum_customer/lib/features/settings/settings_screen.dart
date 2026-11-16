@@ -300,6 +300,7 @@ class SavedAddressesScreen extends ConsumerWidget {
     final name = TextEditingController();
     final address = TextEditingController();
     var label = 'home';
+    var saving = false;
     ZSheet.show<void>(
       context: context,
       title: 'Add address',
@@ -336,30 +337,71 @@ class SavedAddressesScreen extends ConsumerWidget {
             const SizedBox(height: ZSpacing.xl),
             ZButton(
               label: 'Save address',
-              onPressed: () async {
-                final messenger = ScaffoldMessenger.of(context);
-                final navigator = Navigator.of(sheetContext);
-                if (address.text.trim().isEmpty) {
-                  messenger.showSnackBar(
-                    const SnackBar(content: Text('Enter an address')),
-                  );
-                  return;
-                }
-                // Coordinates default to central Bengaluru until the map
-                // picker lands with the Mapbox/OSM location flow.
-                await ref.read(apiContractProvider).createSavedAddress(
-                      label: label,
-                      name: name.text.trim().isEmpty ? label : name.text.trim(),
-                      lat: 12.9716,
-                      lng: 77.5946,
-                      address: address.text.trim(),
-                    );
-                ref.invalidate(_addressesProvider);
-                navigator.pop();
-                messenger.showSnackBar(
-                  const SnackBar(content: Text('Address saved')),
-                );
-              },
+              loading: saving,
+              onPressed: saving
+                  ? null
+                  : () async {
+                      final messenger = ScaffoldMessenger.of(context);
+                      final navigator = Navigator.of(sheetContext);
+                      final text = address.text.trim();
+                      if (text.isEmpty) {
+                        messenger.showSnackBar(
+                          const SnackBar(content: Text('Enter an address')),
+                        );
+                        return;
+                      }
+                      setSheetState(() => saving = true);
+                      try {
+                        final matches = await ref
+                            .read(placeSearchProvider)
+                            .search(
+                              text,
+                              proximityLat: 12.9716,
+                              proximityLng: 77.5946,
+                              limit: 1,
+                            );
+                        if (matches.isEmpty) {
+                          setSheetState(() => saving = false);
+                          messenger.showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Address not found — add a landmark or pincode.',
+                              ),
+                            ),
+                          );
+                          return;
+                        }
+                        final match = matches.first;
+                        await ref.read(apiContractProvider).createSavedAddress(
+                              label: label,
+                              name: name.text.trim().isEmpty
+                                  ? label
+                                  : name.text.trim(),
+                              lat: match.lat,
+                              lng: match.lng,
+                              address: match.address.isEmpty
+                                  ? text
+                                  : match.address,
+                            );
+                        ref.invalidate(_addressesProvider);
+                        navigator.pop();
+                        messenger.showSnackBar(
+                          const SnackBar(content: Text('Address saved')),
+                        );
+                      } catch (e) {
+                        if (!sheetContext.mounted) return;
+                        setSheetState(() => saving = false);
+                        messenger.showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              e is ApiException
+                                  ? e.message
+                                  : 'Could not verify the address. Try again.',
+                            ),
+                          ),
+                        );
+                      }
+                    },
             ),
           ],
         ),

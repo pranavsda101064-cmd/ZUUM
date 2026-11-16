@@ -513,15 +513,91 @@ class AdminApi {
 
   final Dio _dio;
   String? _token;
+  String? _refreshToken;
+  Future<bool>? _refreshing;
+  Future<void> Function(String access, String refresh)? onTokens;
+  Future<void> Function()? onExpired;
+
+  void setSession({String? access, String? refresh}) {
+    _token = access;
+    _refreshToken = refresh;
+  }
 
   void setToken(String? token) => _token = token;
 
-  Options get _auth => Options(
+  Options _authOptions({ResponseType? responseType}) => Options(
+        responseType: responseType,
         headers: {
           if (_token != null && _token!.isNotEmpty)
             'Authorization': 'Bearer $_token',
         },
       );
+
+  Future<Response<T>> _withAuth<T>(
+    Future<Response<T>> Function(Options options) send,
+  ) async {
+    try {
+      return await send(_authOptions());
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 401 && await _tryRefresh()) {
+        return send(_authOptions());
+      }
+      rethrow;
+    }
+  }
+
+  Future<bool> _tryRefresh() {
+    final inFlight = _refreshing;
+    if (inFlight != null) return inFlight;
+    final future = _doRefresh();
+    _refreshing = future;
+    return future.whenComplete(() => _refreshing = null);
+  }
+
+  Future<bool> _doRefresh() async {
+    final refresh = _refreshToken;
+    if (refresh == null || refresh.isEmpty) {
+      await onExpired?.call();
+      return false;
+    }
+    try {
+      final res = await _dio.post<dynamic>(
+        '/auth/refresh',
+        data: {'refresh': refresh},
+      );
+      final data = _map(res.data);
+      final access = '${data['access'] ?? ''}';
+      final nextRefresh = '${data['refresh'] ?? refresh}';
+      if (access.isEmpty) {
+        await onExpired?.call();
+        return false;
+      }
+      _token = access;
+      _refreshToken = nextRefresh;
+      await onTokens?.call(access, nextRefresh);
+      return true;
+    } catch (_) {
+      await onExpired?.call();
+      return false;
+    }
+  }
+
+  Future<void> logout() async {
+    final refresh = _refreshToken;
+    try {
+      if (refresh != null && refresh.isNotEmpty) {
+        await _dio.post<dynamic>(
+          '/auth/logout',
+          data: {'refresh': refresh},
+          options: _authOptions(),
+        );
+      }
+    } catch (_) {
+      // Local session is cleared regardless.
+    }
+    _token = null;
+    _refreshToken = null;
+  }
 
   Future<AdminSession> login(String email, String password) async {
     try {
@@ -537,7 +613,9 @@ class AdminApi {
 
   Future<AdminUser> me() async {
     try {
-      final res = await _dio.get<dynamic>('/auth/me', options: _auth);
+      final res = await _withAuth<dynamic>(
+        (options) => _dio.get<dynamic>('/auth/me', options: options),
+      );
       final data = _map(res.data);
       return AdminUser.fromJson(_map(data['user']));
     } on DioException catch (e) {
@@ -633,14 +711,10 @@ class AdminApi {
 
   Future<Uint8List?> documentBytes(String id) async {
     try {
-      final response = await _dio.get<List<int>>(
-        '/ops/documents/$id/file',
-        options: Options(
-          responseType: ResponseType.bytes,
-          headers: {
-            if (_token != null && _token!.isNotEmpty)
-              'Authorization': 'Bearer $_token',
-          },
+      final response = await _withAuth<List<int>>(
+        (options) => _dio.get<List<int>>(
+          '/ops/documents/$id/file',
+          options: options.copyWith(responseType: ResponseType.bytes),
         ),
       );
       final bytes = response.data;
@@ -713,10 +787,12 @@ class AdminApi {
     Map<String, dynamic>? query,
   }) async {
     try {
-      final res = await _dio.get<dynamic>(
-        path,
-        queryParameters: query,
-        options: _auth,
+      final res = await _withAuth<dynamic>(
+        (options) => _dio.get<dynamic>(
+          path,
+          queryParameters: query,
+          options: options,
+        ),
       );
       return _map(res.data);
     } on DioException catch (e) {
@@ -729,7 +805,9 @@ class AdminApi {
     Map<String, dynamic>? data,
   }) async {
     try {
-      final res = await _dio.post<dynamic>(path, data: data, options: _auth);
+      final res = await _withAuth<dynamic>(
+        (options) => _dio.post<dynamic>(path, data: data, options: options),
+      );
       return _map(res.data);
     } on DioException catch (e) {
       throw _failure(e);

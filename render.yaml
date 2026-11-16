@@ -24,7 +24,7 @@ services:
       - key: AUTO_SEED
         value: "1"
       - key: EXPOSE_DEV_OTP
-        value: "1"
+        value: "0"
       - key: SECRET_KEY
         generateValue: true
       - key: ALLOWED_HOSTS
